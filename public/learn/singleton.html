@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Singleton Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="./index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="./index.html#creational" class="active">Creational</a>
+    <a href="./index.html#structural">Structural</a>
+    <a href="./index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="./index.html">Home</a><span class="sep">/</span>
+  <a href="./index.html#creational">Creational</a><span class="sep">/</span>
+  <span>Singleton</span>
+</div>
+
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-creational">Creational</div>
+    <h1 class="page-title">Singleton</h1>
+    <p class="page-tagline">Ensure a class has only one instance and provide a global point of access to it.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #01 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <!-- INTENT -->
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Singleton Pattern?</h2>
+    <p>The Singleton pattern restricts the instantiation of a class to a single object and provides a global access point to that instance. It ensures that no matter how many times you ask for the object, you always get the same one.</p>
+    <p>It solves two problems at once: controlling how many instances of a class exist, and providing a single point of access. This is one of the simplest yet most debated patterns in software engineering.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A country can have only one official government at a time. No matter who asks "who is the government?", they all get the same answer — the single governing body.</div>
+  </div>
+
+  <!-- PROBLEM -->
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>Imagine a logging service, a thread pool, or a configuration manager. If your application creates multiple instances of these, you'll have inconsistent state — two loggers writing to different files, two config objects with different values, two thread pools competing for resources.</p>
+    <p>You need a way to guarantee that only one instance ever exists, and that it is easily accessible throughout the codebase — without passing it around as a parameter everywhere.</p>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">How Singleton Solves It</h2>
+    <p>The Singleton pattern has two components: make the default constructor private (so no one can call <code>new</code> on it), and provide a static creation method that acts as a constructor but returns the cached instance.</p>
+    <div class="participants">
+      <div class="participant">
+        <div class="participant-name">Singleton Class</div>
+        <div class="participant-desc">Declares a private static field holding the single instance. Provides a public static <code>getInstance()</code> method. Has a private constructor to block external instantiation.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="600" height="320" viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/>
+          </marker>
+        </defs>
+        <!-- Client boxes -->
+        <rect x="20" y="40" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="85" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e2e4ec">Client A</text>
+        <rect x="20" y="130" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="85" y="160" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e2e4ec">Client B</text>
+        <rect x="20" y="220" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="85" y="250" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e2e4ec">Client C</text>
+        <!-- arrows to getInstance -->
+        <line x1="150" y1="65" x2="240" y2="100" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="150" y1="155" x2="240" y2="145" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="150" y1="245" x2="240" y2="190" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- getInstance box -->
+        <rect x="240" y="100" width="160" height="80" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="130" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e8b86d" font-weight="600">getInstance()</text>
+        <text x="320" y="152" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#7a7f96">static method</text>
+        <!-- check diamond -->
+        <polygon points="460,140 490,110 520,140 490,170" fill="#1a1e2a" stroke="#252a38" stroke-width="1.5"/>
+        <text x="490" y="135" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">null?</text>
+        <line x1="400" y1="140" x2="460" y2="140" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- yes branch - create -->
+        <rect x="455" y="190" width="110" height="45" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="510" y="217" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">new Instance()</text>
+        <line x1="490" y1="170" x2="490" y2="190" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="500" y="185" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">yes</text>
+        <!-- no branch -->
+        <text x="530" y="135" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">no</text>
+        <!-- stored instance -->
+        <rect x="420" y="260" width="140" height="45" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="490" y="280" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">static instance</text>
+        <text x="490" y="295" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">returned to all clients</text>
+        <line x1="490" y1="235" x2="490" y2="260" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- CODE -->
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">Java</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre><span class="cm">// Thread-safe Singleton using double-checked locking</span>
+<span class="kw">public class</span> <span class="cl">DatabaseConnection</span> {
+
+    <span class="cm">// volatile ensures visibility across threads</span>
+    <span class="kw">private static volatile</span> <span class="cl">DatabaseConnection</span> instance;
+
+    <span class="kw">private</span> <span class="cl">String</span> url;
+    <span class="kw">private</span> <span class="cl">String</span> status;
+
+    <span class="cm">// Private constructor — no outside instantiation</span>
+    <span class="kw">private</span> <span class="fn">DatabaseConnection</span>() {
+        <span class="kw">this</span>.url = <span class="st">"jdbc:postgresql://localhost/mydb"</span>;
+        <span class="kw">this</span>.status = <span class="st">"connected"</span>;
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Connection established"</span>);
+    }
+
+    <span class="cm">// Double-checked locking for performance + thread safety</span>
+    <span class="kw">public static</span> <span class="cl">DatabaseConnection</span> <span class="fn">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {
+            <span class="kw">synchronized</span> (<span class="cl">DatabaseConnection</span>.<span class="kw">class</span>) {
+                <span class="kw">if</span> (instance == <span class="kw">null</span>) {
+                    instance = <span class="kw">new</span> <span class="cl">DatabaseConnection</span>();
+                }
+            }
+        }
+        <span class="kw">return</span> instance;
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getUrl</span>() { <span class="kw">return</span> url; }
+
+    <span class="kw">public void</span> <span class="fn">query</span>(<span class="cl">String</span> sql) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Executing: "</span> + sql);
+    }
+}
+
+<span class="cm">// --- Enum Singleton (best practice, serialization-safe) ---</span>
+<span class="kw">public enum</span> <span class="cl">AppConfig</span> {
+    INSTANCE;
+
+    <span class="kw">private</span> <span class="cl">String</span> env = <span class="st">"production"</span>;
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getEnv</span>() { <span class="kw">return</span> env; }
+    <span class="kw">public void</span> <span class="fn">setEnv</span>(<span class="cl">String</span> env) { <span class="kw">this</span>.env = env; }
+}
+
+<span class="cm">// --- Client usage ---</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">DatabaseConnection</span> db1 = <span class="cl">DatabaseConnection</span>.<span class="fn">getInstance</span>();
+        <span class="cl">DatabaseConnection</span> db2 = <span class="cl">DatabaseConnection</span>.<span class="fn">getInstance</span>();
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(db1 == db2); <span class="cm">// true — same instance</span>
+        db1.<span class="fn">query</span>(<span class="st">"SELECT * FROM users"</span>);
+
+        <span class="cl">AppConfig</span>.INSTANCE.<span class="fn">setEnv</span>(<span class="st">"staging"</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">AppConfig</span>.INSTANCE.<span class="fn">getEnv</span>()); <span class="cm">// staging</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- WHEN TO USE -->
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Exactly one object is needed to coordinate actions (logging, config, thread pool)</li>
+          <li>Shared resource needs controlled access (DB connection, file system)</li>
+          <li>Global state is genuinely required</li>
+          <li>Lazy initialization of expensive objects is desired</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Unit testing is critical — Singletons are hard to mock/replace</li>
+          <li>You need multiple environments (dev/test/prod) with different instances</li>
+          <li>The "global" need is just convenience, not architectural necessity</li>
+          <li>Using in multi-classloader environments (each loader gets its own instance)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- REAL WORLD -->
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.lang.Runtime.getRuntime()</code> — JVM runtime environment, exactly one per JVM</li>
+      <li><code>java.awt.Desktop.getDesktop()</code> — desktop environment wrapper</li>
+      <li>Spring's <code>ApplicationContext</code> — bean container, single context per application</li>
+      <li>Log4j / SLF4J LogManager — single logging coordinator</li>
+      <li>Hibernate <code>SessionFactory</code> — expensive to create, shared across the app</li>
+    </ul>
+  </div>
+
+  <!-- PROS CONS -->
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Guarantees single instance — prevents conflicting state</li>
+          <li>Lazy initialization — created only when needed</li>
+          <li>Global access point — no need to pass reference everywhere</li>
+          <li>Saves memory for expensive objects</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Violates Single Responsibility Principle — manages both instance and business logic</li>
+          <li>Hard to unit test — global state leaks between tests</li>
+          <li>Multi-threading requires careful implementation</li>
+          <li>Hides dependencies — makes code harder to reason about</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATED PATTERNS -->
+    <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Singleton Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Reflection:</strong> <code>Constructor.setAccessible(true)</code> bypasses the private constructor and creates a second instance</li>
+          <li><strong>Serialization:</strong> Deserializing a saved Singleton creates a brand-new instance separate from the existing one</li>
+          <li><strong>Cloning:</strong> If Singleton implements <code>Cloneable</code>, <code>clone()</code> produces a second instance</li>
+          <li><strong>Multiple ClassLoaders:</strong> Each ClassLoader gets its own class definition — and its own Singleton instance</li>
+          <li><strong>Multi-threading:</strong> Without synchronization, two threads can pass the null check simultaneously and both call <code>new</code></li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Reflection fix:</strong> In the private constructor, throw an exception if the instance already exists: <code>if (instance != null) throw new RuntimeException("Use getInstance()")</code></li>
+          <li><strong>Serialization fix:</strong> Implement <code>readResolve()</code> to return the existing instance instead of the deserialized one</li>
+          <li><strong>Cloning fix:</strong> Override <code>clone()</code> and throw <code>CloneNotSupportedException</code></li>
+          <li><strong>Best solution — Enum Singleton:</strong> Java enums are inherently serialization-safe, reflection-safe, and thread-safe. Use <code>enum AppConfig { INSTANCE; }</code> to eliminate all these vulnerabilities at once</li>
+          <li><strong>Thread safety fix:</strong> Use <code>volatile</code> + double-checked locking, or initialize in a static initializer block</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING via Reflection</span>
+<span class="cl">Constructor</span>&lt;<span class="cl">DatabaseConnection</span>&gt; ctor =
+    <span class="cl">DatabaseConnection</span>.<span class="kw">class</span>.<span class="fn">getDeclaredConstructor</span>();
+ctor.<span class="fn">setAccessible</span>(<span class="kw">true</span>);
+<span class="cl">DatabaseConnection</span> hack = ctor.<span class="fn">newInstance</span>(); <span class="cm">// second instance!</span>
+
+<span class="cm">// ✅ FIX — guard inside constructor</span>
+<span class="kw">private</span> <span class="fn">DatabaseConnection</span>() {
+    <span class="kw">if</span> (instance != <span class="kw">null</span>)
+        <span class="kw">throw new</span> <span class="cl">RuntimeException</span>(<span class="st">"Use getInstance()"</span>);
+}
+
+<span class="cm">// ❌ BREAKING via Serialization</span>
+<span class="cm">// ObjectOutputStream writes the instance to disk</span>
+<span class="cm">// ObjectInputStream.readObject() creates a NEW instance</span>
+
+<span class="cm">// ✅ FIX — readResolve() returns the existing singleton</span>
+<span class="kw">protected</span> <span class="cl">Object</span> <span class="fn">readResolve</span>() { <span class="kw">return</span> <span class="fn">getInstance</span>(); }
+
+<span class="cm">// ✅ BEST FIX — Enum Singleton (immune to all attacks)</span>
+<span class="kw">public enum</span> <span class="cl">SafeSingleton</span> {
+    INSTANCE;
+    <span class="kw">public void</span> <span class="fn">doWork</span>() { <span class="cm">/* ... */</span> }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='factory-method.html'">
+        <div>
+          <div class="related-name">Factory Method</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Factory methods are commonly implemented as Singletons — the factory that creates objects is itself a single shared instance, ensuring consistent creation logic.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='abstract-factory.html'">
+        <div>
+          <div class="related-name">Abstract Factory</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Abstract Factory classes are often implemented as Singletons because only one factory is needed to produce a family of related objects.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='prototype.html'">
+        <div>
+          <div class="related-name">Prototype</div>
+          <span class="related-tag tag-competes">Competes With</span>
+          <div class="related-desc">Prototype clones objects to create many instances; Singleton prevents multiple instances entirely. They represent opposing philosophies on object creation.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/facade.html'">
+        <div>
+          <div class="related-name">Facade</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Facade objects are frequently Singletons — you only need one entry point to a complex subsystem, making a single Facade instance a natural fit.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECAP -->
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Ensures only one instance of a class exists, with a global access point via static <code>getInstance()</code>.</li>
+        <li><strong>How:</strong> Private constructor + private static field + public static method. Use <code>volatile</code> + double-checked locking for thread safety, or use Enum Singleton.</li>
+        <li><strong>When:</strong> Logging, configuration, connection pools, caches — shared resources that must be consistent. Avoid when testability matters — prefer Dependency Injection instead.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <span></span>
+    <a href="factory-method.html" class="right">
+      <span class="nav-dir">Next →</span>
+      <span class="nav-title">Factory Method</span>
+    </a>
+  </div>
+</div>
+<script>
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>

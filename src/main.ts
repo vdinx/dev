@@ -11,7 +11,8 @@ function render(): void {
         <div class="nav-link" data-target="home"><span>01</span> // home</div>
         <div class="nav-link" data-target="expertise"><span>02</span> // expertise</div>
         <div class="nav-link" data-target="experience"><span>03</span> // experience</div>
-        <div class="nav-link" data-target="contact"><span>04</span> // contact</div>
+        <div class="nav-link" data-target="learning"><span>04</span> // learning</div>
+        <div class="nav-link" data-target="contact"><span>05</span> // contact</div>
       </div>
     </nav>
 
@@ -114,6 +115,60 @@ function render(): void {
       </div>
     </div>
 
+    <!-- LEARNING -->
+    <div class="section-header" id="learning">
+      <h2>Learning</h2>
+      <p class="section-subtext">My notes, deep-dives & interview prep guides — written the way I wish someone had explained them to me.</p>
+    </div>
+
+    <div class="learning-grid">
+
+      <div class="learn-card">
+        <div class="learn-card-inner">
+          <div class="learn-card-top">
+            <div class="learn-category-pill">Design Patterns</div>
+            <div class="learn-read-time">23 patterns · Java</div>
+          </div>
+          <h3 class="learn-title">GoF Design Patterns<br/><span>Mastery Guide</span></h3>
+          <p class="learn-excerpt">All 23 Gang of Four patterns explained with intent, UML-style diagrams, Java code, real-world analogies, pros/cons, and interview cheat sheets. Creational patterns available now.</p>
+          <div class="learn-meta">
+            <div class="learn-tags">
+              <span class="learn-tag">Creational</span>
+              <span class="learn-tag learn-tag-soon">Structural</span>
+              <span class="learn-tag learn-tag-soon">Behavioral</span>
+            </div>
+          </div>
+          <div class="learn-patterns-preview">
+            <a href="/learn/index.html" class="learn-pattern-chip">Singleton</a>
+            <a href="/learn/factory-method.html" class="learn-pattern-chip">Factory Method</a>
+            <a href="/learn/abstract-factory.html" class="learn-pattern-chip">Abstract Factory</a>
+            <a href="/learn/builder.html" class="learn-pattern-chip">Builder</a>
+            <a href="/learn/prototype.html" class="learn-pattern-chip">Prototype</a>
+          </div>
+          <a href="/learn/index.html" class="learn-cta">
+            <span>Read the Guide</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+        <div class="learn-card-accent"></div>
+      </div>
+
+      <div class="learn-card learn-card-coming">
+        <div class="learn-card-inner">
+          <div class="learn-card-top">
+            <div class="learn-category-pill learn-pill-gray">System Design</div>
+            <div class="learn-read-time">Coming Soon</div>
+          </div>
+          <h3 class="learn-title">System Design<br/><span>Interview Playbook</span></h3>
+          <p class="learn-excerpt">Scalability, databases, caching, messaging queues, and distributed systems — everything for the senior engineering interviews.</p>
+          <div class="learn-coming-badge">🚧 In Progress</div>
+        </div>
+      </div>
+
+    </div>
+
     <!-- CONTACT -->
     <section class="contact" id="contact">
       <div class="section-header">
@@ -170,7 +225,7 @@ function initInteractions(): void {
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.expertise-card, .exp-row, .section-header').forEach(el => {
+  document.querySelectorAll('.expertise-card, .exp-row, .section-header, .learn-card').forEach(el => {
     const htmlEl = el as HTMLElement;
     htmlEl.style.opacity = '0';
     htmlEl.style.transform = 'translateY(30px)';

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Factory Method Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="./index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="./index.html#creational" class="active">Creational</a>
+    <a href="./index.html#structural">Structural</a>
+    <a href="./index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="./index.html">Home</a><span class="sep">/</span>
+  <a href="./index.html#creational">Creational</a><span class="sep">/</span>
+  <span>Factory Method</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-creational">Creational</div>
+    <h1 class="page-title">Factory Method</h1>
+    <p class="page-tagline">Define an interface for creating an object, but let subclasses decide which class to instantiate.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #02 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Factory Method Pattern?</h2>
+    <p>Factory Method defines an interface for creating an object but lets subclasses decide which class to instantiate. Rather than calling <code>new</code> directly, you call a factory method that subclasses override to produce the right product type.</p>
+    <p>This pattern promotes loose coupling by eliminating the need to bind application-specific classes into your code — the code only deals with the product interface.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A logistics company (Creator) has a <code>createTransport()</code> method. A road logistics subclass returns a Truck; a sea logistics subclass returns a Ship. The high-level shipping logic stays the same — only the transport creation differs.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>Imagine you're building a UI library. You have a <code>Dialog</code> class that creates buttons. On Windows you need <code>WindowsButton</code>; on Mac you need <code>MacButton</code>. Hardcoding <code>new WindowsButton()</code> in Dialog couples it to a specific platform and makes extension painful.</p>
+    <p>You need a way to say "create a button" without specifying exactly which kind — letting platform-specific subclasses decide the concrete type.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant">
+        <div class="participant-name">Creator (abstract)</div>
+        <div class="participant-desc">Declares the abstract factory method <code>createProduct()</code>. May contain core business logic that calls the factory method.</div>
+      </div>
+      <div class="participant">
+        <div class="participant-name">ConcreteCreator</div>
+        <div class="participant-desc">Overrides <code>createProduct()</code> to return an instance of a specific ConcreteProduct.</div>
+      </div>
+      <div class="participant">
+        <div class="participant-name">Product (interface)</div>
+        <div class="participant-desc">Defines the interface for objects the factory method creates.</div>
+      </div>
+      <div class="participant">
+        <div class="participant-name">ConcreteProduct</div>
+        <div class="participant-desc">Implements the Product interface. The actual object that gets created.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="300" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e8b86d"/></marker></defs>
+        <!-- Creator -->
+        <rect x="20" y="80" width="180" height="70" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="110" y="105" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e8b86d">«abstract»</text>
+        <text x="110" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Creator</text>
+        <text x="110" y="140" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#7a7f96">createProduct()</text>
+        <!-- ConcreteCreator A -->
+        <rect x="20" y="210" width="160" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="100" y="232" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">WindowsDialog</text>
+        <text x="100" y="249" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createProduct()</text>
+        <!-- ConcreteCreator B -->
+        <rect x="200" y="210" width="160" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="280" y="232" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">WebDialog</text>
+        <text x="280" y="249" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createProduct()</text>
+        <!-- arrows creator → concrete -->
+        <line x1="110" y1="150" x2="100" y2="210" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="150" y1="150" x2="280" y2="210" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- Product interface -->
+        <rect x="430" y="80" width="180" height="70" rx="6" fill="#13161e" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="520" y="105" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#6de8a8">«interface»</text>
+        <text x="520" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Button</text>
+        <text x="520" y="140" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#7a7f96">render() / onClick()</text>
+        <!-- ConcreteProduct A -->
+        <rect x="380" y="210" width="150" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="455" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">WindowsButton</text>
+        <!-- ConcreteProduct B -->
+        <rect x="550" y="210" width="70" height="50" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="585" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">HTMLButton</text>
+        <!-- product arrows -->
+        <line x1="455" y1="210" x2="490" y2="150" stroke="#6de8a8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="575" y1="210" x2="545" y2="150" stroke="#6de8a8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- creator → product (uses) -->
+        <line x1="200" y1="115" x2="430" y2="115" stroke="#e8b86d" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr2)"/>
+        <text x="315" y="108" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">«creates»</text>
+        <text x="22" y="30" font-family="JetBrains Mono,monospace" font-size="10" fill="#7a7f96">--- = inheritance/implements  ··· = dependency</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Product interface</span>
+<span class="kw">public interface</span> <span class="cl">Button</span> {
+    <span class="kw">void</span> <span class="fn">render</span>();
+    <span class="kw">void</span> <span class="fn">onClick</span>();
+}
+
+<span class="cm">// Concrete Products</span>
+<span class="kw">public class</span> <span class="cl">WindowsButton</span> <span class="kw">implements</span> <span class="cl">Button</span> {
+    <span class="kw">public void</span> <span class="fn">render</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Rendering Windows button"</span>); }
+    <span class="kw">public void</span> <span class="fn">onClick</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Windows click handler"</span>); }
+}
+
+<span class="kw">public class</span> <span class="cl">HTMLButton</span> <span class="kw">implements</span> <span class="cl">Button</span> {
+    <span class="kw">public void</span> <span class="fn">render</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Rendering HTML button"</span>); }
+    <span class="kw">public void</span> <span class="fn">onClick</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"HTML click handler"</span>); }
+}
+
+<span class="cm">// Creator — declares factory method</span>
+<span class="kw">public abstract class</span> <span class="cl">Dialog</span> {
+
+    <span class="cm">// The factory method — subclasses must implement</span>
+    <span class="kw">public abstract</span> <span class="cl">Button</span> <span class="fn">createButton</span>();
+
+    <span class="cm">// Uses the factory method — works with any Button</span>
+    <span class="kw">public void</span> <span class="fn">renderDialog</span>() {
+        <span class="cl">Button</span> btn = <span class="fn">createButton</span>(); <span class="cm">// polymorphic creation</span>
+        btn.<span class="fn">render</span>();
+        btn.<span class="fn">onClick</span>();
+    }
+}
+
+<span class="cm">// Concrete Creators</span>
+<span class="kw">public class</span> <span class="cl">WindowsDialog</span> <span class="kw">extends</span> <span class="cl">Dialog</span> {
+    <span class="kw">public</span> <span class="cl">Button</span> <span class="fn">createButton</span>() { <span class="kw">return new</span> <span class="cl">WindowsButton</span>(); }
+}
+
+<span class="kw">public class</span> <span class="cl">WebDialog</span> <span class="kw">extends</span> <span class="cl">Dialog</span> {
+    <span class="kw">public</span> <span class="cl">Button</span> <span class="fn">createButton</span>() { <span class="kw">return new</span> <span class="cl">HTMLButton</span>(); }
+}
+
+<span class="cm">// Client — works with Dialog abstraction, unaware of concrete type</span>
+<span class="kw">public class</span> <span class="cl">Application</span> {
+    <span class="kw">private static</span> <span class="cl">Dialog</span> dialog;
+
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">String</span> os = <span class="cl">System</span>.<span class="fn">getProperty</span>(<span class="st">"os.name"</span>);
+        <span class="kw">if</span> (os.contains(<span class="st">"Windows"</span>)) {
+            dialog = <span class="kw">new</span> <span class="cl">WindowsDialog</span>();
+        } <span class="kw">else</span> {
+            dialog = <span class="kw">new</span> <span class="cl">WebDialog</span>();
+        }
+        dialog.<span class="fn">renderDialog</span>(); <span class="cm">// same call, different result</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You don't know ahead of time what class you need to instantiate</li>
+          <li>You want subclasses to specify the objects they create</li>
+          <li>You need to encapsulate object creation and hide the concrete type from clients</li>
+          <li>Adding new product types should not require changing existing creator code</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Only one product type is ever needed — unnecessary complexity</li>
+          <li>The product type is unlikely to change</li>
+          <li>You prefer composition over inheritance — use Abstract Factory instead</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.Calendar.getInstance()</code> — returns locale-specific Calendar subclass</li>
+      <li><code>java.util.Iterator</code> — Collection subclasses implement their own iterator factories</li>
+      <li>Spring's <code>FactoryBean</code> — creates beans via factory method pattern</li>
+      <li>JDBC <code>DriverManager.getConnection()</code> — returns driver-specific connection</li>
+      <li>JUnit <code>TestCase</code> — framework calls overridden test method factories</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Open/Closed Principle — add new products without changing creator</li>
+          <li>Single Responsibility — creation code in one place</li>
+          <li>Eliminates tight coupling between creator and concrete products</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Requires subclassing — code can become more complex with many creators</li>
+          <li>Client must subclass Creator just to create a different product</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+    <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Factory Method Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Bypassing the factory:</strong> Client directly calls <code>new WindowsButton()</code> instead of <code>dialog.createButton()</code>, defeating the abstraction</li>
+          <li><strong>Reflection:</strong> Client uses reflection to discover the concrete type and instantiate it directly, bypassing the intended polymorphism</li>
+          <li><strong>Returning wrong type:</strong> A ConcreteCreator returns a product incompatible with the declared interface contract — violating Liskov Substitution Principle</li>
+          <li><strong>Mutable product state leaks:</strong> If the factory returns a shared (non-new) instance, clients mutate shared state unexpectedly</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Restrict direct instantiation:</strong> Make ConcreteProduct constructors package-private so clients outside the package can only get them through the factory</li>
+          <li><strong>Program to interfaces:</strong> Clients should only reference the <code>Button</code> interface — never <code>WindowsButton</code>. Code reviews and architecture tests (ArchUnit) can enforce this</li>
+          <li><strong>Contract tests:</strong> Write tests asserting that every ConcreteCreator's product correctly implements the Product interface behaviour</li>
+          <li><strong>Return fresh instances:</strong> Factories should return new instances unless intentionally using caching — document the behaviour clearly</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — client bypasses factory, couples to concrete class</span>
+<span class="cl">Button</span> btn = <span class="kw">new</span> <span class="cl">WindowsButton</span>(); <span class="cm">// direct instantiation defeats the pattern</span>
+
+<span class="cm">// ✅ FIX — restrict constructor visibility</span>
+<span class="kw">class</span> <span class="cl">WindowsButton</span> <span class="kw">implements</span> <span class="cl">Button</span> {
+    <span class="cm">// package-private — only WindowsDialog (same package) can instantiate</span>
+    <span class="fn">WindowsButton</span>() {}
+    <span class="kw">public void</span> <span class="fn">render</span>() { <span class="cm">/* ... */</span> }
+    <span class="kw">public void</span> <span class="fn">onClick</span>() { <span class="cm">/* ... */</span> }
+}
+
+<span class="cm">// ❌ BREAKING — ConcreteCreator returns wrong type silently</span>
+<span class="kw">public class</span> <span class="cl">BuggyDialog</span> <span class="kw">extends</span> <span class="cl">Dialog</span> {
+    <span class="kw">public</span> <span class="cl">Button</span> <span class="fn">createButton</span>() {
+        <span class="kw">return new</span> <span class="cl">HTMLButton</span>(); <span class="cm">// wrong platform — breaks visual consistency</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — ArchUnit test enforces factory usage (no direct instantiation)</span>
+<span class="cm">// noClasses().that().resideInPackage("..client..")</span>
+<span class="cm">//     .should().accessClassesThat().resideInPackage("..product.impl..")</span></pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='abstract-factory.html'">
+        <div>
+          <div class="related-name">Abstract Factory</div>
+          <span class="related-tag tag-extends">Extends</span>
+          <div class="related-desc">Abstract Factory is often implemented using Factory Methods. It creates families of objects; Factory Method creates one product via subclassing.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/template-method.html'">
+        <div>
+          <div class="related-name">Template Method</div>
+          <span class="related-tag tag-confused">Often Confused</span>
+          <div class="related-desc">Both use inheritance and overriding. Template Method defines the algorithm skeleton; Factory Method just defines the creation step. Factory Method is often a step within Template Method.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='prototype.html'">
+        <div>
+          <div class="related-name">Prototype</div>
+          <span class="related-tag tag-competes">Competes With</span>
+          <div class="related-desc">Factory Method uses subclassing to decide which product to create; Prototype delegates to the prototype object itself. Prototype avoids subclassing the Creator.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='singleton.html'">
+        <div>
+          <div class="related-name">Singleton</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Concrete Creators are often implemented as Singletons since only one factory per type is usually needed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Abstract method in a base class that subclasses override to return different product types — "let subclasses decide what to instantiate."</li>
+        <li><strong>How:</strong> Abstract Creator with abstract <code>createProduct()</code>. ConcreteCreators override it. Client calls the Creator's methods without knowing the concrete product.</li>
+        <li><strong>Key difference from Abstract Factory:</strong> Factory Method uses inheritance (one product per creator); Abstract Factory uses composition (families of products).</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="singleton.html">
+      <span class="nav-dir">← Previous</span>
+      <span class="nav-title">Singleton</span>
+    </a>
+    <a href="abstract-factory.html" class="right">
+      <span class="nav-dir">Next →</span>
+      <span class="nav-title">Abstract Factory</span>
+    </a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

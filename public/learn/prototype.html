@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Prototype Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="./style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="./index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="./index.html#creational" class="active">Creational</a>
+    <a href="./index.html#structural">Structural</a>
+    <a href="./index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="./index.html">Home</a><span class="sep">/</span>
+  <a href="./index.html#creational">Creational</a><span class="sep">/</span>
+  <span>Prototype</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-creational">Creational</div>
+    <h1 class="page-title">Prototype</h1>
+    <p class="page-tagline">Specify the kinds of objects to create using a prototypical instance, and create new objects by copying that prototype.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #05 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <!-- INTENT -->
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Prototype Pattern?</h2>
+    <p>The Prototype pattern lets you create new objects by cloning an existing instance (the prototype) rather than building from scratch via constructors. The object itself knows how to copy itself — delegating the cloning logic inside the class rather than exposing it externally.</p>
+    <p>This is especially powerful when object creation is expensive (e.g., DB queries, network calls, heavy computation) and you just need a slightly different version of an existing object.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Biological cell division — a cell copies itself to create a new identical cell, rather than assembling a new cell from raw atoms each time. The prototype is the original cell; the clone is the copy.</div>
+  </div>
+
+  <!-- PROBLEM -->
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>Suppose you have a complex object loaded from a database — parsed, validated, and populated with many fields. You need a near-identical copy but with a few tweaks. Constructing a new one from scratch is expensive and wasteful. And you can't just copy fields externally because some may be private.</p>
+    <p>Furthermore, you may not even know the exact class of the object at runtime — just its interface. You can't call <code>new ConcreteClass()</code> when you only have an interface reference.</p>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant">
+        <div class="participant-name">Prototype (interface)</div>
+        <div class="participant-desc">Declares the <code>clone()</code> method. In Java, this is the <code>Cloneable</code> interface (or a custom one).</div>
+      </div>
+      <div class="participant">
+        <div class="participant-name">ConcretePrototype</div>
+        <div class="participant-desc">Implements <code>clone()</code> to return a deep or shallow copy of itself. Contains all the copying logic internally.</div>
+      </div>
+      <div class="participant">
+        <div class="participant-name">Client</div>
+        <div class="participant-desc">Creates a new object by asking a prototype to clone itself. Never calls <code>new</code> on the concrete class directly.</div>
+      </div>
+      <div class="participant">
+        <div class="participant-name">Prototype Registry (optional)</div>
+        <div class="participant-desc">A store of pre-built prototypes keyed by name/type. Client fetches prototype from registry and clones it, avoiding any coupling to concrete classes.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="310" viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/>
+          </marker>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#6de8a8"/>
+          </marker>
+        </defs>
+
+        <!-- Client -->
+        <rect x="20" y="120" width="110" height="55" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="75" y="145" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#b46de8" font-weight="600">Client</text>
+        <text x="75" y="163" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">calls clone()</text>
+
+        <!-- Prototype Registry -->
+        <rect x="20" y="220" width="150" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="95" y="244" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">ProtoRegistry</text>
+        <text x="95" y="261" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">Map&lt;key, prototype&gt;</text>
+        <text x="95" y="277" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">getPrototype(key)</text>
+
+        <!-- Prototype interface -->
+        <rect x="230" y="50" width="180" height="60" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="74" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface»</text>
+        <text x="320" y="91" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Prototype</text>
+        <text x="390" y="58" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">clone()</text>
+
+        <!-- ConcretePrototype 1 -->
+        <rect x="180" y="180" width="170" height="100" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="265" y="204" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">CirclePrototype</text>
+        <text x="265" y="222" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">radius: int</text>
+        <text x="265" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">color: String</text>
+        <text x="265" y="257" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">clone() { return copy; }</text>
+
+        <!-- ConcretePrototype 2 -->
+        <rect x="390" y="180" width="170" height="100" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="475" y="204" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">RectPrototype</text>
+        <text x="475" y="222" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">width, height: int</text>
+        <text x="475" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">color: String</text>
+        <text x="475" y="257" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">clone() { return copy; }</text>
+
+        <!-- Clone result box -->
+        <rect x="490" y="40" width="130" height="55" rx="6" fill="#13161e" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="555" y="62" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">Cloned Object</text>
+        <text x="555" y="80" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">independent copy</text>
+
+        <!-- arrows -->
+        <line x1="130" y1="148" x2="230" y2="100" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="280" y1="110" x2="250" y2="180" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="360" y1="110" x2="440" y2="180" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="350" y1="230" x2="490" y2="75" stroke="#6de8a8" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr2)"/>
+        <line x1="95" y1="220" x2="95" y2="175" stroke="#e8b86d" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <text x="100" y="200" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">stores</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- CODE -->
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Prototype interface</span>
+<span class="kw">public abstract class</span> <span class="cl">Shape</span> <span class="kw">implements</span> <span class="cl">Cloneable</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> color;
+    <span class="kw">protected int</span> x, y;
+
+    <span class="kw">public</span> <span class="fn">Shape</span>(<span class="cl">Shape</span> target) {
+        <span class="cm">// Copy constructor — used by clone()</span>
+        <span class="kw">if</span> (target != <span class="kw">null</span>) {
+            <span class="kw">this</span>.color = target.color;
+            <span class="kw">this</span>.x = target.x;
+            <span class="kw">this</span>.y = target.y;
+        }
+    }
+
+    <span class="kw">public abstract</span> <span class="cl">Shape</span> <span class="fn">clone</span>();
+
+    <span class="kw">public boolean</span> <span class="fn">equals</span>(<span class="cl">Object</span> o) {
+        <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="cl">Shape</span>)) <span class="kw">return false</span>;
+        <span class="cl">Shape</span> s = (<span class="cl">Shape</span>) o;
+        <span class="kw">return</span> s.color.equals(color) && s.x == x && s.y == y;
+    }
+}
+
+<span class="cm">// Concrete Prototype 1</span>
+<span class="kw">public class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">public int</span> radius;
+
+    <span class="kw">public</span> <span class="fn">Circle</span>(<span class="cl">Circle</span> target) {
+        <span class="kw">super</span>(target);
+        <span class="kw">if</span> (target != <span class="kw">null</span>) <span class="kw">this</span>.radius = target.radius;
+    }
+
+    <span class="kw">public</span> <span class="cl">Circle</span> <span class="fn">clone</span>() { <span class="kw">return new</span> <span class="cl">Circle</span>(<span class="kw">this</span>); }
+}
+
+<span class="cm">// Concrete Prototype 2</span>
+<span class="kw">public class</span> <span class="cl">Rectangle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">public int</span> width, height;
+
+    <span class="kw">public</span> <span class="fn">Rectangle</span>(<span class="cl">Rectangle</span> target) {
+        <span class="kw">super</span>(target);
+        <span class="kw">if</span> (target != <span class="kw">null</span>) {
+            <span class="kw">this</span>.width  = target.width;
+            <span class="kw">this</span>.height = target.height;
+        }
+    }
+
+    <span class="kw">public</span> <span class="cl">Rectangle</span> <span class="fn">clone</span>() { <span class="kw">return new</span> <span class="cl">Rectangle</span>(<span class="kw">this</span>); }
+}
+
+<span class="cm">// Prototype Registry — stores pre-built prototypes by key</span>
+<span class="kw">public class</span> <span class="cl">ShapeRegistry</span> {
+    <span class="kw">private static</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Shape</span>&gt; cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+    <span class="kw">static</span> {
+        <span class="cl">Circle</span> c = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="kw">null</span>);
+        c.color = <span class="st">"red"</span>; c.radius = <span class="nm">10</span>;
+        cache.<span class="fn">put</span>(<span class="st">"red-circle"</span>, c);
+
+        <span class="cl">Rectangle</span> r = <span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="kw">null</span>);
+        r.color = <span class="st">"blue"</span>; r.width = <span class="nm">20</span>; r.height = <span class="nm">30</span>;
+        cache.<span class="fn">put</span>(<span class="st">"blue-rect"</span>, r);
+    }
+
+    <span class="kw">public static</span> <span class="cl">Shape</span> <span class="fn">getShape</span>(<span class="cl">String</span> key) {
+        <span class="kw">return</span> cache.<span class="fn">get</span>(key).<span class="fn">clone</span>(); <span class="cm">// always return a clone</span>
+    }
+}
+
+<span class="cm">// Client usage</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Shape</span> c1 = <span class="cl">ShapeRegistry</span>.<span class="fn">getShape</span>(<span class="st">"red-circle"</span>);
+        <span class="cl">Shape</span> c2 = <span class="cl">ShapeRegistry</span>.<span class="fn">getShape</span>(<span class="st">"red-circle"</span>);
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(c1 == c2);         <span class="cm">// false — different objects</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(c1.<span class="fn">equals</span>(c2));    <span class="cm">// true  — same field values</span>
+
+        <span class="cm">// Mutate the clone freely — original is unaffected</span>
+        ((<span class="cl">Circle</span>) c1).radius = <span class="nm">99</span>;
+        <span class="cl">System</span>.out.<span class="fn">println</span>(((<span class="cl">Circle</span>) c2).radius); <span class="cm">// still 10</span>
+    }
+}
+
+<span class="cm">// ⚠ Shallow vs Deep Clone</span>
+<span class="cm">// Shallow: copies primitive fields, shares object references (default Object.clone())</span>
+<span class="cm">// Deep:    recursively copies nested objects — must implement manually</span>
+<span class="kw">public</span> <span class="cl">DeepObject</span> <span class="fn">clone</span>() {
+    <span class="cl">DeepObject</span> copy = (<span class="cl">DeepObject</span>) <span class="kw">super</span>.<span class="fn">clone</span>(); <span class="cm">// shallow</span>
+    copy.nestedList = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="kw">this</span>.nestedList); <span class="cm">// deep copy list</span>
+    <span class="kw">return</span> copy;
+}</pre>
+    </div>
+  </div>
+
+  <!-- WHEN TO USE -->
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Object creation is expensive (DB lookup, network call, heavy init)</li>
+          <li>You need many similar objects that differ only slightly</li>
+          <li>You don't know the exact class of the object to create at runtime</li>
+          <li>You want to avoid subclassing just to configure objects differently</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Objects have circular references — deep cloning becomes very tricky</li>
+          <li>Construction is cheap — cloning adds unnecessary complexity</li>
+          <li>All objects of a type are always unique — no benefit to prototype sharing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- REAL WORLD -->
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>Object.clone()</code> — Java's built-in shallow clone mechanism via <code>Cloneable</code> interface</li>
+      <li><code>ArrayList.clone()</code>, <code>HashMap.clone()</code> — shallow copies of collections</li>
+      <li>Spring prototype bean scope — <code>@Scope("prototype")</code> returns a fresh clone per request</li>
+      <li>Game engines — enemy/item templates stored as prototypes, cloned for each spawn</li>
+      <li>JavaScript's <code>Object.create(proto)</code> — language-level prototype-based inheritance</li>
+    </ul>
+  </div>
+
+  <!-- PROS CONS -->
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Faster than constructing from scratch when initialization is heavy</li>
+          <li>Clone at runtime without knowing the concrete class</li>
+          <li>Alternative to subclassing for object variation</li>
+          <li>Prototype Registry enables named, reusable object templates</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Deep cloning with circular references is complex and error-prone</li>
+          <li>Each subclass must implement <code>clone()</code> — easy to forget</li>
+          <li>Java's <code>Cloneable</code> interface is considered poorly designed</li>
+          <li>Shallow copies can cause subtle bugs with shared mutable state</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATED PATTERNS -->
+    <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Prototype Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Shallow copy shared mutation:</strong> Default <code>Object.clone()</code> is shallow — cloned object shares references to nested mutable objects. Mutating the clone's nested object changes the original too</li>
+          <li><strong>Circular references:</strong> Object A references B, which references A — a naive deep clone loops infinitely or causes a <code>StackOverflowError</code></li>
+          <li><strong>Cloning a Singleton:</strong> If a Singleton implements <code>Cloneable</code>, cloning it produces a second instance and breaks the Singleton guarantee</li>
+          <li><strong>Forgetting to override clone():</strong> Subclass adds new fields but doesn't update <code>clone()</code> — new fields are lost silently in the copy</li>
+          <li><strong>Using stale registry prototypes:</strong> Prototype registry holds a cached object whose state has drifted; clones inherit outdated state</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Always implement deep clone for mutable fields:</strong> Explicitly clone every mutable nested object — do not rely on the default shallow <code>super.clone()</code> when nested objects exist</li>
+          <li><strong>Circular reference fix:</strong> Track visited objects in a <code>Map&lt;Original, Clone&gt;</code> during cloning — if already cloned, return the existing copy instead of recursing</li>
+          <li><strong>Singleton cloning fix:</strong> Override <code>clone()</code> in the Singleton to throw <code>CloneNotSupportedException</code>, or do not implement <code>Cloneable</code> at all</li>
+          <li><strong>Copy constructor over Cloneable:</strong> Prefer explicit copy constructors (<code>new Circle(original)</code>) over <code>Object.clone()</code> — clearer, safer, and avoids Java's broken <code>Cloneable</code> design</li>
+          <li><strong>Serialization-based deep clone:</strong> Serialize to byte array then deserialize — automatically handles deep copy but is slower; use only when object graph is complex</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — shallow clone shares mutable nested list</span>
+<span class="kw">public class</span> <span class="cl">UserProfile</span> <span class="kw">implements</span> <span class="cl">Cloneable</span> {
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; roles = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public</span> <span class="cl">UserProfile</span> <span class="fn">clone</span>() {
+        <span class="kw">return</span> (<span class="cl">UserProfile</span>) <span class="kw">super</span>.<span class="fn">clone</span>(); <span class="cm">// shallow! roles list is shared</span>
+    }
+}
+<span class="cl">UserProfile</span> original = <span class="kw">new</span> <span class="cl">UserProfile</span>();
+original.roles.<span class="fn">add</span>(<span class="st">"admin"</span>);
+<span class="cl">UserProfile</span> clone = original.<span class="fn">clone</span>();
+clone.roles.<span class="fn">add</span>(<span class="st">"superuser"</span>); <span class="cm">// also modifies original.roles!</span>
+
+<span class="cm">// ✅ FIX — deep clone the mutable field</span>
+<span class="kw">public</span> <span class="cl">UserProfile</span> <span class="fn">clone</span>() {
+    <span class="cl">UserProfile</span> copy = (<span class="cl">UserProfile</span>) <span class="kw">super</span>.<span class="fn">clone</span>();
+    copy.roles = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="kw">this</span>.roles); <span class="cm">// independent copy</span>
+    <span class="kw">return</span> copy;
+}
+
+<span class="cm">// ❌ BREAKING — circular reference causes infinite recursion</span>
+<span class="cm">// Node A has reference to B; B has reference back to A</span>
+<span class="cm">// Naive deep clone: clone A → clone B → clone A → ... StackOverflow</span>
+
+<span class="cm">// ✅ FIX — visited map breaks the cycle</span>
+<span class="kw">public</span> <span class="cl">Node</span> <span class="fn">deepClone</span>(<span class="cl">Map</span>&lt;<span class="cl">Node</span>, <span class="cl">Node</span>&gt; visited) {
+    <span class="kw">if</span> (visited.<span class="fn">containsKey</span>(<span class="kw">this</span>)) <span class="kw">return</span> visited.<span class="fn">get</span>(<span class="kw">this</span>); <span class="cm">// reuse</span>
+    <span class="cl">Node</span> copy = <span class="kw">new</span> <span class="cl">Node</span>(<span class="kw">this</span>.value);
+    visited.<span class="fn">put</span>(<span class="kw">this</span>, copy);
+    copy.next = (next != <span class="kw">null</span>) ? next.<span class="fn">deepClone</span>(visited) : <span class="kw">null</span>;
+    <span class="kw">return</span> copy;
+}
+
+<span class="cm">// ✅ Serialization-based deep clone (handles complex graphs)</span>
+<span class="kw">public static</span> &lt;T <span class="kw">extends</span> <span class="cl">Serializable</span>&gt; T <span class="fn">deepClone</span>(T obj) {
+    <span class="kw">try</span> {
+        <span class="cl">ByteArrayOutputStream</span> bos = <span class="kw">new</span> <span class="cl">ByteArrayOutputStream</span>();
+        <span class="kw">new</span> <span class="cl">ObjectOutputStream</span>(bos).<span class="fn">writeObject</span>(obj);
+        <span class="kw">return</span> (<span class="cl">T</span>) <span class="kw">new</span> <span class="cl">ObjectInputStream</span>(
+            <span class="kw">new</span> <span class="cl">ByteArrayInputStream</span>(bos.<span class="fn">toByteArray</span>())).<span class="fn">readObject</span>();
+    } <span class="kw">catch</span> (<span class="cl">Exception</span> e) { <span class="kw">throw new</span> <span class="cl">RuntimeException</span>(e); }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='factory-method.html'">
+        <div>
+          <div class="related-name">Factory Method</div>
+          <span class="related-tag tag-competes">Competes With</span>
+          <div class="related-desc">Factory Method uses subclassing to decide the concrete class; Prototype delegates creation to the prototype itself. Prototype avoids the need for a Creator subclass hierarchy entirely.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='abstract-factory.html'">
+        <div>
+          <div class="related-name">Abstract Factory</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">An Abstract Factory can store a set of prototypes and return clones instead of constructing products via subclasses, reducing the number of factory subclasses needed.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='singleton.html'">
+        <div>
+          <div class="related-name">Singleton</div>
+          <span class="related-tag tag-competes">Competes With</span>
+          <div class="related-desc">Singleton allows only one instance; Prototype can produce unlimited copies. They embody opposing philosophies: one for uniqueness, the other for duplication.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/composite.html'">
+        <div>
+          <div class="related-name">Composite</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Composite trees are often cloned using Prototype — it's far easier to clone a whole tree structure than to reconstruct it from scratch node by node.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/decorator.html'">
+        <div>
+          <div class="related-name">Decorator</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">A heavily decorated object can be cloned as a prototype so new instances start with all decorations pre-applied, avoiding re-wrapping each time.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECAP -->
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Create new objects by cloning an existing prototype rather than instantiating from scratch — delegates creation to the object itself via <code>clone()</code>.</li>
+        <li><strong>How:</strong> Implement <code>Cloneable</code> (or a custom interface). Use a copy constructor for clean deep cloning. Optionally use a Prototype Registry (Map) to store named templates and always return clones.</li>
+        <li><strong>Critical interview point:</strong> Know the difference between shallow clone (copies primitives, shares references) and deep clone (fully independent copy). Deep cloning circular references requires special care — serialization trick is a common workaround.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="builder.html"><span class="nav-dir">← Previous</span><span class="nav-title">Builder</span></a>
+    <a href="../structural/adapter.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Adapter</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>
