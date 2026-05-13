@@ -139,13 +139,13 @@ function render(): void {
             </div>
           </div>
           <div class="learn-patterns-preview">
-            <a href="/learn/index.html" class="learn-pattern-chip">Singleton</a>
-            <a href="/learn/factory-method.html" class="learn-pattern-chip">Factory Method</a>
-            <a href="/learn/abstract-factory.html" class="learn-pattern-chip">Abstract Factory</a>
-            <a href="/learn/builder.html" class="learn-pattern-chip">Builder</a>
-            <a href="/learn/prototype.html" class="learn-pattern-chip">Prototype</a>
+            <a href="./learn/index.html" class="learn-pattern-chip">Singleton</a>
+            <a href="./learn/factory-method.html" class="learn-pattern-chip">Factory Method</a>
+            <a href="./learn/abstract-factory.html" class="learn-pattern-chip">Abstract Factory</a>
+            <a href="./learn/builder.html" class="learn-pattern-chip">Builder</a>
+            <a href="./learn/prototype.html" class="learn-pattern-chip">Prototype</a>
           </div>
-          <a href="/learn/index.html" class="learn-cta">
+          <a href="./learn/index.html" class="learn-cta">
             <span>Read the Guide</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
