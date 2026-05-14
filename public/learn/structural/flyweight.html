@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Flyweight Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural" class="active">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#structural">Structural</a><span class="sep">/</span>
+  <span>Flyweight</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-structural">Structural</div>
+    <h1 class="page-title">Flyweight</h1>
+    <p class="page-tagline">Use sharing to efficiently support a large number of fine-grained objects by externalising state.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-advanced">Advanced</span>
+      <span class="diff-badge">Pattern #11 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Flyweight Pattern?</h2>
+    <p>Flyweight minimises memory usage by sharing as much data as possible among similar objects. It separates object state into <strong>intrinsic</strong> (shared, immutable, stored in the flyweight) and <strong>extrinsic</strong> (unique per context, passed in at runtime). One flyweight object serves many contexts.</p>
+    <p>The key insight: if many objects share the same internal state, there's no need to store that state in each object — store it once in a shared flyweight and pass the context-specific part in when needed.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A forest of trees in a game. Each tree has position (extrinsic — unique per tree) and species/texture/colour (intrinsic — shared by all trees of the same type). Instead of storing texture data in 10,000 tree objects, store it once in one <code>TreeType</code> flyweight used by all.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>A text editor stores each character as an object with font, size, colour, and the character value itself. A document with 100,000 characters creates 100,000 objects, most sharing the same font/size/colour — massive, redundant memory consumption.</p>
+    <p>Flyweight stores font, size, and colour once in a shared <code>CharacterStyle</code> object. Each character position only stores the character value and a reference to the shared style — dramatically reducing memory.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Flyweight (interface)</div><div class="participant-desc">Declares the interface through which flyweights receive extrinsic state and perform operations.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteFlyweight</div><div class="participant-desc">Stores intrinsic state — shared, immutable data. Must be thread-safe as it is shared. Accepts extrinsic state as method parameters.</div></div>
+      <div class="participant"><div class="participant-name">FlyweightFactory</div><div class="participant-desc">Creates and manages flyweight objects. Returns an existing flyweight if one with the requested intrinsic state already exists; creates a new one otherwise. The factory is essentially a cache.</div></div>
+      <div class="participant"><div class="participant-name">Context (Client)</div><div class="participant-desc">Stores the extrinsic state — unique per object. Calls flyweight operations passing in extrinsic state. Has a reference to a shared flyweight.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="290" viewBox="0 0 660 290" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- FlyweightFactory -->
+        <rect x="230" y="10" width="200" height="80" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="330" y="36" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e8b86d" font-weight="600">FlyweightFactory</text>
+        <text x="330" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">cache: Map&lt;key, Flyweight&gt;</text>
+        <text x="330" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">getFlyweight(key) → shared</text>
+        <text x="330" y="83" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">returns existing or creates new</text>
+        <!-- ConcreteFlyweight -->
+        <rect x="230" y="150" width="200" height="80" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="330" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#6d9ee8" font-weight="600">ConcreteFlyweight</text>
+        <text x="330" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">intrinsic: color, texture</text>
+        <text x="330" y="208" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">(shared, immutable)</text>
+        <text x="330" y="223" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">draw(x, y) ← extrinsic</text>
+        <!-- Context objects -->
+        <rect x="30"  y="170" width="140" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="100" y="196" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">Context (Tree)</text>
+        <text x="100" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">x=10, y=45 (extrinsic)</text>
+        <text x="100" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6d9ee8">→ shared TreeType</text>
+        <rect x="490" y="170" width="140" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="560" y="196" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">Context (Tree)</text>
+        <text x="560" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">x=200,y=88 (extrinsic)</text>
+        <text x="560" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6d9ee8">→ shared TreeType</text>
+        <!-- arrows -->
+        <line x1="330" y1="90" x2="330" y2="150" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="336" y="128" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">creates/returns</text>
+        <line x1="170" y1="205" x2="230" y2="190" stroke="#e8b86d" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="490" y1="205" x2="430" y2="190" stroke="#e8b86d" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <text x="240" y="245" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">← many contexts share one flyweight →</text>
+        <!-- memory saving label -->
+        <rect x="10" y="255" width="640" height="30" rx="4" fill="#080a0f" stroke="#252a38"/>
+        <text x="330" y="274" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">Memory: 10,000 trees × 1 shared TreeType (not 10,000 TreeTypes) — saves megabytes</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Forest / Game Tree Example</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Flyweight — stores INTRINSIC state (shared, immutable)</span>
+<span class="kw">public class</span> <span class="cl">TreeType</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> name;    <span class="cm">// intrinsic</span>
+    <span class="kw">private final</span> <span class="cl">String</span> color;   <span class="cm">// intrinsic</span>
+    <span class="kw">private final</span> <span class="cl">String</span> texture; <span class="cm">// intrinsic (large data!)</span>
+
+    <span class="kw">public</span> <span class="fn">TreeType</span>(<span class="cl">String</span> name, <span class="cl">String</span> color, <span class="cl">String</span> texture) {
+        <span class="kw">this</span>.name=name; <span class="kw">this</span>.color=color; <span class="kw">this</span>.texture=texture;
+    }
+
+    <span class="cm">// Extrinsic state (x, y) passed in at call time — NOT stored here</span>
+    <span class="kw">public void</span> <span class="fn">draw</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"Drawing %s tree [%s] at (%d,%d)%n"</span>, name, color, x, y);
+    }
+}
+
+<span class="cm">// FlyweightFactory — cache of shared TreeType instances</span>
+<span class="kw">public class</span> <span class="cl">TreeFactory</span> {
+    <span class="kw">private static final</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">TreeType</span>&gt; cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public static</span> <span class="cl">TreeType</span> <span class="fn">getTreeType</span>(<span class="cl">String</span> name, <span class="cl">String</span> color, <span class="cl">String</span> tex) {
+        <span class="cl">String</span> key = name + <span class="st">"_"</span> + color;
+        <span class="kw">return</span> cache.<span class="fn">computeIfAbsent</span>(key, k -> {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Creating new TreeType: "</span> + key);
+            <span class="kw">return new</span> <span class="cl">TreeType</span>(name, color, tex); <span class="cm">// expensive creation once</span>
+        });
+    }
+
+    <span class="kw">public static int</span> <span class="fn">getCacheSize</span>() { <span class="kw">return</span> cache.<span class="fn">size</span>(); }
+}
+
+<span class="cm">// Context — stores EXTRINSIC state (unique per tree instance)</span>
+<span class="kw">public class</span> <span class="cl">Tree</span> {
+    <span class="kw">private final int</span> x, y;           <span class="cm">// extrinsic — unique per tree</span>
+    <span class="kw">private final</span> <span class="cl">TreeType</span> type;     <span class="cm">// reference to shared flyweight</span>
+
+    <span class="kw">public</span> <span class="fn">Tree</span>(<span class="kw">int</span> x, <span class="kw">int</span> y, <span class="cl">TreeType</span> type) {
+        <span class="kw">this</span>.x=x; <span class="kw">this</span>.y=y; <span class="kw">this</span>.type=type;
+    }
+
+    <span class="kw">public void</span> <span class="fn">draw</span>() {
+        type.<span class="fn">draw</span>(x, y); <span class="cm">// passes extrinsic state to flyweight</span>
+    }
+}
+
+<span class="cm">// Forest — creates 10,000 trees using only 2 TreeType objects</span>
+<span class="kw">public class</span> <span class="cl">Forest</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">Tree</span>&gt; trees = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">plantTree</span>(<span class="kw">int</span> x, <span class="kw">int</span> y, <span class="cl">String</span> name, <span class="cl">String</span> color, <span class="cl">String</span> tex) {
+        <span class="cl">TreeType</span> type = <span class="cl">TreeFactory</span>.<span class="fn">getTreeType</span>(name, color, tex);
+        trees.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">Tree</span>(x, y, type)); <span class="cm">// Tree is tiny — just x,y + reference</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">draw</span>() { trees.<span class="fn">forEach</span>(<span class="cl">Tree</span>::<span class="fn">draw</span>); }
+}
+
+<span class="cm">// Client</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Forest</span> forest = <span class="kw">new</span> <span class="cl">Forest</span>();
+
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">5000</span>; i++)
+            forest.<span class="fn">plantTree</span>(i*<span class="nm">2</span>, i*<span class="nm">3</span>, <span class="st">"Oak"</span>, <span class="st">"Green"</span>, <span class="st">"oak_texture"</span>);
+
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">5000</span>; i++)
+            forest.<span class="fn">plantTree</span>(i*<span class="nm">4</span>, i*<span class="nm">5</span>, <span class="st">"Pine"</span>, <span class="st">"DarkGreen"</span>, <span class="st">"pine_texture"</span>);
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"TreeType objects in cache: "</span> + <span class="cl">TreeFactory</span>.<span class="fn">getCacheSize</span>());
+        <span class="cm">// Output: TreeType objects in cache: 2  (not 10,000!)</span>
+
+        forest.<span class="fn">draw</span>(); <span class="cm">// all 10,000 trees rendered</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Application uses a huge number of similar objects that consume too much memory</li>
+          <li>Most object state can be made extrinsic (passed in, not stored)</li>
+          <li>Many groups of objects can be replaced by relatively few shared objects</li>
+          <li>Application doesn't depend on object identity — shared objects look identical</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Object count is low — the complexity isn't justified</li>
+          <li>State is mostly unique per object — little to share as intrinsic state</li>
+          <li>You need to distinguish objects by identity (<code>==</code>) — sharing breaks this</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>Integer.valueOf()</code> caches <code>Integer</code> objects for -128 to 127 — classic Flyweight in the JDK</li>
+      <li><code>String.intern()</code> — String pool interns identical strings as shared flyweights</li>
+      <li>Java's <code>Boolean.TRUE</code> / <code>Boolean.FALSE</code> — only two shared instances ever created</li>
+      <li>Game engines — particle systems, tile maps, and font rendering all use Flyweight for shared assets</li>
+      <li>Connection pools — a pool of reusable <code>Connection</code> objects shared among many client requests</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Dramatically reduces memory usage when many similar objects needed</li>
+          <li>Can improve performance — fewer objects = less GC pressure</li>
+          <li>Enables scenarios otherwise impossible due to memory constraints</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Increases complexity — must carefully separate intrinsic vs extrinsic state</li>
+          <li>Extrinsic state must be passed around — more parameters in method signatures</li>
+          <li>Shared mutable flyweights cause race conditions — flyweights must be immutable</li>
+          <li>May trade RAM savings for CPU cost (computing extrinsic state each call)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Flyweight Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Mutable intrinsic state:</strong> If a flyweight's shared state is mutable, one context changing it corrupts all contexts that share the same flyweight — the most dangerous Flyweight failure mode</li>
+          <li><strong>Storing extrinsic state in the flyweight:</strong> If context-specific data (x, y, userId) is stored in the shared object, concurrent requests overwrite each other's data — thread-safety nightmare</li>
+          <li><strong>Identity equality broken:</strong> Code using <code>==</code> to compare tree objects gets wrong results since different Tree contexts share the same TreeType — subtle equality bugs</li>
+          <li><strong>Factory cache unbounded growth:</strong> If the factory key is too granular (e.g., includes extrinsic state), the cache grows without bound — defeating the memory-saving purpose and causing a memory leak</li>
+          <li><strong>Thread-unsafe factory:</strong> Concurrent calls to <code>getFlyweight()</code> without synchronisation can create duplicate flyweight objects</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Make flyweights immutable:</strong> All intrinsic fields must be <code>final</code>. No setters. Once created, a flyweight never changes — this is the single most important rule</li>
+          <li><strong>Never store extrinsic state in flyweight:</strong> Everything context-specific is passed as method parameters — the flyweight object has zero awareness of who is using it or where</li>
+          <li><strong>Use value-based equality:</strong> Override <code>equals()</code> and <code>hashCode()</code> on the flyweight based on intrinsic state — never rely on reference equality for flyweights</li>
+          <li><strong>Bound the factory cache:</strong> Use a bounded cache (e.g., <code>LinkedHashMap</code> with LRU eviction or max size) to prevent unbounded growth if variety is high</li>
+          <li><strong>Thread-safe factory:</strong> Use <code>ConcurrentHashMap.computeIfAbsent()</code> for atomic get-or-create operations — the standard safe approach in Java</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — mutable intrinsic state in flyweight</span>
+<span class="kw">public class</span> <span class="cl">BrokenTreeType</span> {
+    <span class="kw">public</span> <span class="cl">String</span> color; <span class="cm">// ❌ mutable! One context changes it, all see the change</span>
+    <span class="kw">public void</span> <span class="fn">setColor</span>(<span class="cl">String</span> c) { <span class="kw">this</span>.color = c; } <span class="cm">// ❌ NEVER do this</span>
+}
+<span class="cm">// Thread A: treeType.setColor("Red")  → all trees using this type turn red</span>
+
+<span class="cm">// ✅ FIX — all intrinsic fields final, no setters</span>
+<span class="kw">public class</span> <span class="cl">TreeType</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> name;
+    <span class="kw">private final</span> <span class="cl">String</span> color;   <span class="cm">// ✅ final — never changes after creation</span>
+    <span class="kw">private final</span> <span class="cl">String</span> texture; <span class="cm">// ✅ final</span>
+    <span class="cm">// No setters</span>
+}
+
+<span class="cm">// ❌ BREAKING — storing extrinsic state in flyweight</span>
+<span class="kw">public class</span> <span class="cl">BrokenTreeType</span> {
+    <span class="kw">private int</span> x, y; <span class="cm">// ❌ extrinsic! Shared by all — overwrites per request</span>
+    <span class="kw">public void</span> <span class="fn">draw</span>() { <span class="cm">/* uses this.x, this.y */</span> } <span class="cm">// ❌ race condition</span>
+}
+
+<span class="cm">// ✅ FIX — extrinsic state passed as parameters, never stored</span>
+<span class="kw">public void</span> <span class="fn">draw</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { <span class="cm">// ✅ x,y are parameters, not fields</span>
+    <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"Drawing %s at (%d,%d)%n"</span>, name, x, y);
+}
+
+<span class="cm">// ❌ BREAKING — non-thread-safe factory</span>
+<span class="kw">public static</span> <span class="cl">TreeType</span> <span class="fn">getTreeType</span>(<span class="cl">String</span> key) {
+    <span class="kw">if</span> (!cache.<span class="fn">containsKey</span>(key)) {      <span class="cm">// ❌ check-then-act race condition</span>
+        cache.<span class="fn">put</span>(key, <span class="kw">new</span> <span class="cl">TreeType</span>(key)); <span class="cm">// two threads create duplicates</span>
+    }
+    <span class="kw">return</span> cache.<span class="fn">get</span>(key);
+}
+
+<span class="cm">// ✅ FIX — atomic computeIfAbsent on ConcurrentHashMap</span>
+<span class="kw">private static final</span> <span class="cl">ConcurrentHashMap</span>&lt;<span class="cl">String</span>, <span class="cl">TreeType</span>&gt; cache
+    = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();
+
+<span class="kw">public static</span> <span class="cl">TreeType</span> <span class="fn">getTreeType</span>(<span class="cl">String</span> name, <span class="cl">String</span> color, <span class="cl">String</span> tex) {
+    <span class="kw">return</span> cache.<span class="fn">computeIfAbsent</span>(name + <span class="st">"_"</span> + color,
+        k -> <span class="kw">new</span> <span class="cl">TreeType</span>(name, color, tex)); <span class="cm">// ✅ atomic — thread-safe</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='../singleton.html'">
+        <div><div class="related-name">Singleton</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Singleton = one instance total. Flyweight = one instance per unique intrinsic state (could be many flyweights in the factory). Flyweight factory itself is often a Singleton.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../prototype.html'">
+        <div><div class="related-name">Prototype</div>
+        <span class="related-tag tag-competes">Competes With</span>
+        <div class="related-desc">Prototype creates copies of objects; Flyweight avoids creating copies by sharing. They are conceptually opposite — Prototype = clone freely, Flyweight = share one instance.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='composite.html'">
+        <div><div class="related-name">Composite</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Flyweight is often applied to leaf nodes in a Composite tree — sharing common leaf state (e.g., character style in a document) while each leaf node stores its unique position.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/state.html'">
+        <div><div class="related-name">State</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">State objects are good Flyweight candidates when many contexts share the same state object — since State objects are often stateless themselves, one instance can serve all contexts in that state.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Shares common state across many objects to reduce memory. Splits state into intrinsic (shared, stored in flyweight, immutable) and extrinsic (unique, passed as parameters). One flyweight serves many contexts.</li>
+        <li><strong>How:</strong> ConcreteFlyweight with final intrinsic fields. FlyweightFactory with a cache map — returns existing or creates new. Context stores extrinsic state + flyweight reference. Flyweight method takes extrinsic state as parameters.</li>
+        <li><strong>Critical rule:</strong> Flyweights MUST be immutable. Any mutable shared state corrupts all contexts sharing that flyweight. Use <code>ConcurrentHashMap.computeIfAbsent()</code> for thread-safe factory creation.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="facade.html"><span class="nav-dir">← Previous</span><span class="nav-title">Facade</span></a>
+    <a href="proxy.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Proxy</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

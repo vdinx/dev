@@ -130,11 +130,11 @@ function render(): void {
             <div class="learn-read-time">23 patterns · Java</div>
           </div>
           <h3 class="learn-title">GoF Design Patterns<br/><span>Mastery Guide</span></h3>
-          <p class="learn-excerpt">All 23 Gang of Four patterns explained with intent, UML-style diagrams, Java code, real-world analogies, pros/cons, and interview cheat sheets. Creational patterns available now.</p>
+          <p class="learn-excerpt">All 23 Gang of Four patterns explained with intent, UML-style diagrams, Java code, real-world analogies, pros/cons, and interview cheat sheets. Creational &amp; Structural patterns available now.</p>
           <div class="learn-meta">
             <div class="learn-tags">
               <span class="learn-tag">Creational</span>
-              <span class="learn-tag learn-tag-soon">Structural</span>
+              <span class="learn-tag">Structural</span>
               <span class="learn-tag learn-tag-soon">Behavioral</span>
             </div>
           </div>
@@ -144,6 +144,13 @@ function render(): void {
             <a href="./learn/abstract-factory.html" class="learn-pattern-chip">Abstract Factory</a>
             <a href="./learn/builder.html" class="learn-pattern-chip">Builder</a>
             <a href="./learn/prototype.html" class="learn-pattern-chip">Prototype</a>
+            <a href="./learn/structural/adapter.html" class="learn-pattern-chip">Adapter</a>
+            <a href="./learn/structural/bridge.html" class="learn-pattern-chip">Bridge</a>
+            <a href="./learn/structural/composite.html" class="learn-pattern-chip">Composite</a>
+            <a href="./learn/structural/decorator.html" class="learn-pattern-chip">Decorator</a>
+            <a href="./learn/structural/facade.html" class="learn-pattern-chip">Facade</a>
+            <a href="./learn/structural/flyweight.html" class="learn-pattern-chip">Flyweight</a>
+            <a href="./learn/structural/proxy.html" class="learn-pattern-chip">Proxy</a>
           </div>
           <a href="./learn/index.html" class="learn-cta">
             <span>Read the Guide</span>

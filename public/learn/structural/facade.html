@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Facade Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural" class="active">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#structural">Structural</a><span class="sep">/</span>
+  <span>Facade</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-structural">Structural</div>
+    <h1 class="page-title">Facade</h1>
+    <p class="page-tagline">Provide a simplified, unified interface to a complex subsystem — hide the complexity behind a single entry point.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #10 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Facade Pattern?</h2>
+    <p>Facade provides a simple interface to a complex body of code — a library, a framework, or any complex set of classes. Clients interact with the Facade instead of the subsystem directly, reducing coupling and cognitive load.</p>
+    <p>The Facade doesn't prevent access to the subsystem — advanced users can still go direct. It simply provides a convenient, higher-level alternative for common use cases.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Starting a car. You turn a key — the Facade. Behind it: battery check, fuel injection, ignition timing, starter motor, ECU initialisation. You don't need to know any of that. The key is your Facade.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>A home theatre system has: <code>Amplifier</code>, <code>DVDPlayer</code>, <code>Projector</code>, <code>Lights</code>, <code>Screen</code>, <code>PopcornPopper</code>. Watching a movie means: turning on the popper, lowering lights, pulling down the screen, turning on the projector, setting input, turning on the amp, setting volume, starting the DVD. 8 classes, many method calls, specific order.</p>
+    <p>A <code>HomeTheatreFacade</code> with a single <code>watchMovie()</code> method hides all of this complexity. The client calls one method.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Facade</div><div class="participant-desc">Knows which subsystem classes to delegate to and in what order. Provides simple methods that orchestrate complex subsystem interactions. Does not duplicate subsystem functionality.</div></div>
+      <div class="participant"><div class="participant-name">Subsystem Classes</div><div class="participant-desc">Complex classes that implement the actual functionality. Unaware of the Facade — no back-reference. Can still be used directly by advanced clients.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Interacts only with the Facade for common operations. The Facade decouples the client from the subsystem's complexity.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="260" viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Client -->
+        <rect x="10" y="100" width="100" height="60" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="60" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#b46de8" font-weight="600">Client</text>
+        <text x="60" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">simple call</text>
+        <!-- Facade -->
+        <rect x="170" y="80" width="180" height="100" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="2"/>
+        <text x="260" y="110" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" fill="#e8b86d" font-weight="700">Facade</text>
+        <text x="260" y="130" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">watchMovie()</text>
+        <text x="260" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">endMovie()</text>
+        <text x="260" y="162" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">listenToRadio()</text>
+        <!-- Subsystem classes -->
+        <rect x="420" y="20"  width="130" height="40" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="485" y="45" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">Amplifier</text>
+        <rect x="420" y="75"  width="130" height="40" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="485" y="100" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">DVDPlayer</text>
+        <rect x="420" y="130" width="130" height="40" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="485" y="155" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">Projector</text>
+        <rect x="420" y="185" width="130" height="40" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="485" y="210" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">Lights / Screen</text>
+        <!-- arrows -->
+        <line x1="110" y1="130" x2="170" y2="130" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="350" y1="110" x2="420" y2="40"  stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="350" y1="120" x2="420" y2="95"  stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="350" y1="140" x2="420" y2="150" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="350" y1="155" x2="420" y2="200" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- subsystem box label -->
+        <rect x="410" y="5" width="240" height="230" rx="8" fill="none" stroke="#252a38" stroke-dasharray="6,4"/>
+        <text x="535" y="245" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">Subsystem (complex internals)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Home Theatre Example</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Subsystem classes — complex, many methods</span>
+<span class="kw">public class</span> <span class="cl">Amplifier</span> {
+    <span class="kw">public void</span> <span class="fn">on</span>()              { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Amp on"</span>); }
+    <span class="kw">public void</span> <span class="fn">setVolume</span>(<span class="kw">int</span> v) { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Volume: "</span> + v); }
+    <span class="kw">public void</span> <span class="fn">off</span>()             { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Amp off"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">DVDPlayer</span> {
+    <span class="kw">public void</span> <span class="fn">on</span>()              { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"DVD on"</span>); }
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> m)   { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Playing: "</span> + m); }
+    <span class="kw">public void</span> <span class="fn">stop</span>()            { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"DVD stopped"</span>); }
+    <span class="kw">public void</span> <span class="fn">off</span>()             { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"DVD off"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">Projector</span> {
+    <span class="kw">public void</span> <span class="fn">on</span>()              { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Projector on"</span>); }
+    <span class="kw">public void</span> <span class="fn">wideScreenMode</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Widescreen mode"</span>); }
+    <span class="kw">public void</span> <span class="fn">off</span>()             { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Projector off"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">TheaterLights</span> {
+    <span class="kw">public void</span> <span class="fn">dim</span>(<span class="kw">int</span> pct)     { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Lights at "</span> + pct + <span class="st">"%"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">Screen</span> {
+    <span class="kw">public void</span> <span class="fn">down</span>()            { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Screen down"</span>); }
+    <span class="kw">public void</span> <span class="fn">up</span>()              { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Screen up"</span>); }
+}
+
+<span class="cm">// Facade — orchestrates the subsystem</span>
+<span class="kw">public class</span> <span class="cl">HomeTheatreFacade</span> {
+    <span class="kw">private final</span> <span class="cl">Amplifier</span>     amp;
+    <span class="kw">private final</span> <span class="cl">DVDPlayer</span>     dvd;
+    <span class="kw">private final</span> <span class="cl">Projector</span>     projector;
+    <span class="kw">private final</span> <span class="cl">TheaterLights</span> lights;
+    <span class="kw">private final</span> <span class="cl">Screen</span>        screen;
+
+    <span class="kw">public</span> <span class="fn">HomeTheatreFacade</span>(<span class="cl">Amplifier</span> a, <span class="cl">DVDPlayer</span> d,
+                              <span class="cl">Projector</span> p, <span class="cl">TheaterLights</span> l, <span class="cl">Screen</span> s) {
+        amp=a; dvd=d; projector=p; lights=l; screen=s;
+    }
+
+    <span class="cm">// Simple interface hiding 8 subsystem calls</span>
+    <span class="kw">public void</span> <span class="fn">watchMovie</span>(<span class="cl">String</span> movie) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"--- Get ready to watch a movie! ---"</span>);
+        lights.<span class="fn">dim</span>(<span class="nm">10</span>);
+        screen.<span class="fn">down</span>();
+        projector.<span class="fn">on</span>();
+        projector.<span class="fn">wideScreenMode</span>();
+        amp.<span class="fn">on</span>();
+        amp.<span class="fn">setVolume</span>(<span class="nm">5</span>);
+        dvd.<span class="fn">on</span>();
+        dvd.<span class="fn">play</span>(movie);
+    }
+
+    <span class="kw">public void</span> <span class="fn">endMovie</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"--- Shutting down theatre ---"</span>);
+        dvd.<span class="fn">stop</span>(); dvd.<span class="fn">off</span>();
+        amp.<span class="fn">off</span>();
+        projector.<span class="fn">off</span>();
+        screen.<span class="fn">up</span>();
+        lights.<span class="fn">dim</span>(<span class="nm">100</span>);
+    }
+}
+
+<span class="cm">// Client — one call instead of eight</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">HomeTheatreFacade</span> theatre = <span class="kw">new</span> <span class="cl">HomeTheatreFacade</span>(
+            <span class="kw">new</span> <span class="cl">Amplifier</span>(), <span class="kw">new</span> <span class="cl">DVDPlayer</span>(),
+            <span class="kw">new</span> <span class="cl">Projector</span>(), <span class="kw">new</span> <span class="cl">TheaterLights</span>(), <span class="kw">new</span> <span class="cl">Screen</span>()
+        );
+        theatre.<span class="fn">watchMovie</span>(<span class="st">"Inception"</span>);
+        theatre.<span class="fn">endMovie</span>();
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You want to provide a simple interface to a complex subsystem</li>
+          <li>There are many dependencies between clients and implementation classes</li>
+          <li>You want to layer your system — Facade defines the entry point to each layer</li>
+          <li>You need to decouple client code from a third-party library</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>The Facade becomes a "god object" that knows too much — it should orchestrate, not implement</li>
+          <li>Clients need fine-grained control over the subsystem — don't force them through the Facade</li>
+          <li>The subsystem is simple — adding a Facade is unnecessary indirection</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Spring's <code>JdbcTemplate</code> — Facade over raw JDBC (Connection, PreparedStatement, ResultSet, exception handling)</li>
+      <li>SLF4J logging API — Facade over Log4j, Logback, java.util.logging subsystems</li>
+      <li><code>java.net.URL</code> — Facade over HTTP connection, socket, stream management</li>
+      <li>Spring's <code>RestTemplate</code> / <code>WebClient</code> — Facade over HTTP client complexity</li>
+      <li>Hibernate <code>Session</code> — Facade over SQL generation, connection pooling, caching</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Simplifies client code — one call instead of many</li>
+          <li>Decouples client from subsystem — subsystem can evolve without affecting client</li>
+          <li>Promotes weak coupling between subsystems</li>
+          <li>Subsystem is still accessible directly for advanced use cases</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Facade can become a God Object if it accumulates too much logic</li>
+          <li>Risk of coupling all subsystems together through the Facade</li>
+          <li>May hide functionality that some clients legitimately need</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Facade Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>God Facade:</strong> The Facade grows to implement business logic itself rather than just orchestrating subsystems — it becomes a massive unmaintainable class</li>
+          <li><strong>Bypassing the Facade:</strong> Clients reach directly into subsystem classes for convenience, creating tight coupling the Facade was meant to eliminate</li>
+          <li><strong>Facade depending on client details:</strong> Facade methods take or return client-specific types rather than generic ones — couples the subsystem to the client's domain</li>
+          <li><strong>Stateful Facade shared across threads:</strong> A singleton Facade that holds mutable subsystem state (e.g., current volume) is not thread-safe and causes race conditions</li>
+          <li><strong>Hiding errors:</strong> Facade swallows subsystem exceptions and returns silently — client has no way to know an operation failed</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Keep Facade thin:</strong> It orchestrates and delegates — never implements business logic. Any logic that grows in the Facade should move into the appropriate subsystem class</li>
+          <li><strong>Package-protect subsystem classes:</strong> Make subsystem classes package-private so clients outside the package are forced to go through the Facade</li>
+          <li><strong>Use generic types in Facade API:</strong> Facade methods should use domain-neutral types — never take UI-layer or client-specific objects as parameters</li>
+          <li><strong>Keep Facade stateless or use thread-local state:</strong> Avoid mutable instance fields in a shared Facade — delegate all state to the subsystem classes</li>
+          <li><strong>Always propagate exceptions:</strong> Let subsystem exceptions bubble up (or wrap in a Facade-specific exception) — never silently catch and ignore</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — God Facade with business logic</span>
+<span class="kw">public void</span> <span class="fn">watchMovie</span>(<span class="cl">String</span> movie) {
+    <span class="cm">// ❌ Facade doing business logic, not just orchestration</span>
+    <span class="kw">if</span> (movie.<span class="fn">contains</span>(<span class="st">"adult"</span>)) {
+        <span class="fn">verifyAge</span>(); <span class="fn">chargeSubscription</span>(); <span class="fn">logAnalytics</span>(); <span class="cm">// wrong place!</span>
+    }
+    lights.<span class="fn">dim</span>(<span class="nm">10</span>); <span class="cm">// ...</span>
+}
+
+<span class="cm">// ✅ FIX — Facade only orchestrates, logic stays in subsystem</span>
+<span class="kw">public void</span> <span class="fn">watchMovie</span>(<span class="cl">String</span> movie) {
+    lights.<span class="fn">dim</span>(<span class="nm">10</span>); screen.<span class="fn">down</span>(); projector.<span class="fn">on</span>();
+    amp.<span class="fn">on</span>(); dvd.<span class="fn">on</span>(); dvd.<span class="fn">play</span>(movie); <span class="cm">// purely orchestration</span>
+}
+
+<span class="cm">// ❌ BREAKING — swallowing exceptions</span>
+<span class="kw">public void</span> <span class="fn">watchMovie</span>(<span class="cl">String</span> movie) {
+    <span class="kw">try</span> {
+        dvd.<span class="fn">play</span>(movie);
+    } <span class="kw">catch</span> (<span class="cl">Exception</span> e) {
+        <span class="cm">// ❌ silent catch — client thinks movie is playing</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — wrap and rethrow</span>
+<span class="kw">public void</span> <span class="fn">watchMovie</span>(<span class="cl">String</span> movie) {
+    <span class="kw">try</span> {
+        dvd.<span class="fn">play</span>(movie);
+    } <span class="kw">catch</span> (<span class="cl">DVDException</span> e) {
+        <span class="kw">throw new</span> <span class="cl">TheatreException</span>(<span class="st">"Could not play movie"</span>, e);
+    }
+}
+
+<span class="cm">// ❌ BREAKING — bypassing Facade directly</span>
+<span class="cm">// client reaches into subsystem, defeats the pattern</span>
+<span class="cl">DVDPlayer</span> dvd = theatre.getDVD(); <span class="cm">// ❌ leaking subsystem reference</span>
+dvd.<span class="fn">play</span>(<span class="st">"raw call"</span>);
+
+<span class="cm">// ✅ FIX — package-private subsystem, no getters on Facade</span>
+<span class="kw">class</span> <span class="cl">DVDPlayer</span> { <span class="cm">// package-private — only Facade in same package can use</span>
+    <span class="kw">void</span> <span class="fn">play</span>(<span class="cl">String</span> m) { <span class="cm">/* ... */</span> }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='adapter.html'">
+        <div><div class="related-name">Adapter</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Adapter makes one existing interface work with another. Facade defines a new, simpler interface for an entire subsystem. Adapter = translate. Facade = simplify.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../singleton.html'">
+        <div><div class="related-name">Singleton</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Facade objects are often Singletons — you typically need only one facade entry point per subsystem in an application.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/mediator.html'">
+        <div><div class="related-name">Mediator</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both centralise interaction between many objects. Facade provides a one-way simplified interface to a subsystem. Mediator enables two-way communication between components — subsystem objects know the mediator. Subsystem objects never know the Facade.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='proxy.html'">
+        <div><div class="related-name">Proxy</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Proxy provides the same interface as a single subject and controls access to it. Facade provides a simplified interface for an entire subsystem of multiple classes.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> A single class that wraps a complex subsystem and provides a simple interface. Clients call one method; the Facade orchestrates many subsystem calls in the right order.</li>
+        <li><strong>How:</strong> Create a Facade class that holds references to all subsystem objects. Provide high-level methods that sequence subsystem calls. Subsystem classes remain unchanged and directly accessible if needed.</li>
+        <li><strong>Key distinctions:</strong> Adapter = translates one interface. Facade = simplifies many interfaces. Mediator = coordinates two-way communication. Proxy = controls access to one object. Facade is about hiding complexity, not changing interfaces.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="decorator.html"><span class="nav-dir">← Previous</span><span class="nav-title">Decorator</span></a>
+    <a href="flyweight.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Flyweight</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

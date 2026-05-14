@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Composite Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural" class="active">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#structural">Structural</a><span class="sep">/</span>
+  <span>Composite</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-structural">Structural</div>
+    <h1 class="page-title">Composite</h1>
+    <p class="page-tagline">Compose objects into tree structures to represent part-whole hierarchies — treat individual objects and compositions uniformly.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #08 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Composite Pattern?</h2>
+    <p>Composite lets clients treat individual objects (leaves) and compositions of objects (composites) through the same interface. The client never needs to distinguish between a single item and a group of items — both respond to the same operations.</p>
+    <p>It builds tree structures where every node (composite) can contain children that are either leaves or other composites, allowing recursive composition of arbitrary depth.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A company org chart. An individual employee (leaf) and a department (composite containing employees or sub-departments) both respond to <code>getSalary()</code>. Calling it on a department sums up the salaries of everyone inside it recursively.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>Consider a file system. You have <code>File</code> objects and <code>Folder</code> objects. Folders can contain Files or other Folders. To calculate total size, you'd have to write one code path for files and a different recursive one for folders — and repeat this every time you need a new operation.</p>
+    <p>Composite makes both File and Folder implement the same <code>FileSystem</code> interface. <code>getSize()</code> on a File returns its own size; on a Folder it sums children recursively. Client calls the same method on both.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Component (interface)</div><div class="participant-desc">Declares the common interface for both leaves and composites. May include default implementations for child management methods.</div></div>
+      <div class="participant"><div class="participant-name">Leaf</div><div class="participant-desc">A basic element with no children. Does the actual work. Has no child management — it's the end node of the tree.</div></div>
+      <div class="participant"><div class="participant-name">Composite</div><div class="participant-desc">A container that stores child Components (leaves or other composites). Implements child management (add/remove). Delegates operations to children and aggregates results.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Works with all elements through the Component interface — never checks if it's dealing with a leaf or composite.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="310" viewBox="0 0 640 310" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker>
+        <marker id="dia" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><polygon points="0,5 5,0 10,5 5,10" fill="none" stroke="#6d9ee8" stroke-width="1"/></marker></defs>
+        <!-- Component -->
+        <rect x="220" y="20" width="200" height="70" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface»</text>
+        <text x="320" y="61" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Component</text>
+        <text x="320" y="79" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">operation() / getSize()</text>
+        <!-- Leaf -->
+        <rect x="60" y="160" width="160" height="70" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="140" y="186" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6de8a8" font-weight="600">Leaf</text>
+        <text x="140" y="204" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">(File, Employee)</text>
+        <text x="140" y="221" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">operation() — does work</text>
+        <!-- Composite -->
+        <rect x="380" y="160" width="230" height="90" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="495" y="186" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6d9ee8" font-weight="600">Composite</text>
+        <text x="495" y="204" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">(Folder, Department)</text>
+        <text x="495" y="221" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">children: List&lt;Component&gt;</text>
+        <text x="495" y="238" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">operation() — loops children</text>
+        <!-- arrows from Component -->
+        <line x1="270" y1="90" x2="170" y2="160" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="370" y1="90" x2="460" y2="160" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- self-reference composite -->
+        <path d="M610,200 C650,200 650,270 495,270 L495,250" stroke="#6d9ee8" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <text x="570" y="278" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6d9ee8">contains 0..* Component</text>
+        <!-- tree example -->
+        <rect x="20" y="270" width="560" height="35" rx="4" fill="#080a0f" stroke="#252a38"/>
+        <text x="300" y="287" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">Tree: Folder → [File, File, Folder → [File, Folder → [File]]]  — any depth</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — File System Example</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Component — uniform interface</span>
+<span class="kw">public interface</span> <span class="cl">FileSystemItem</span> {
+    <span class="cl">String</span> <span class="fn">getName</span>();
+    <span class="kw">long</span>   <span class="fn">getSize</span>();
+    <span class="kw">void</span>   <span class="fn">print</span>(<span class="cl">String</span> indent);
+}
+
+<span class="cm">// Leaf — no children</span>
+<span class="kw">public class</span> <span class="cl">File</span> <span class="kw">implements</span> <span class="cl">FileSystemItem</span> {
+    <span class="kw">private</span> <span class="cl">String</span> name;
+    <span class="kw">private long</span>   size;
+
+    <span class="kw">public</span> <span class="fn">File</span>(<span class="cl">String</span> name, <span class="kw">long</span> size) { <span class="kw">this</span>.name=name; <span class="kw">this</span>.size=size; }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getName</span>() { <span class="kw">return</span> name; }
+    <span class="kw">public long</span>   <span class="fn">getSize</span>() { <span class="kw">return</span> size; }
+    <span class="kw">public void</span>   <span class="fn">print</span>(<span class="cl">String</span> indent) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(indent + <span class="st">"📄 "</span> + name + <span class="st">" ("</span> + size + <span class="st">"KB)"</span>);
+    }
+}
+
+<span class="cm">// Composite — contains children</span>
+<span class="kw">public class</span> <span class="cl">Folder</span> <span class="kw">implements</span> <span class="cl">FileSystemItem</span> {
+    <span class="kw">private</span> <span class="cl">String</span> name;
+    <span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">FileSystemItem</span>&gt; children = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public</span> <span class="fn">Folder</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
+
+    <span class="kw">public void</span> <span class="fn">add</span>(<span class="cl">FileSystemItem</span> item)    { children.<span class="fn">add</span>(item); }
+    <span class="kw">public void</span> <span class="fn">remove</span>(<span class="cl">FileSystemItem</span> item) { children.<span class="fn">remove</span>(item); }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getName</span>() { <span class="kw">return</span> name; }
+
+    <span class="cm">// Composite operation: aggregates from all children recursively</span>
+    <span class="kw">public long</span> <span class="fn">getSize</span>() {
+        <span class="kw">return</span> children.<span class="fn">stream</span>()
+            .<span class="fn">mapToLong</span>(<span class="cl">FileSystemItem</span>::<span class="fn">getSize</span>)
+            .<span class="fn">sum</span>();
+    }
+
+    <span class="kw">public void</span> <span class="fn">print</span>(<span class="cl">String</span> indent) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(indent + <span class="st">"📁 "</span> + name);
+        children.<span class="fn">forEach</span>(c -> c.<span class="fn">print</span>(indent + <span class="st">"  "</span>)); <span class="cm">// recursive!</span>
+    }
+}
+
+<span class="cm">// Client — never distinguishes File from Folder</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Folder</span> root = <span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">"root"</span>);
+
+        <span class="cl">Folder</span> src = <span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">"src"</span>);
+        src.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">"Main.java"</span>,  <span class="nm">12</span>));
+        src.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">"Utils.java"</span>, <span class="nm">8</span>));
+
+        <span class="cl">Folder</span> test = <span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">"test"</span>);
+        test.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">"MainTest.java"</span>, <span class="nm">5</span>));
+
+        root.<span class="fn">add</span>(src);
+        root.<span class="fn">add</span>(test);
+        root.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">"README.md"</span>, <span class="nm">2</span>));
+
+        root.<span class="fn">print</span>(<span class="st">""</span>);
+        <span class="cm">// 📁 root</span>
+        <span class="cm">//   📁 src</span>
+        <span class="cm">//     📄 Main.java (12KB)</span>
+        <span class="cm">//     📄 Utils.java (8KB)</span>
+        <span class="cm">//   📁 test</span>
+        <span class="cm">//     📄 MainTest.java (5KB)</span>
+        <span class="cm">//   📄 README.md (2KB)</span>
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Total: "</span> + root.<span class="fn">getSize</span>() + <span class="st">"KB"</span>); <span class="cm">// 27KB</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You need to represent part-whole hierarchies (trees)</li>
+          <li>Clients should treat leaf and composite objects uniformly</li>
+          <li>You want recursive operations to propagate through a tree automatically</li>
+          <li>Building UI component trees, org charts, file systems, menus</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Components are too different to share a common interface meaningfully</li>
+          <li>You need to restrict what types can be added as children at compile time</li>
+          <li>The hierarchy is flat — no benefit over a simple list</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Java Swing — <code>JPanel</code> (composite) contains <code>JButton</code>, <code>JLabel</code> (leaves) all as <code>Component</code></li>
+      <li>HTML DOM — a <code>div</code> can contain other <code>div</code>s or text nodes; all are <code>Node</code></li>
+      <li>Spring Security — <code>AuthorizationManager</code> composites chain multiple authorization checks</li>
+      <li><code>java.awt.Container</code> extends <code>java.awt.Component</code> — textbook Composite in the JDK</li>
+      <li>Apache Ant build files — tasks (leaves) and task-groups (composites) both implement the same <code>Task</code> interface</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Uniform treatment — client code is simpler, works on leaves and composites identically</li>
+          <li>Open/Closed — add new leaf or composite types without changing client</li>
+          <li>Recursive operations propagate naturally through the tree</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Overly general interface — hard to restrict what types of children a composite accepts</li>
+          <li>Leaves must implement child-management methods even if meaningless for them</li>
+          <li>Deep trees can cause performance issues or stack overflows in recursive operations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Composite Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Circular references:</strong> A Composite is added as a child of its own descendant — recursive operations like <code>getSize()</code> loop infinitely causing a <code>StackOverflowError</code></li>
+          <li><strong>Adding a composite to itself:</strong> <code>folder.add(folder)</code> — simplest form of circular reference, crashes on any recursive call</li>
+          <li><strong>Type-checking children:</strong> Client uses <code>instanceof</code> to distinguish Leaf from Composite inside operations — defeats the whole point of the uniform interface</li>
+          <li><strong>Leaf implementing add/remove:</strong> If Leaf implements child management and throws at runtime, client only discovers the error late — not at compile time</li>
+          <li><strong>Deep unbounded trees:</strong> Very deep recursive trees cause stack overflow on operations that traverse top-to-bottom without tail recursion or iteration</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Cycle detection in add():</strong> Walk the ancestor chain before adding a child — reject any child that is an ancestor of the current composite</li>
+          <li><strong>Self-add guard:</strong> In <code>add()</code>, explicitly check <code>if (item == this) throw new IllegalArgumentException("Cannot add to itself")</code></li>
+          <li><strong>Never use instanceof in client:</strong> All operations should be on the Component interface — if you're checking types, the interface needs a method added</li>
+          <li><strong>Separate interface for composites:</strong> Use a <code>Composite</code> sub-interface that adds <code>add()</code>/<code>remove()</code> — Leaf never implements these, catching misuse at compile time</li>
+          <li><strong>Iterative traversal for deep trees:</strong> Replace recursive calls with an explicit stack (<code>Deque</code>) to avoid <code>StackOverflowError</code> on very deep hierarchies</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — circular reference → StackOverflow</span>
+<span class="cl">Folder</span> a = <span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">"a"</span>);
+<span class="cl">Folder</span> b = <span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">"b"</span>);
+a.<span class="fn">add</span>(b);
+b.<span class="fn">add</span>(a); <span class="cm">// ❌ cycle! getSize() loops forever</span>
+
+<span class="cm">// ✅ FIX — ancestor check in add()</span>
+<span class="kw">public void</span> <span class="fn">add</span>(<span class="cl">FileSystemItem</span> item) {
+    <span class="kw">if</span> (item == <span class="kw">this</span>)
+        <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Cannot add folder to itself"</span>);
+    <span class="kw">if</span> (<span class="fn">isAncestor</span>(item))
+        <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Circular reference detected"</span>);
+    children.<span class="fn">add</span>(item);
+}
+
+<span class="kw">private boolean</span> <span class="fn">isAncestor</span>(<span class="cl">FileSystemItem</span> candidate) {
+    <span class="kw">if</span> (!(candidate <span class="kw">instanceof</span> <span class="cl">Folder</span>)) <span class="kw">return false</span>;
+    <span class="cl">Folder</span> f = (<span class="cl">Folder</span>) candidate;
+    <span class="kw">for</span> (<span class="cl">FileSystemItem</span> child : f.children) {
+        <span class="kw">if</span> (child == <span class="kw">this</span> || <span class="fn">isAncestor</span>(child)) <span class="kw">return true</span>;
+    }
+    <span class="kw">return false</span>;
+}
+
+<span class="cm">// ❌ BREAKING — client uses instanceof, defeats pattern</span>
+<span class="kw">void</span> <span class="fn">process</span>(<span class="cl">FileSystemItem</span> item) {
+    <span class="kw">if</span> (item <span class="kw">instanceof</span> <span class="cl">Folder</span>) { <span class="cm">/* folder logic */</span> }
+    <span class="kw">else</span>                         { <span class="cm">/* file logic */</span> }
+}
+
+<span class="cm">// ✅ FIX — add method to the interface, let each type handle itself</span>
+<span class="kw">public interface</span> <span class="cl">FileSystemItem</span> {
+    <span class="kw">void</span> <span class="fn">process</span>(); <span class="cm">// File and Folder implement differently</span>
+}
+
+<span class="cm">// ✅ FIX — iterative traversal for deep trees</span>
+<span class="kw">public long</span> <span class="fn">getSizeIterative</span>(<span class="cl">Folder</span> root) {
+    <span class="kw">long</span> total = <span class="nm">0</span>;
+    <span class="cl">Deque</span>&lt;<span class="cl">FileSystemItem</span>&gt; stack = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+    stack.<span class="fn">push</span>(root);
+    <span class="kw">while</span> (!stack.<span class="fn">isEmpty</span>()) {
+        <span class="cl">FileSystemItem</span> item = stack.<span class="fn">pop</span>();
+        total += item.<span class="fn">getSize</span>();
+        <span class="kw">if</span> (item <span class="kw">instanceof</span> <span class="cl">Folder</span>)
+            ((<span class="cl">Folder</span>) item).children.<span class="fn">forEach</span>(stack::push);
+    }
+    <span class="kw">return</span> total;
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='../behavioral/iterator.html'">
+        <div><div class="related-name">Iterator</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator is often used to traverse a Composite tree. A recursive iterator can walk the entire tree depth-first or breadth-first without the client knowing the structure.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/visitor.html'">
+        <div><div class="related-name">Visitor</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Visitor lets you add new operations to a Composite tree without modifying the node classes. The Visitor traverses the tree; each node calls <code>visitor.visit(this)</code>.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='decorator.html'">
+        <div><div class="related-name">Decorator</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both Composite and Decorator rely on recursive composition. Decorator adds responsibilities to one object; Composite aggregates results from many children. Composite is about tree structure; Decorator is about wrapping.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../builder.html'">
+        <div><div class="related-name">Builder</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Builder is often used to construct complex Composite trees step by step, adding leaf and composite nodes in the correct sequence without exposing the tree's internal structure.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Tree structure where leaves and composites implement the same interface. Client calls the same operation on either — composites delegate recursively to children, leaves do the actual work.</li>
+        <li><strong>How:</strong> Component interface with <code>operation()</code>. Leaf implements it directly. Composite stores <code>List&lt;Component&gt;</code> and loops children in its <code>operation()</code>. Both look identical to the client.</li>
+        <li><strong>Key interview point:</strong> The critical benefit is uniform treatment — no if/else for leaf vs composite. Critical risk is circular references — always guard <code>add()</code> with ancestor checks.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="bridge.html"><span class="nav-dir">← Previous</span><span class="nav-title">Bridge</span></a>
+    <a href="decorator.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Decorator</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Adapter Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural" class="active">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#structural">Structural</a><span class="sep">/</span>
+  <span>Adapter</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-structural">Structural</div>
+    <h1 class="page-title">Adapter</h1>
+    <p class="page-tagline">Convert the interface of a class into another interface that clients expect — make incompatible interfaces work together.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #06 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Adapter Pattern?</h2>
+    <p>The Adapter pattern acts as a bridge between two incompatible interfaces. It wraps an existing class (the Adaptee) with a new interface (the Target) that the client expects — without modifying either the client or the adaptee.</p>
+    <p>Think of it as a translator: the client speaks one language, the adaptee speaks another, and the adapter translates between them in real time.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A power travel adapter. Your laptop charger has a US plug (Adaptee), the European wall socket expects a different shape (Target interface). The travel adapter sits in between — neither the charger nor the wall is modified.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You're integrating a third-party analytics library into your app. Your code calls <code>analytics.track(Event)</code> but the library exposes <code>logger.log(String, Map)</code>. You can't change the library, and you don't want to scatter conversion logic throughout your codebase.</p>
+    <p>You need a single place that translates your <code>Event</code> calls into the library's expected format — without coupling your business logic to the third-party API.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Target (interface)</div><div class="participant-desc">The interface the client expects and works with. Defines the domain-specific interface.</div></div>
+      <div class="participant"><div class="participant-name">Adaptee</div><div class="participant-desc">The existing class with an incompatible interface — the thing you want to reuse but can't change.</div></div>
+      <div class="participant"><div class="participant-name">Adapter</div><div class="participant-desc">Implements the Target interface and wraps the Adaptee. Translates Target calls into Adaptee calls.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Collaborates with the Target interface only — completely unaware of the Adaptee's existence.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="220" viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Client -->
+        <rect x="20" y="80" width="110" height="60" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="75" y="106" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#b46de8" font-weight="600">Client</text>
+        <text x="75" y="124" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">uses Target</text>
+        <!-- Target -->
+        <rect x="185" y="55" width="150" height="65" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="260" y="78" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface»</text>
+        <text x="260" y="95" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Target</text>
+        <text x="260" y="112" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">request()</text>
+        <!-- Adapter -->
+        <rect x="185" y="145" width="150" height="65" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="260" y="170" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6d9ee8" font-weight="600">Adapter</text>
+        <text x="260" y="188" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">request() {</text>
+        <text x="260" y="202" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  adaptee.specificReq()</text>
+        <!-- Adaptee -->
+        <rect x="450" y="100" width="180" height="65" rx="6" fill="#1a1e2a" stroke="#e86d6d" stroke-width="1.5"/>
+        <text x="540" y="125" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e86d6d" font-weight="600">Adaptee</text>
+        <text x="540" y="143" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">(3rd party / legacy)</text>
+        <text x="540" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">specificRequest()</text>
+        <!-- arrows -->
+        <line x1="130" y1="110" x2="185" y2="90" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="260" y1="120" x2="260" y2="145" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="335" y1="178" x2="450" y2="140" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="370" y="152" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">delegates to</text>
+        <text x="195" y="50" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">implements</text>
+        <!-- wraps label -->
+        <rect x="380" y="168" width="60" height="20" rx="3" fill="#13161e" stroke="#e86d6d" stroke-width="1"/>
+        <text x="410" y="182" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#e86d6d">wraps</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Object Adapter (composition) + Class Adapter (inheritance)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ── OBJECT ADAPTER (preferred — uses composition) ──────────────────</span>
+
+<span class="cm">// Target — what the client expects</span>
+<span class="kw">public interface</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">void</span> <span class="fn">play</span>(<span class="cl">String</span> filename);
+}
+
+<span class="cm">// Adaptee — existing class with incompatible interface</span>
+<span class="kw">public class</span> <span class="cl">VLCPlayer</span> {
+    <span class="kw">public void</span> <span class="fn">playVLC</span>(<span class="cl">String</span> file) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"VLC playing: "</span> + file);
+    }
+}
+<span class="kw">public class</span> <span class="cl">MP4Player</span> {
+    <span class="kw">public void</span> <span class="fn">playMP4</span>(<span class="cl">String</span> file) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"MP4 playing: "</span> + file);
+    }
+}
+
+<span class="cm">// Adapter — wraps adaptee, exposes Target interface</span>
+<span class="kw">public class</span> <span class="cl">MediaAdapter</span> <span class="kw">implements</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">private</span> <span class="cl">VLCPlayer</span> vlc;
+    <span class="kw">private</span> <span class="cl">MP4Player</span> mp4;
+
+    <span class="kw">public</span> <span class="fn">MediaAdapter</span>(<span class="cl">String</span> type) {
+        <span class="kw">if</span> (type.<span class="fn">equals</span>(<span class="st">"vlc"</span>))  vlc = <span class="kw">new</span> <span class="cl">VLCPlayer</span>();
+        <span class="kw">if</span> (type.<span class="fn">equals</span>(<span class="st">"mp4"</span>))  mp4 = <span class="kw">new</span> <span class="cl">MP4Player</span>();
+    }
+
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> filename) {
+        <span class="kw">if</span> (vlc != <span class="kw">null</span>) vlc.<span class="fn">playVLC</span>(filename);
+        <span class="kw">if</span> (mp4 != <span class="kw">null</span>) mp4.<span class="fn">playMP4</span>(filename);
+    }
+}
+
+<span class="cm">// Client — only knows MediaPlayer</span>
+<span class="kw">public class</span> <span class="cl">AudioPlayer</span> <span class="kw">implements</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> filename) {
+        <span class="cl">String</span> ext = filename.<span class="fn">substring</span>(filename.<span class="fn">lastIndexOf</span>(<span class="st">'.'</span>) + <span class="nm">1</span>);
+        <span class="kw">if</span> (ext.<span class="fn">equals</span>(<span class="st">"mp3"</span>)) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Playing MP3: "</span> + filename);
+        } <span class="kw">else if</span> (ext.<span class="fn">equals</span>(<span class="st">"vlc"</span>) || ext.<span class="fn">equals</span>(<span class="st">"mp4"</span>)) {
+            <span class="kw">new</span> <span class="cl">MediaAdapter</span>(ext).<span class="fn">play</span>(filename); <span class="cm">// delegates via adapter</span>
+        } <span class="kw">else</span> {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Unsupported format"</span>);
+        }
+    }
+}
+
+<span class="cm">// ── CLASS ADAPTER (uses multiple inheritance — Java: extend + implement) ─</span>
+<span class="kw">public class</span> <span class="cl">ClassAdapter</span> <span class="kw">extends</span> <span class="cl">VLCPlayer</span> <span class="kw">implements</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> filename) {
+        <span class="fn">playVLC</span>(filename); <span class="cm">// inherited from VLCPlayer directly</span>
+    }
+}
+
+<span class="cm">// Client usage</span>
+<span class="cl">AudioPlayer</span> player = <span class="kw">new</span> <span class="cl">AudioPlayer</span>();
+player.<span class="fn">play</span>(<span class="st">"song.mp3"</span>);
+player.<span class="fn">play</span>(<span class="st">"movie.vlc"</span>);
+player.<span class="fn">play</span>(<span class="st">"video.mp4"</span>);</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You want to reuse an existing class but its interface doesn't match what you need</li>
+          <li>Integrating third-party or legacy code without modifying it</li>
+          <li>You want to create a reusable class that cooperates with unrelated classes</li>
+          <li>Multiple adaptees need to be unified behind one interface</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>You can modify the source class — just align the interfaces directly</li>
+          <li>Too many adaptees — may signal a design that needs rethinking</li>
+          <li>The translation is so complex it introduces significant overhead or bugs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.Arrays.asList()</code> — adapts an array to the <code>List</code> interface</li>
+      <li><code>InputStreamReader</code> — adapts byte-based <code>InputStream</code> to character-based <code>Reader</code></li>
+      <li><code>Collections.list(Enumeration)</code> — adapts legacy <code>Enumeration</code> to <code>ArrayList</code></li>
+      <li>Spring's <code>HandlerAdapter</code> — adapts different controller types to a uniform handler interface</li>
+      <li>JDBC — <code>ResultSet</code> adapts DB-specific data to a standard Java interface</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Single Responsibility — translation logic isolated in one class</li>
+          <li>Open/Closed — add new adapters without changing client or adaptee</li>
+          <li>Enables reuse of existing classes with incompatible interfaces</li>
+          <li>Object Adapter can adapt multiple adaptees at once via composition</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Overall complexity increases — extra indirection layer</li>
+          <li>Class Adapter is inflexible — adapts only one specific class</li>
+          <li>If many methods need adapting, the adapter can become unwieldy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Adapter Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Leaking the adaptee:</strong> Adapter exposes a getter for the wrapped Adaptee — clients obtain it directly and call its specific methods, bypassing the abstraction entirely</li>
+          <li><strong>Incomplete translation:</strong> Adapter silently swallows some Target methods (empty body or no-op) because the Adaptee has no equivalent — clients get unexpected null/void behaviour with no error</li>
+          <li><strong>Adapter chains:</strong> Adapter wraps another Adapter wraps another — deep nesting causes performance issues and makes debugging a nightmare</li>
+          <li><strong>State mismatch:</strong> Adapter holds stale state if the Adaptee's internal state changes externally and the Adapter caches a translated copy</li>
+          <li><strong>Class Adapter over-coupling:</strong> Using inheritance-based Class Adapter makes the Adapter tightly coupled to the specific Adaptee subclass — any change in Adaptee hierarchy breaks the Adapter</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Never expose the adaptee:</strong> Keep the Adaptee reference private with no getter — the only way to interact is through the Target interface</li>
+          <li><strong>Throw on unimplemented methods:</strong> If a Target method has no Adaptee equivalent, throw <code>UnsupportedOperationException</code> rather than silently doing nothing — fail fast</li>
+          <li><strong>Prefer Object Adapter over Class Adapter:</strong> Composition over inheritance gives flexibility to swap the adaptee implementation and avoids fragile base class issues</li>
+          <li><strong>Limit adapter nesting:</strong> If you need Adapter of Adapter, it's a signal to refactor — redesign the interfaces or create one direct adapter from source to final target</li>
+          <li><strong>Delegate, don't cache:</strong> Always forward calls directly to the Adaptee in real time rather than caching translated values</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — leaking the adaptee</span>
+<span class="kw">public class</span> <span class="cl">LeakyAdapter</span> <span class="kw">implements</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">private</span> <span class="cl">VLCPlayer</span> vlc = <span class="kw">new</span> <span class="cl">VLCPlayer</span>();
+    <span class="kw">public</span> <span class="cl">VLCPlayer</span> <span class="fn">getVLC</span>() { <span class="kw">return</span> vlc; } <span class="cm">// ❌ exposes internals</span>
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> f) { vlc.<span class="fn">playVLC</span>(f); }
+}
+<span class="cm">// Client now calls getVLC().playVLC() — adapter is useless</span>
+
+<span class="cm">// ✅ FIX — no getter, adaptee strictly private</span>
+<span class="kw">public class</span> <span class="cl">SafeAdapter</span> <span class="kw">implements</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">private final</span> <span class="cl">VLCPlayer</span> vlc; <span class="cm">// private, final, no getter</span>
+    <span class="kw">public</span> <span class="fn">SafeAdapter</span>(<span class="cl">VLCPlayer</span> vlc) { <span class="kw">this</span>.vlc = vlc; }
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> f) { vlc.<span class="fn">playVLC</span>(f); }
+}
+
+<span class="cm">// ❌ BREAKING — silent no-op on unimplemented method</span>
+<span class="kw">public class</span> <span class="cl">BrokenAdapter</span> <span class="kw">implements</span> <span class="cl">MediaPlayer</span> {
+    <span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> f)   { <span class="cm">/* TODO — nothing happens! */</span> }
+}
+
+<span class="cm">// ✅ FIX — fail fast with UnsupportedOperationException</span>
+<span class="kw">public void</span> <span class="fn">play</span>(<span class="cl">String</span> f) {
+    <span class="kw">throw new</span> <span class="cl">UnsupportedOperationException</span>(
+        <span class="st">"play() not supported by this adapter"</span>);
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='bridge.html'">
+        <div><div class="related-name">Bridge</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both involve a level of indirection. Bridge is designed upfront to separate abstraction from implementation. Adapter is a retrofit — it reconciles existing incompatible interfaces after the fact.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='decorator.html'">
+        <div><div class="related-name">Decorator</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Decorator wraps to add behaviour while keeping the same interface. Adapter wraps to change the interface. Both use composition but for different purposes.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='facade.html'">
+        <div><div class="related-name">Facade</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Facade defines a new simplified interface for a subsystem. Adapter reuses an existing interface. Facade hides complexity; Adapter resolves incompatibility.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='proxy.html'">
+        <div><div class="related-name">Proxy</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Proxy keeps the same interface and controls access. Adapter changes the interface to resolve incompatibility. Key distinction: same interface vs different interface.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Wraps an incompatible class (Adaptee) with the interface the client expects (Target). A translator between two interfaces — neither side is modified.</li>
+        <li><strong>Two variants:</strong> Object Adapter (composition — wraps via field, preferred) vs Class Adapter (inheritance — extends Adaptee and implements Target, less flexible).</li>
+        <li><strong>Key distinction from similar patterns:</strong> Adapter = changes interface. Decorator = same interface + adds behaviour. Facade = new simplified interface. Proxy = same interface + controls access.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="../prototype.html"><span class="nav-dir">← Previous</span><span class="nav-title">Prototype</span></a>
+    <a href="bridge.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Bridge</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

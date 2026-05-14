@@ -1,0 +1,420 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Proxy Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural" class="active">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#structural">Structural</a><span class="sep">/</span>
+  <span>Proxy</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-structural">Structural</div>
+    <h1 class="page-title">Proxy</h1>
+    <p class="page-tagline">Provide a surrogate or placeholder for another object to control access to it.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #12 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Proxy Pattern?</h2>
+    <p>Proxy provides a substitute for another object and controls access to it. The proxy implements the same interface as the real subject, so clients can't tell the difference. The proxy can do work before or after forwarding the request — lazy loading, caching, access control, logging, and more.</p>
+    <p>Four major proxy flavours exist: <strong>Virtual</strong> (lazy init), <strong>Protection</strong> (access control), <strong>Remote</strong> (network transparency), and <strong>Caching</strong> (result memoisation).</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A credit card is a proxy for your bank account. It implements the same "make payment" interface, but adds security checks, spending limits, and logging before forwarding to the actual account.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a heavyweight service object that loads a large image from disk. Most of the time it isn't even used — but it's always initialised at startup, wasting memory and time.</p>
+    <p>A Virtual Proxy can stand in for the real object, delaying its creation until the first actual use. The client never changes — it just calls methods on what it thinks is the real object, but it's actually calling the lightweight proxy.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Subject (interface)</div><div class="participant-desc">Common interface for RealSubject and Proxy. Allows a Proxy to be used anywhere a RealSubject is expected.</div></div>
+      <div class="participant"><div class="participant-name">RealSubject</div><div class="participant-desc">The actual object that does the real work. The proxy delegates to this eventually.</div></div>
+      <div class="participant"><div class="participant-name">Proxy</div><div class="participant-desc">Maintains a reference to RealSubject. Implements Subject. Intercepts calls — adds lazy loading, caching, logging, or access checks before/after delegating to RealSubject.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Works through the Subject interface — completely unaware it's talking to a Proxy rather than the RealSubject.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="260" viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Subject interface -->
+        <rect x="220" y="10" width="200" height="55" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="34" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface» Subject</text>
+        <text x="320" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">request()</text>
+        <!-- Client -->
+        <rect x="20" y="100" width="110" height="55" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="75" y="126" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#b46de8" font-weight="600">Client</text>
+        <text x="75" y="144" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">uses Subject</text>
+        <!-- Proxy -->
+        <rect x="190" y="100" width="200" height="110" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="2"/>
+        <text x="290" y="126" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6d9ee8" font-weight="600">Proxy</text>
+        <text x="290" y="144" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">- realSubject: RealSubject</text>
+        <text x="290" y="160" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">request() {</text>
+        <text x="290" y="176" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  checkAccess()</text>
+        <text x="290" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">  realSubject.request()</text>
+        <text x="290" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  logAccess()</text>
+        <!-- RealSubject -->
+        <rect x="460" y="100" width="180" height="90" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="550" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6de8a8" font-weight="600">RealSubject</text>
+        <text x="550" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">(heavyweight/remote)</text>
+        <text x="550" y="164" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">request() — real work</text>
+        <text x="550" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">expensive to create</text>
+        <!-- arrows -->
+        <line x1="250" y1="65" x2="250" y2="100" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="390" y1="65" x2="390" y2="100" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="130" y1="127" x2="190" y2="127" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="390" y1="155" x2="460" y2="145" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="400" y="138" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">delegates</text>
+        <!-- proxy types row -->
+        <rect x="20" y="220" width="620" height="35" rx="6" fill="#080a0f" stroke="#252a38"/>
+        <text x="60"  y="240" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">Virtual</text>
+        <text x="60"  y="251" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">lazy init</text>
+        <text x="190" y="240" font-family="JetBrains Mono,monospace" font-size="9" fill="#6d9ee8">Protection</text>
+        <text x="190" y="251" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">access ctrl</text>
+        <text x="330" y="240" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">Remote</text>
+        <text x="330" y="251" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">network</text>
+        <text x="440" y="240" font-family="JetBrains Mono,monospace" font-size="9" fill="#b46de8">Caching</text>
+        <text x="440" y="251" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">memoisation</text>
+        <text x="560" y="240" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">Logging</text>
+        <text x="560" y="251" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">audit trail</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Virtual + Protection + Caching Proxies</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Subject interface</span>
+<span class="kw">public interface</span> <span class="cl">Image</span> {
+    <span class="kw">void</span> <span class="fn">display</span>();
+}
+
+<span class="cm">// RealSubject — expensive to create</span>
+<span class="kw">public class</span> <span class="cl">RealImage</span> <span class="kw">implements</span> <span class="cl">Image</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> filename;
+
+    <span class="kw">public</span> <span class="fn">RealImage</span>(<span class="cl">String</span> filename) {
+        <span class="kw">this</span>.filename = filename;
+        <span class="fn">loadFromDisk</span>(); <span class="cm">// expensive — disk I/O</span>
+    }
+
+    <span class="kw">private void</span> <span class="fn">loadFromDisk</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Loading "</span> + filename + <span class="st">" from disk..."</span>);
+    }
+
+    <span class="kw">public void</span> <span class="fn">display</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Displaying "</span> + filename);
+    }
+}
+
+<span class="cm">// ── VIRTUAL PROXY — lazy initialisation ─────────────────────────────</span>
+<span class="kw">public class</span> <span class="cl">LazyImageProxy</span> <span class="kw">implements</span> <span class="cl">Image</span> {
+    <span class="kw">private</span> <span class="cl">RealImage</span> realImage; <span class="cm">// null until first use</span>
+    <span class="kw">private final</span> <span class="cl">String</span> filename;
+
+    <span class="kw">public</span> <span class="fn">LazyImageProxy</span>(<span class="cl">String</span> filename) {
+        <span class="kw">this</span>.filename = filename; <span class="cm">// cheap — no disk load yet</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">display</span>() {
+        <span class="kw">if</span> (realImage == <span class="kw">null</span>) {
+            realImage = <span class="kw">new</span> <span class="cl">RealImage</span>(filename); <span class="cm">// load only on first call</span>
+        }
+        realImage.<span class="fn">display</span>(); <span class="cm">// delegate</span>
+    }
+}
+
+<span class="cm">// ── PROTECTION PROXY — access control ───────────────────────────────</span>
+<span class="kw">public class</span> <span class="cl">ProtectedImageProxy</span> <span class="kw">implements</span> <span class="cl">Image</span> {
+    <span class="kw">private final</span> <span class="cl">RealImage</span> realImage;
+    <span class="kw">private final</span> <span class="cl">String</span>    userRole;
+
+    <span class="kw">public</span> <span class="fn">ProtectedImageProxy</span>(<span class="cl">String</span> filename, <span class="cl">String</span> role) {
+        <span class="kw">this</span>.realImage = <span class="kw">new</span> <span class="cl">RealImage</span>(filename);
+        <span class="kw">this</span>.userRole  = role;
+    }
+
+    <span class="kw">public void</span> <span class="fn">display</span>() {
+        <span class="kw">if</span> (!userRole.<span class="fn">equals</span>(<span class="st">"ADMIN"</span>) && !userRole.<span class="fn">equals</span>(<span class="st">"USER"</span>)) {
+            <span class="kw">throw new</span> <span class="cl">SecurityException</span>(<span class="st">"Access denied for role: "</span> + userRole);
+        }
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"[ACCESS LOG] user="</span> + userRole);
+        realImage.<span class="fn">display</span>();
+    }
+}
+
+<span class="cm">// ── CACHING PROXY — memoisation ──────────────────────────────────────</span>
+<span class="kw">public interface</span> <span class="cl">DataService</span> {
+    <span class="cl">String</span> <span class="fn">fetchData</span>(<span class="cl">String</span> query);
+}
+
+<span class="kw">public class</span> <span class="cl">CachingDataProxy</span> <span class="kw">implements</span> <span class="cl">DataService</span> {
+    <span class="kw">private final</span> <span class="cl">DataService</span>            realService;
+    <span class="kw">private final</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt;  cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public</span> <span class="fn">CachingDataProxy</span>(<span class="cl">DataService</span> real) { <span class="kw">this</span>.realService = real; }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">fetchData</span>(<span class="cl">String</span> query) {
+        <span class="kw">if</span> (cache.<span class="fn">containsKey</span>(query)) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"[CACHE HIT] "</span> + query);
+            <span class="kw">return</span> cache.<span class="fn">get</span>(query);
+        }
+        <span class="cl">String</span> result = realService.<span class="fn">fetchData</span>(query); <span class="cm">// expensive DB call</span>
+        cache.<span class="fn">put</span>(query, result);
+        <span class="kw">return</span> result;
+    }
+}
+
+<span class="cm">// ── Dynamic Proxy (Java built-in) ────────────────────────────────────</span>
+<span class="kw">public class</span> <span class="cl">LoggingHandler</span> <span class="kw">implements</span> <span class="cl">InvocationHandler</span> {
+    <span class="kw">private final</span> <span class="cl">Object</span> target;
+    <span class="kw">public</span> <span class="fn">LoggingHandler</span>(<span class="cl">Object</span> target) { <span class="kw">this</span>.target = target; }
+
+    <span class="kw">public</span> <span class="cl">Object</span> <span class="fn">invoke</span>(<span class="cl">Object</span> proxy, <span class="cl">Method</span> method, <span class="cl">Object</span>[] args)
+            <span class="kw">throws</span> <span class="cl">Throwable</span> {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"[LOG] Calling: "</span> + method.<span class="fn">getName</span>());
+        <span class="cl">Object</span> result = method.<span class="fn">invoke</span>(target, args);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"[LOG] Done: "</span> + method.<span class="fn">getName</span>());
+        <span class="kw">return</span> result;
+    }
+}
+
+<span class="cm">// Client creates a JDK dynamic proxy</span>
+<span class="cl">Image</span> proxy = (<span class="cl">Image</span>) <span class="cl">Proxy</span>.<span class="fn">newProxyInstance</span>(
+    <span class="cl">Image</span>.<span class="kw">class</span>.<span class="fn">getClassLoader</span>(),
+    <span class="kw">new</span> <span class="cl">Class</span>[]{ <span class="cl">Image</span>.<span class="kw">class</span> },
+    <span class="kw">new</span> <span class="cl">LoggingHandler</span>(<span class="kw">new</span> <span class="cl">RealImage</span>(<span class="st">"photo.jpg"</span>))
+);
+proxy.<span class="fn">display</span>(); <span class="cm">// logs before and after</span></pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li><strong>Virtual:</strong> Object initialisation is expensive and may not be needed</li>
+          <li><strong>Protection:</strong> You need access control without changing the real subject</li>
+          <li><strong>Remote:</strong> You want local-transparent access to a remote object</li>
+          <li><strong>Caching:</strong> Results of expensive operations can be memoised</li>
+          <li><strong>Logging/Audit:</strong> Cross-cutting concerns without modifying the real class</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>The added indirection degrades response time in latency-critical paths</li>
+          <li>The real subject is simple — proxy adds unjustified complexity</li>
+          <li>You can add the cross-cutting concern directly to the subject (small codebase)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Spring AOP — all <code>@Transactional</code>, <code>@Cacheable</code>, <code>@Secured</code> use JDK/CGLIB dynamic proxies</li>
+      <li>Hibernate lazy loading — <code>getOrders()</code> on a <code>User</code> returns a proxy list, DB query fires only on iteration</li>
+      <li><code>java.lang.reflect.Proxy</code> — JDK's built-in dynamic proxy for interface-based proxying</li>
+      <li>RMI (Remote Method Invocation) — stub is a Remote Proxy for an object running on another JVM</li>
+      <li>Spring's <code>@Cacheable</code> — wraps methods in a Caching Proxy automatically</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Controls access to real object without client knowing</li>
+          <li>Open/Closed — add caching/logging without changing subject</li>
+          <li>Virtual proxy improves startup performance via lazy loading</li>
+          <li>Cross-cutting concerns (security, logging) cleanly separated</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Response time may increase due to indirection layer</li>
+          <li>Code complexity increases — extra class per proxied service</li>
+          <li>Stale cache in Caching Proxy can return outdated data</li>
+          <li>Dynamic proxies only work with interfaces in JDK (CGLIB needed for classes)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Proxy Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Bypassing the proxy:</strong> Client holds a direct reference to the RealSubject — all access control, caching and logging in the proxy is skipped entirely</li>
+          <li><strong>Stale cache in Caching Proxy:</strong> Underlying data changes but cached result is returned — clients receive outdated data with no indication it's stale</li>
+          <li><strong>Race condition in Virtual Proxy:</strong> Two threads both see <code>realSubject == null</code> simultaneously and both create a new RealSubject — expensive double initialisation</li>
+          <li><strong>Proxy not covering all interface methods:</strong> Proxy only intercepts some methods; client calls an unproxied method directly on the subject through a leaked reference — bypasses all guards</li>
+          <li><strong>Self-invocation bypass in Spring AOP:</strong> A method inside the real bean calls another method on <code>this</code> — the call goes directly to the real object, skipping the Spring proxy and its <code>@Transactional</code>/<code>@Cacheable</code> interceptors</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Never expose RealSubject directly:</strong> Only inject the Proxy through DI. Make RealSubject package-private or constructor-private from outside its module</li>
+          <li><strong>Cache invalidation strategy:</strong> Implement TTL-based expiry, event-driven invalidation, or version tokens in the Caching Proxy — never cache indefinitely without a strategy</li>
+          <li><strong>Thread-safe Virtual Proxy:</strong> Use <code>synchronized</code> with double-checked locking or an <code>AtomicReference</code> with <code>compareAndSet</code> for safe lazy initialisation</li>
+          <li><strong>Implement all interface methods in the proxy:</strong> The proxy must intercept every method — use a dynamic proxy (<code>java.lang.reflect.Proxy</code>) if the interface is large, to avoid gaps</li>
+          <li><strong>Spring self-invocation fix:</strong> Inject the proxy into the bean itself (<code>@Autowired private MyService self</code>) and call <code>self.method()</code>, or use <code>AopContext.currentProxy()</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — race condition in Virtual Proxy</span>
+<span class="kw">public void</span> <span class="fn">display</span>() {
+    <span class="kw">if</span> (realImage == <span class="kw">null</span>) {              <span class="cm">// Thread A and B both see null</span>
+        realImage = <span class="kw">new</span> <span class="cl">RealImage</span>(file); <span class="cm">// both create — double init!</span>
+    }
+    realImage.<span class="fn">display</span>();
+}
+
+<span class="cm">// ✅ FIX — double-checked locking with volatile</span>
+<span class="kw">private volatile</span> <span class="cl">RealImage</span> realImage;
+
+<span class="kw">public void</span> <span class="fn">display</span>() {
+    <span class="kw">if</span> (realImage == <span class="kw">null</span>) {
+        <span class="kw">synchronized</span> (<span class="kw">this</span>) {
+            <span class="kw">if</span> (realImage == <span class="kw">null</span>) {          <span class="cm">// second check inside lock</span>
+                realImage = <span class="kw">new</span> <span class="cl">RealImage</span>(filename);
+            }
+        }
+    }
+    realImage.<span class="fn">display</span>();
+}
+
+<span class="cm">// ❌ BREAKING — stale cache, no invalidation</span>
+<span class="kw">public</span> <span class="cl">String</span> <span class="fn">fetchData</span>(<span class="cl">String</span> q) {
+    <span class="kw">if</span> (cache.<span class="fn">containsKey</span>(q)) <span class="kw">return</span> cache.<span class="fn">get</span>(q); <span class="cm">// never expires!</span>
+    <span class="cl">String</span> r = real.<span class="fn">fetchData</span>(q); cache.<span class="fn">put</span>(q, r); <span class="kw">return</span> r;
+}
+
+<span class="cm">// ✅ FIX — TTL-based cache entry</span>
+<span class="kw">record</span> <span class="cl">CacheEntry</span>(<span class="cl">String</span> value, <span class="kw">long</span> expiresAt) {}
+<span class="kw">private final</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">CacheEntry</span>&gt; cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+<span class="kw">private static final long</span> TTL_MS = <span class="nm">60_000</span>;
+
+<span class="kw">public</span> <span class="cl">String</span> <span class="fn">fetchData</span>(<span class="cl">String</span> q) {
+    <span class="cl">CacheEntry</span> entry = cache.<span class="fn">get</span>(q);
+    <span class="kw">if</span> (entry != <span class="kw">null</span> && <span class="cl">System</span>.<span class="fn">currentTimeMillis</span>() &lt; entry.<span class="fn">expiresAt</span>()) {
+        <span class="kw">return</span> entry.<span class="fn">value</span>(); <span class="cm">// ✅ only serve if not expired</span>
+    }
+    <span class="cl">String</span> r = real.<span class="fn">fetchData</span>(q);
+    cache.<span class="fn">put</span>(q, <span class="kw">new</span> <span class="cl">CacheEntry</span>(r, <span class="cl">System</span>.<span class="fn">currentTimeMillis</span>() + TTL_MS));
+    <span class="kw">return</span> r;
+}
+
+<span class="cm">// ❌ BREAKING — Spring self-invocation bypasses proxy</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="kw">public void</span> <span class="fn">placeOrder</span>() {
+        <span class="fn">processPayment</span>(); <span class="cm">// ❌ calls this.processPayment() — bypasses @Transactional proxy!</span>
+    }
+    <span class="kw">@</span><span class="cl">Transactional</span>
+    <span class="kw">public void</span> <span class="fn">processPayment</span>() { <span class="cm">/* transaction never starts */</span> }
+}
+
+<span class="cm">// ✅ FIX — call through the proxy</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="kw">@Autowired</span> <span class="kw">private</span> <span class="cl">OrderService</span> self; <span class="cm">// inject own proxy</span>
+
+    <span class="kw">public void</span> <span class="fn">placeOrder</span>() {
+        self.<span class="fn">processPayment</span>(); <span class="cm">// ✅ goes through Spring proxy — @Transactional fires</span>
+    }
+    <span class="kw">@</span><span class="cl">Transactional</span>
+    <span class="kw">public void</span> <span class="fn">processPayment</span>() { <span class="cm">/* transaction starts correctly */</span> }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='decorator.html'">
+        <div><div class="related-name">Decorator</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both wrap an object with the same interface. Decorator is composed by the client to add behaviour. Proxy controls access and is usually set up transparently — client doesn't choose the proxy, it just gets one.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='adapter.html'">
+        <div><div class="related-name">Adapter</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Proxy keeps the same interface as the subject. Adapter changes the interface. Proxy = same interface, access control. Adapter = different interface, compatibility.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='facade.html'">
+        <div><div class="related-name">Facade</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Facade simplifies a complex subsystem of many classes into a new interface. Proxy wraps a single object with the same interface to control access to it.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='flyweight.html'">
+        <div><div class="related-name">Flyweight</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both save resources. Flyweight saves memory by sharing state across many objects. Proxy saves time/memory by controlling when and how a single expensive object is created or accessed.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> A stand-in for the real object with the same interface. Intercepts calls to add lazy loading (Virtual), access control (Protection), caching (Caching), or network transparency (Remote) — client never knows.</li>
+        <li><strong>4 types to know:</strong> Virtual (lazy init), Protection (security check), Remote (local stub for remote object), Caching (memoises expensive results). Spring AOP uses dynamic proxies for all cross-cutting concerns.</li>
+        <li><strong>Critical Java gotcha:</strong> Spring AOP self-invocation bug — <code>this.method()</code> inside a bean bypasses the proxy. Fix by injecting <code>self</code> or using <code>AopContext.currentProxy()</code>. Comes up in every Spring interview.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="flyweight.html"><span class="nav-dir">← Previous</span><span class="nav-title">Flyweight</span></a>
+    <a href="../behavioral/chain-of-responsibility.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Chain of Responsibility</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

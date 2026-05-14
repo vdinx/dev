@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Bridge Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural" class="active">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#structural">Structural</a><span class="sep">/</span>
+  <span>Bridge</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-structural">Structural</div>
+    <h1 class="page-title">Bridge</h1>
+    <p class="page-tagline">Decouple an abstraction from its implementation so that the two can vary independently.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-advanced">Advanced</span>
+      <span class="diff-badge">Pattern #07 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Bridge Pattern?</h2>
+    <p>Bridge splits a large class (or set of closely related classes) into two separate hierarchies — abstraction and implementation — that can be developed and extended independently. The abstraction holds a reference to the implementation and delegates work to it.</p>
+    <p>Without Bridge, combining M abstractions with N implementations would require M×N subclasses. Bridge reduces this to M+N classes.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A TV remote (abstraction) and a TV (implementation). You can have different remotes (basic, advanced) and different TVs (Samsung, Sony). Any remote works with any TV — the remote doesn't know the TV's internals, it just sends signals through a standard interface.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a <code>Shape</code> class with subtypes <code>Circle</code> and <code>Square</code>. You want to add colours — <code>Red</code> and <code>Blue</code>. Using inheritance: <code>RedCircle</code>, <code>BlueCircle</code>, <code>RedSquare</code>, <code>BlueSquare</code> — 4 classes for 2 shapes × 2 colours. Add one more shape and one more colour and you have 9 classes. This explodes exponentially.</p>
+    <p>Bridge solves this by separating the Shape hierarchy from the Color hierarchy and connecting them via composition.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Abstraction</div><div class="participant-desc">High-level control layer. Holds a reference to an Implementor and delegates the actual work to it. Defines the interface clients use.</div></div>
+      <div class="participant"><div class="participant-name">RefinedAbstraction</div><div class="participant-desc">Extends Abstraction with optional variations. Adds higher-level operations on top of the base abstraction.</div></div>
+      <div class="participant"><div class="participant-name">Implementor (interface)</div><div class="participant-desc">Defines the interface for implementation classes. Does not have to match the Abstraction interface — typically lower-level primitive operations.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteImplementor</div><div class="participant-desc">Provides platform-specific or variant-specific implementations of the Implementor interface.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="300" viewBox="0 0 660 300" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Abstraction -->
+        <rect x="30" y="80" width="190" height="80" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="125" y="108" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e8b86d" font-weight="600">Abstraction</text>
+        <text x="125" y="126" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">- impl: Implementor</text>
+        <text x="125" y="142" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">+ operation()</text>
+        <!-- RefinedAbstraction -->
+        <rect x="30" y="210" width="190" height="65" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="125" y="235" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">RefinedAbstraction</text>
+        <text x="125" y="253" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">Circle / Square</text>
+        <text x="125" y="268" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">+ draw()</text>
+        <line x1="125" y1="160" x2="125" y2="210" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <text x="132" y="190" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">extends</text>
+
+        <!-- bridge arrow -->
+        <line x1="220" y1="120" x2="380" y2="120" stroke="#e8b86d" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="280" y="112" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">«bridge»</text>
+        <text x="270" y="125" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">delegates to impl</text>
+
+        <!-- Implementor -->
+        <rect x="380" y="80" width="190" height="80" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="475" y="105" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface»</text>
+        <text x="475" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Implementor</text>
+        <text x="475" y="140" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">+ drawImpl()</text>
+        <!-- ConcreteImplementors -->
+        <rect x="330" y="210" width="130" height="65" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="395" y="237" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">RedColor</text>
+        <text x="395" y="255" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">drawImpl()</text>
+        <rect x="490" y="210" width="130" height="65" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="555" y="237" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">BlueColor</text>
+        <text x="555" y="255" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">drawImpl()</text>
+        <line x1="430" y1="160" x2="395" y2="210" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="510" y1="160" x2="555" y2="210" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+
+        <!-- dimension labels -->
+        <text x="30" y="30" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">Abstraction dimension →</text>
+        <text x="380" y="30" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">Implementation dimension →</text>
+        <text x="10" y="50" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">vary independently — no class explosion</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Implementor interface — lower-level rendering operations</span>
+<span class="kw">public interface</span> <span class="cl">Color</span> {
+    <span class="kw">void</span> <span class="fn">applyColor</span>();
+}
+
+<span class="cm">// Concrete Implementors</span>
+<span class="kw">public class</span> <span class="cl">RedColor</span> <span class="kw">implements</span> <span class="cl">Color</span> {
+    <span class="kw">public void</span> <span class="fn">applyColor</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Applying RED color"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">BlueColor</span> <span class="kw">implements</span> <span class="cl">Color</span> {
+    <span class="kw">public void</span> <span class="fn">applyColor</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Applying BLUE color"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">GreenColor</span> <span class="kw">implements</span> <span class="cl">Color</span> {
+    <span class="kw">public void</span> <span class="fn">applyColor</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Applying GREEN color"</span>); }
+}
+
+<span class="cm">// Abstraction — holds reference to Implementor (the bridge)</span>
+<span class="kw">public abstract class</span> <span class="cl">Shape</span> {
+    <span class="kw">protected</span> <span class="cl">Color</span> color; <span class="cm">// THE BRIDGE — composition over inheritance</span>
+
+    <span class="kw">public</span> <span class="fn">Shape</span>(<span class="cl">Color</span> color) { <span class="kw">this</span>.color = color; }
+
+    <span class="kw">public abstract void</span> <span class="fn">draw</span>();
+}
+
+<span class="cm">// Refined Abstractions — vary independently of Color</span>
+<span class="kw">public class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">private int</span> radius;
+
+    <span class="kw">public</span> <span class="fn">Circle</span>(<span class="kw">int</span> radius, <span class="cl">Color</span> color) {
+        <span class="kw">super</span>(color);
+        <span class="kw">this</span>.radius = radius;
+    }
+
+    <span class="kw">public void</span> <span class="fn">draw</span>() {
+        <span class="cl">System</span>.out.<span class="fn">print</span>(<span class="st">"Circle radius="</span> + radius + <span class="st">" — "</span>);
+        color.<span class="fn">applyColor</span>(); <span class="cm">// delegates to implementor</span>
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">Square</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">private int</span> side;
+
+    <span class="kw">public</span> <span class="fn">Square</span>(<span class="kw">int</span> side, <span class="cl">Color</span> color) {
+        <span class="kw">super</span>(color);
+        <span class="kw">this</span>.side = side;
+    }
+
+    <span class="kw">public void</span> <span class="fn">draw</span>() {
+        <span class="cl">System</span>.out.<span class="fn">print</span>(<span class="st">"Square side="</span> + side + <span class="st">" — "</span>);
+        color.<span class="fn">applyColor</span>();
+    }
+}
+
+<span class="cm">// Client — combines any shape with any color freely</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Shape</span> redCircle  = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">10</span>, <span class="kw">new</span> <span class="cl">RedColor</span>());
+        <span class="cl">Shape</span> blueSquare = <span class="kw">new</span> <span class="cl">Square</span>(<span class="nm">5</span>,  <span class="kw">new</span> <span class="cl">BlueColor</span>());
+        <span class="cl">Shape</span> greenCircle = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">7</span>, <span class="kw">new</span> <span class="cl">GreenColor</span>());
+
+        redCircle.<span class="fn">draw</span>();   <span class="cm">// Circle radius=10 — Applying RED color</span>
+        blueSquare.<span class="fn">draw</span>();  <span class="cm">// Square side=5 — Applying BLUE color</span>
+        greenCircle.<span class="fn">draw</span>(); <span class="cm">// Circle radius=7 — Applying GREEN color</span>
+
+        <span class="cm">// Switch implementor at runtime — the bridge flexes!</span>
+        redCircle.color = <span class="kw">new</span> <span class="cl">BlueColor</span>();
+        redCircle.<span class="fn">draw</span>(); <span class="cm">// same circle, now blue</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You want to avoid a permanent binding between abstraction and implementation</li>
+          <li>Both abstractions and implementations should be extensible via subclassing</li>
+          <li>You have a class explosion from combining two independent dimensions</li>
+          <li>You want to switch implementations at runtime</li>
+          <li>Implementation changes should have no impact on client code</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Only one implementation exists — unnecessary abstraction layer</li>
+          <li>The abstraction and implementation are tightly coupled by nature</li>
+          <li>Simple inheritance clearly solves the problem without class explosion</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Java AWT — <code>Component</code> (abstraction) bridges to platform-specific <code>ComponentPeer</code> (implementor) for Windows/Mac/Linux rendering</li>
+      <li>JDBC — <code>Connection</code>, <code>Statement</code> are abstractions; each DB driver provides the concrete implementor</li>
+      <li>Logging frameworks — <code>Logger</code> abstraction bridges to <code>Appender</code> implementations (file, console, network)</li>
+      <li>Spring's <code>PlatformTransactionManager</code> — transaction abstraction over JDBC, JPA, Hibernate implementors</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Eliminates M×N class explosion — reduces to M+N classes</li>
+          <li>Open/Closed — add new abstractions and implementations independently</li>
+          <li>Runtime binding — swap implementor without changing abstraction</li>
+          <li>Single Responsibility — abstraction and implementation each focused</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Increased complexity for simple scenarios — overkill if only one or two combinations needed</li>
+          <li>Harder to understand than plain inheritance — requires upfront design insight</li>
+          <li>Indirection overhead — every call goes through the bridge</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Bridge Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Downcasting the implementor:</strong> Abstraction casts the Implementor to a specific ConcreteImplementor to call methods not in the interface — shatters the decoupling</li>
+          <li><strong>Null implementor:</strong> Abstraction's <code>impl</code> field is null when <code>draw()</code> is called — NullPointerException with no clear error message</li>
+          <li><strong>Public implementor field:</strong> If the <code>impl</code> reference is public, clients replace it with an incompatible object at runtime causing unexpected behaviour</li>
+          <li><strong>Fat Implementor interface:</strong> Adding too many methods to the Implementor interface means every ConcreteImplementor must implement them all — partial implementations with empty bodies silently break the contract</li>
+          <li><strong>Cross-dimension dependencies:</strong> A RefinedAbstraction references a specific ConcreteImplementor by type — re-introduces the tight coupling Bridge was designed to eliminate</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Never downcast the implementor:</strong> The Abstraction must only call methods defined on the Implementor interface — zero knowledge of concrete type</li>
+          <li><strong>Guard against null:</strong> Validate the implementor in the constructor or provide a NullObject default — never allow a null bridge reference</li>
+          <li><strong>Keep implementor field protected/private:</strong> Expose it only through a setter with validation so external code cannot corrupt the bridge</li>
+          <li><strong>Keep Implementor interface lean:</strong> Only primitive operations that all implementations genuinely support. Use multiple Implementor interfaces if needed rather than one fat one</li>
+          <li><strong>Inject the implementor:</strong> Use constructor injection so the bridge is set at creation time — prevents partial or invalid states</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — downcasting implementor</span>
+<span class="kw">public void</span> <span class="fn">draw</span>() {
+    ((<span class="cl">RedColor</span>) color).<span class="fn">applySpecialEffect</span>(); <span class="cm">// ❌ tied to concrete impl</span>
+}
+
+<span class="cm">// ✅ FIX — only call interface methods</span>
+<span class="kw">public void</span> <span class="fn">draw</span>() {
+    color.<span class="fn">applyColor</span>(); <span class="cm">// ✅ only Implementor interface methods</span>
+}
+
+<span class="cm">// ❌ BREAKING — null implementor</span>
+<span class="cl">Shape</span> broken = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">5</span>, <span class="kw">null</span>); <span class="cm">// NPE on draw()</span>
+
+<span class="cm">// ✅ FIX — validate in constructor</span>
+<span class="kw">public</span> <span class="fn">Shape</span>(<span class="cl">Color</span> color) {
+    <span class="kw">if</span> (color == <span class="kw">null</span>)
+        <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Color implementor required"</span>);
+    <span class="kw">this</span>.color = color;
+}
+
+<span class="cm">// ✅ OR — use NullObject pattern as safe default</span>
+<span class="kw">public class</span> <span class="cl">NoColor</span> <span class="kw">implements</span> <span class="cl">Color</span> {
+    <span class="kw">public void</span> <span class="fn">applyColor</span>() { <span class="cm">/* intentional no-op safe default */</span> }
+}
+
+<span class="cm">// ❌ BREAKING — public bridge field, client corrupts it</span>
+<span class="kw">public</span> <span class="cl">Color</span> color; <span class="cm">// client sets incompatible object</span>
+
+<span class="cm">// ✅ FIX — protected with validated setter</span>
+<span class="kw">protected</span> <span class="cl">Color</span> color;
+<span class="kw">public void</span> <span class="fn">setColor</span>(<span class="cl">Color</span> c) {
+    <span class="kw">if</span> (c == <span class="kw">null</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"null not allowed"</span>);
+    <span class="kw">this</span>.color = c;
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='adapter.html'">
+        <div><div class="related-name">Adapter</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Adapter is a retrofit — it reconciles incompatible interfaces that already exist. Bridge is designed upfront to separate two dimensions that should vary independently. Adapter fixes; Bridge plans.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/strategy.html'">
+        <div><div class="related-name">Strategy</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Bridge and Strategy both use composition to delegate behaviour. Strategy focuses on swapping algorithms at runtime inside one class. Bridge separates entire class hierarchies across two dimensions.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../abstract-factory.html'">
+        <div><div class="related-name">Abstract Factory</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Abstract Factory can create the correct ConcreteImplementor for a Bridge, hiding the creation logic so the Abstraction never needs to know which implementor it receives.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/template-method.html'">
+        <div><div class="related-name">Template Method</div>
+        <span class="related-tag tag-competes">Competes With</span>
+        <div class="related-desc">Template Method uses inheritance to vary parts of an algorithm; Bridge uses composition to vary entire implementations. Bridge is more flexible — implementations can be swapped at runtime.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Separates two independent dimensions (abstraction + implementation) into separate hierarchies connected via composition — eliminates M×N subclass explosion.</li>
+        <li><strong>How:</strong> Abstraction holds a reference to an Implementor interface. RefinedAbstractions extend Abstraction. ConcreteImplementors implement the Implementor interface. Client sets the implementor at construction or runtime.</li>
+        <li><strong>Key interview distinction:</strong> Adapter = retrofit (fixes existing incompatibility). Bridge = upfront design (prevents future class explosion). Both use composition but serve opposite purposes.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="adapter.html"><span class="nav-dir">← Previous</span><span class="nav-title">Adapter</span></a>
+    <a href="composite.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Composite</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>
