@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Chain of Responsibility — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Chain of Responsibility</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Chain of Responsibility</h1>
+    <p class="page-tagline">Pass a request along a chain of handlers — each handler decides to process it or pass it to the next.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #13 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is Chain of Responsibility?</h2>
+    <p>Chain of Responsibility lets you pass a request through a chain of handler objects. Each handler decides either to process the request and stop the chain, or pass it to the next handler. The sender doesn't know which handler will ultimately process it.</p>
+    <p>This decouples the sender from all potential receivers — you can build, reorder, or extend the chain without changing any existing handler or the sender.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A customer support escalation chain — Level 1 support handles basic issues. If it can't resolve it, passes to Level 2. If still unresolved, escalates to Level 3. Each level either handles or passes on.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You're building an expense approval system. Requests under $500 are approved by a Team Lead. $500–$5000 by a Manager. $5000–$50000 by a Director. Above that, only the CEO can approve. Hardcoding a long if-else chain couples the logic in one place and makes it painful to add new approval levels.</p>
+    <p>Chain of Responsibility lets each approver be a self-contained handler. Assembling or reordering the chain at runtime requires zero changes to handler code.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Handler (interface)</div><div class="participant-desc">Declares the interface for handling requests. Usually contains a method to set the next handler and a method to handle the request.</div></div>
+      <div class="participant"><div class="participant-name">BaseHandler (abstract)</div><div class="participant-desc">Optional boilerplate class implementing the chain-linking logic. Stores next handler reference and calls it if the current handler passes the request.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteHandler</div><div class="participant-desc">Handles requests it is responsible for. Calls next handler for everything else. Self-contained — knows only its own logic and the next handler.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Assembles the chain and sends requests to the first handler. Unaware of which specific handler processes each request.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="200" viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6de8a8"/></marker></defs>
+        <!-- Request -->
+        <rect x="10" y="75" width="80" height="50" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="50" y="98" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#b46de8">Request</text>
+        <text x="50" y="114" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">sender</text>
+        <!-- Handler 1 -->
+        <rect x="130" y="55" width="120" height="90" rx="6" fill="#1a1e2a" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="190" y="80" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">TeamLead</text>
+        <text x="190" y="96" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">&lt;$500?</text>
+        <text x="190" y="112" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">✓ handle</text>
+        <text x="190" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">else → next</text>
+        <!-- Handler 2 -->
+        <rect x="300" y="55" width="120" height="90" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="360" y="80" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">Manager</text>
+        <text x="360" y="96" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">&lt;$5000?</text>
+        <text x="360" y="112" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">✓ handle</text>
+        <text x="360" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">else → next</text>
+        <!-- Handler 3 -->
+        <rect x="470" y="55" width="120" height="90" rx="6" fill="#1a1e2a" stroke="#e86d6d" stroke-width="1.5"/>
+        <text x="530" y="80" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e86d6d">Director</text>
+        <text x="530" y="96" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">&lt;$50000?</text>
+        <text x="530" y="112" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">✓ handle</text>
+        <text x="530" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">else reject</text>
+        <!-- arrows -->
+        <line x1="90"  y1="100" x2="130" y2="100" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="250" y1="100" x2="300" y2="100" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="420" y1="100" x2="470" y2="100" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="255" y="92" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">pass</text>
+        <text x="424" y="92" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">pass</text>
+        <!-- handled arrows -->
+        <line x1="190" y1="145" x2="190" y2="175" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <text x="200" y="170" font-family="JetBrains Mono,monospace" font-size="8" fill="#6de8a8">handled</text>
+        <line x1="360" y1="145" x2="360" y2="175" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <text x="370" y="170" font-family="JetBrains Mono,monospace" font-size="8" fill="#6de8a8">handled</text>
+        <line x1="530" y1="145" x2="530" y2="175" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <text x="540" y="170" font-family="JetBrains Mono,monospace" font-size="8" fill="#6de8a8">handled</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Expense Approval Chain</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Handler interface</span>
+<span class="kw">public interface</span> <span class="cl">Approver</span> {
+    <span class="kw">void</span> <span class="fn">setNext</span>(<span class="cl">Approver</span> next);
+    <span class="kw">void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount);
+}
+
+<span class="cm">// Abstract base handler — boilerplate chain logic</span>
+<span class="kw">public abstract class</span> <span class="cl">BaseApprover</span> <span class="kw">implements</span> <span class="cl">Approver</span> {
+    <span class="kw">private</span> <span class="cl">Approver</span> next;
+
+    <span class="kw">public</span> <span class="cl">Approver</span> <span class="fn">setNext</span>(<span class="cl">Approver</span> next) {
+        <span class="kw">this</span>.next = next;
+        <span class="kw">return</span> next; <span class="cm">// allows chaining: a.setNext(b).setNext(c)</span>
+    }
+
+    <span class="kw">protected void</span> <span class="fn">passToNext</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (next != <span class="kw">null</span>) {
+            next.<span class="fn">approve</span>(amount);
+        } <span class="kw">else</span> {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"No handler available for $"</span> + amount);
+        }
+    }
+}
+
+<span class="cm">// Concrete Handlers</span>
+<span class="kw">public class</span> <span class="cl">TeamLead</span> <span class="kw">extends</span> <span class="cl">BaseApprover</span> {
+    <span class="kw">public void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &lt; <span class="nm">500</span>) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"TeamLead approved $"</span> + amount);
+        } <span class="kw">else</span> {
+            <span class="fn">passToNext</span>(amount); <span class="cm">// can't handle — pass up</span>
+        }
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">Manager</span> <span class="kw">extends</span> <span class="cl">BaseApprover</span> {
+    <span class="kw">public void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &lt; <span class="nm">5_000</span>) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Manager approved $"</span> + amount);
+        } <span class="kw">else</span> {
+            <span class="fn">passToNext</span>(amount);
+        }
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">Director</span> <span class="kw">extends</span> <span class="cl">BaseApprover</span> {
+    <span class="kw">public void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &lt; <span class="nm">50_000</span>) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Director approved $"</span> + amount);
+        } <span class="kw">else</span> {
+            <span class="fn">passToNext</span>(amount);
+        }
+    }
+}
+
+<span class="cm">// Client — assembles chain</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">BaseApprover</span> lead    = <span class="kw">new</span> <span class="cl">TeamLead</span>();
+        <span class="cl">BaseApprover</span> manager = <span class="kw">new</span> <span class="cl">Manager</span>();
+        <span class="cl">BaseApprover</span> director= <span class="kw">new</span> <span class="cl">Director</span>();
+
+        <span class="cm">// Build chain: lead → manager → director</span>
+        lead.<span class="fn">setNext</span>(manager).<span class="fn">setNext</span>(director);
+
+        lead.<span class="fn">approve</span>(<span class="nm">200</span>);     <span class="cm">// TeamLead approved</span>
+        lead.<span class="fn">approve</span>(<span class="nm">1500</span>);    <span class="cm">// Manager approved</span>
+        lead.<span class="fn">approve</span>(<span class="nm">20000</span>);   <span class="cm">// Director approved</span>
+        lead.<span class="fn">approve</span>(<span class="nm">100000</span>);  <span class="cm">// No handler available</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>More than one object may handle a request, and the handler isn't known a priori</li>
+          <li>You want to issue a request to one of several objects without specifying the receiver explicitly</li>
+          <li>The set of handlers should be specifiable dynamically</li>
+          <li>Middleware pipelines, filter chains, event propagation</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Every request must be guaranteed to be handled — broken chains silently drop requests</li>
+          <li>Performance is critical — long chains add latency</li>
+          <li>The handler logic is simple and static — an if-else or strategy is simpler</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Java Servlet <code>Filter</code> chain — each filter processes the request and calls <code>chain.doFilter()</code></li>
+      <li>Spring Security filter chain — authentication, authorization, CSRF filters in sequence</li>
+      <li><code>java.util.logging</code> — Logger passes log records up the parent handler chain</li>
+      <li>Spring MVC <code>HandlerInterceptor</code> — preHandle chain for request interception</li>
+      <li>UI event bubbling in browsers — click event travels up from child to parent DOM nodes</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Decouples sender from receivers — sender knows nothing about handlers</li>
+          <li>Single Responsibility — each handler does one thing</li>
+          <li>Open/Closed — add new handlers without changing existing ones</li>
+          <li>Chain order is configurable at runtime</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>No guarantee a request gets handled — can fall off the end of the chain</li>
+          <li>Hard to debug — difficult to trace which handler processed a request</li>
+          <li>Long chains hurt performance and stack depth</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Chain of Responsibility Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Broken chain — request silently dropped:</strong> A handler neither processes the request nor calls <code>passToNext()</code> — the request disappears with no error</li>
+          <li><strong>Circular chain:</strong> Handler A sets next to B, B sets next to A — infinite loop, StackOverflowError</li>
+          <li><strong>Handler modifying shared request object:</strong> One handler mutates the request before passing it — downstream handlers see corrupted state</li>
+          <li><strong>Assembling chain in wrong order:</strong> Chain is wired lead → director → manager instead of lead → manager → director — director approves small amounts that should go to manager</li>
+          <li><strong>Stateful handlers shared across threads:</strong> Handler stores per-request state in instance fields — concurrent requests overwrite each other's state</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Default passToNext in base class:</strong> The abstract base handler always calls next if defined — ConcreteHandlers only need to call <code>super.handle()</code> or <code>passToNext()</code> to stay in chain</li>
+          <li><strong>Terminal handler:</strong> Always add a terminal catch-all handler at the end of the chain that logs or throws an exception if no handler could process the request</li>
+          <li><strong>Immutable request objects:</strong> Make the request a value object with no setters — handlers can read it but never mutate it</li>
+          <li><strong>Cycle detection:</strong> When building the chain with <code>setNext()</code>, check that the new next handler isn't already in the chain</li>
+          <li><strong>Stateless handlers:</strong> Keep all handler classes stateless — all per-request data lives in the request object itself, not in handler fields</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — handler swallows request silently</span>
+<span class="kw">public void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount) {
+    <span class="kw">if</span> (amount &lt; <span class="nm">500</span>) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Approved"</span>);
+    }
+    <span class="cm">// ❌ else: nothing happens — request silently dropped</span>
+}
+
+<span class="cm">// ✅ FIX — always call passToNext in else branch</span>
+<span class="kw">public void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount) {
+    <span class="kw">if</span> (amount &lt; <span class="nm">500</span>) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"TeamLead approved"</span>);
+    } <span class="kw">else</span> {
+        <span class="fn">passToNext</span>(amount); <span class="cm">// ✅ always pass if not handled</span>
+    }
+}
+
+<span class="cm">// ✅ Terminal handler — catches unhandled requests</span>
+<span class="kw">public class</span> <span class="cl">UnhandledApprover</span> <span class="kw">extends</span> <span class="cl">BaseApprover</span> {
+    <span class="kw">public void</span> <span class="fn">approve</span>(<span class="kw">double</span> amount) {
+        <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(
+            <span class="st">"No approver for amount: $"</span> + amount); <span class="cm">// fail loudly</span>
+    }
+}
+<span class="cm">// Wire it: lead.setNext(manager).setNext(director).setNext(new UnhandledApprover())</span>
+
+<span class="cm">// ❌ BREAKING — handler mutates shared request</span>
+<span class="kw">public void</span> <span class="fn">approve</span>(<span class="cl">Request</span> req) {
+    req.<span class="fn">setAmount</span>(req.<span class="fn">getAmount</span>() * <span class="nm">0.9</span>); <span class="cm">// ❌ mutates — next handler sees 10% less</span>
+    <span class="fn">passToNext</span>(req);
+}
+
+<span class="cm">// ✅ FIX — immutable request object</span>
+<span class="kw">public record</span> <span class="cl">Request</span>(<span class="kw">double</span> amount, <span class="cl">String</span> description) {}
+<span class="cm">// records are immutable by default — no setters possible</span></pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='command.html'">
+        <div><div class="related-name">Command</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Command encapsulates requests as objects. Chain of Responsibility passes those Command objects along a chain of handlers. Together they form powerful pipeline architectures.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/decorator.html'">
+        <div><div class="related-name">Decorator</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both chain objects together. Decorator always forwards to the next and adds behaviour. Chain of Responsibility may stop the chain at any point — only one handler typically processes a request.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/composite.html'">
+        <div><div class="related-name">Composite</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Chain of Responsibility is often used with Composite — a component's parent is its next handler. An event not handled by a leaf propagates up to its parent composite automatically.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> A linked list of handlers. Request enters the first handler — it either processes it and stops, or passes to the next. Sender never knows which handler actually handles it.</li>
+        <li><strong>How:</strong> Handler interface with <code>setNext()</code> and <code>handle()</code>. Abstract BaseHandler stores next reference and calls it. ConcreteHandlers check condition — handle or call <code>passToNext()</code>. Client wires chain and sends to first.</li>
+        <li><strong>Critical interview point:</strong> Always add a terminal handler — silent request drops are the most common production bug with this pattern. Request objects should be immutable to prevent handler corruption.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="../structural/proxy.html"><span class="nav-dir">← Previous</span><span class="nav-title">Proxy</span></a>
+    <a href="command.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Command</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

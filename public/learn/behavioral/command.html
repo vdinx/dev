@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Command Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Command</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Command</h1>
+    <p class="page-tagline">Encapsulate a request as an object — enabling undo/redo, queuing, logging, and parameterisation of operations.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #14 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Command Pattern?</h2>
+    <p>Command turns a request into a standalone object. This object contains the action and all information needed to execute it. You can store commands, pass them as arguments, queue them, log them, and reverse them — none of which is possible with a simple method call.</p>
+    <p>The Invoker triggers execution without knowing anything about the Receiver. The Client creates the Command object connecting Invoker and Receiver.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A restaurant order slip. The waiter (Invoker) writes down your order (Command) and passes it to the kitchen (Receiver). The waiter doesn't know how to cook — the slip contains all information. Orders can be queued, cancelled, or recalled.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You're building a text editor with Undo/Redo. When the user types, cuts, or pastes, you need to remember what happened and reverse it. Storing operations as method calls is impossible — you can't "unsee" a method call or put it in a queue.</p>
+    <p>Command wraps every operation in an object with <code>execute()</code> and <code>undo()</code>. You push executed commands onto a stack. Undo pops and calls <code>undo()</code>. Redo replays from another stack.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Command (interface)</div><div class="participant-desc">Declares <code>execute()</code>. Often also declares <code>undo()</code> for reversible commands.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteCommand</div><div class="participant-desc">Binds a Receiver with the action. Stores state needed to undo. Implements <code>execute()</code> by calling methods on the Receiver.</div></div>
+      <div class="participant"><div class="participant-name">Receiver</div><div class="participant-desc">The object that knows how to perform the actual work. ConcreteCommand calls its methods.</div></div>
+      <div class="participant"><div class="participant-name">Invoker</div><div class="participant-desc">Triggers commands. Holds a command reference. Never calls receiver directly. May maintain a command history for undo/redo.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Creates ConcreteCommand objects, sets their Receiver, and passes them to the Invoker.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="660" height="220" viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Client -->
+        <rect x="10" y="80" width="90" height="60" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="55" y="108" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#b46de8">Client</text>
+        <text x="55" y="126" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">creates cmd</text>
+        <!-- Invoker -->
+        <rect x="155" y="60" width="130" height="100" rx="6" fill="#1a1e2a" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="220" y="88" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e8b86d" font-weight="600">Invoker</text>
+        <text x="220" y="106" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">cmd: Command</text>
+        <text x="220" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">history: Stack</text>
+        <text x="220" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">executeCmd()</text>
+        <!-- Command interface -->
+        <rect x="340" y="30" width="150" height="60" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="415" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface»</text>
+        <text x="415" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#fff" font-weight="600">Command</text>
+        <text x="490" y="42" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">execute() / undo()</text>
+        <!-- ConcreteCommand -->
+        <rect x="340" y="140" width="150" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="415" y="165" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">ConcreteCommand</text>
+        <text x="415" y="182" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">receiver: Receiver</text>
+        <text x="415" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">execute() → receiver.do()</text>
+        <!-- Receiver -->
+        <rect x="555" y="100" width="90" height="60" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="600" y="128" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#6de8a8">Receiver</text>
+        <text x="600" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">action()</text>
+        <!-- arrows -->
+        <line x1="100" y1="110" x2="155" y2="110" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="285" y1="90"  x2="340" y2="60"  stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="415" y1="90"  x2="415" y2="140" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="490" y1="175" x2="555" y2="130" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="500" y="148" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">calls</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Text Editor with Undo/Redo</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Command interface with undo support</span>
+<span class="kw">public interface</span> <span class="cl">Command</span> {
+    <span class="kw">void</span> <span class="fn">execute</span>();
+    <span class="kw">void</span> <span class="fn">undo</span>();
+}
+
+<span class="cm">// Receiver — knows how to do the actual work</span>
+<span class="kw">public class</span> <span class="cl">TextEditor</span> {
+    <span class="kw">private</span> <span class="cl">StringBuilder</span> text = <span class="kw">new</span> <span class="cl">StringBuilder</span>();
+
+    <span class="kw">public void</span> <span class="fn">insertText</span>(<span class="cl">String</span> s, <span class="kw">int</span> pos) { text.<span class="fn">insert</span>(pos, s); }
+    <span class="kw">public void</span> <span class="fn">deleteText</span>(<span class="kw">int</span> start, <span class="kw">int</span> len)  { text.<span class="fn">delete</span>(start, start+len); }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getText</span>()                        { <span class="kw">return</span> text.<span class="fn">toString</span>(); }
+}
+
+<span class="cm">// ConcreteCommand — Insert operation with undo</span>
+<span class="kw">public class</span> <span class="cl">InsertCommand</span> <span class="kw">implements</span> <span class="cl">Command</span> {
+    <span class="kw">private final</span> <span class="cl">TextEditor</span> editor;
+    <span class="kw">private final</span> <span class="cl">String</span>     text;
+    <span class="kw">private final int</span>        position;
+
+    <span class="kw">public</span> <span class="fn">InsertCommand</span>(<span class="cl">TextEditor</span> e, <span class="cl">String</span> text, <span class="kw">int</span> pos) {
+        <span class="kw">this</span>.editor = e; <span class="kw">this</span>.text = text; <span class="kw">this</span>.position = pos;
+    }
+
+    <span class="kw">public void</span> <span class="fn">execute</span>() { editor.<span class="fn">insertText</span>(text, position); }
+    <span class="kw">public void</span> <span class="fn">undo</span>()    { editor.<span class="fn">deleteText</span>(position, text.<span class="fn">length</span>()); }
+}
+
+<span class="cm">// ConcreteCommand — Delete operation with undo</span>
+<span class="kw">public class</span> <span class="cl">DeleteCommand</span> <span class="kw">implements</span> <span class="cl">Command</span> {
+    <span class="kw">private final</span> <span class="cl">TextEditor</span> editor;
+    <span class="kw">private final int</span>         start, length;
+    <span class="kw">private</span> <span class="cl">String</span>            backup; <span class="cm">// saved for undo</span>
+
+    <span class="kw">public</span> <span class="fn">DeleteCommand</span>(<span class="cl">TextEditor</span> e, <span class="kw">int</span> start, <span class="kw">int</span> length) {
+        <span class="kw">this</span>.editor=e; <span class="kw">this</span>.start=start; <span class="kw">this</span>.length=length;
+    }
+
+    <span class="kw">public void</span> <span class="fn">execute</span>() {
+        backup = editor.<span class="fn">getText</span>().<span class="fn">substring</span>(start, start+length); <span class="cm">// save</span>
+        editor.<span class="fn">deleteText</span>(start, length);
+    }
+    <span class="kw">public void</span> <span class="fn">undo</span>() { editor.<span class="fn">insertText</span>(backup, start); } <span class="cm">// restore</span>
+}
+
+<span class="cm">// Invoker — maintains command history for undo/redo</span>
+<span class="kw">public class</span> <span class="cl">CommandHistory</span> {
+    <span class="kw">private final</span> <span class="cl">Deque</span>&lt;<span class="cl">Command</span>&gt; undoStack = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+    <span class="kw">private final</span> <span class="cl">Deque</span>&lt;<span class="cl">Command</span>&gt; redoStack = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">execute</span>(<span class="cl">Command</span> cmd) {
+        cmd.<span class="fn">execute</span>();
+        undoStack.<span class="fn">push</span>(cmd);
+        redoStack.<span class="fn">clear</span>(); <span class="cm">// new action clears redo history</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">undo</span>() {
+        <span class="kw">if</span> (!undoStack.<span class="fn">isEmpty</span>()) {
+            <span class="cl">Command</span> cmd = undoStack.<span class="fn">pop</span>();
+            cmd.<span class="fn">undo</span>();
+            redoStack.<span class="fn">push</span>(cmd);
+        }
+    }
+
+    <span class="kw">public void</span> <span class="fn">redo</span>() {
+        <span class="kw">if</span> (!redoStack.<span class="fn">isEmpty</span>()) {
+            <span class="cl">Command</span> cmd = redoStack.<span class="fn">pop</span>();
+            cmd.<span class="fn">execute</span>();
+            undoStack.<span class="fn">push</span>(cmd);
+        }
+    }
+}
+
+<span class="cm">// Client</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">TextEditor</span>     editor  = <span class="kw">new</span> <span class="cl">TextEditor</span>();
+        <span class="cl">CommandHistory</span> history = <span class="kw">new</span> <span class="cl">CommandHistory</span>();
+
+        history.<span class="fn">execute</span>(<span class="kw">new</span> <span class="cl">InsertCommand</span>(editor, <span class="st">"Hello"</span>, <span class="nm">0</span>));
+        history.<span class="fn">execute</span>(<span class="kw">new</span> <span class="cl">InsertCommand</span>(editor, <span class="st">" World"</span>, <span class="nm">5</span>));
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// Hello World</span>
+
+        history.<span class="fn">undo</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// Hello</span>
+
+        history.<span class="fn">redo</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// Hello World</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You need undo/redo functionality</li>
+          <li>Operations need to be queued, scheduled, or executed at a different time</li>
+          <li>You want to log operations for auditing or replay</li>
+          <li>You need to parameterise UI elements (buttons, menus) with operations</li>
+          <li>Transactional behaviour — rollback a series of commands on failure</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Operations are simple and undo/queuing/logging are not needed</li>
+          <li>The number of command classes becomes unmanageable — consider lambdas</li>
+          <li>Memory is constrained — storing command history for undo can be large</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.lang.Runnable</code> — the canonical Command interface in Java (no undo, but encapsulates work)</li>
+      <li><code>java.util.concurrent.Callable</code> — Command with a return value</li>
+      <li>Spring Batch — each step is a Command object that can be retried or skipped</li>
+      <li>Transaction management — a set of DB operations wrapped as commands, rolled back on failure</li>
+      <li>Macro recording in IDEs — records keystrokes as Command objects and replays them</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Single Responsibility — decouples operation triggering from execution</li>
+          <li>Open/Closed — add new commands without changing Invoker or Receiver</li>
+          <li>Undo/Redo, queuing, logging all become natural</li>
+          <li>Compose macro commands from simpler ones</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Class explosion — one class per operation can become unwieldy</li>
+          <li>Undo history consumes memory for complex object state snapshots</li>
+          <li>In modern Java, lambdas/method references often replace simple Commands</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Command Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Incomplete undo:</strong> <code>execute()</code> makes side effects that <code>undo()</code> doesn't reverse — partial state restoration causes corruption on undo</li>
+          <li><strong>Not saving state before execute:</strong> <code>DeleteCommand</code> deletes text but forgets to save it in <code>execute()</code> — <code>undo()</code> has nothing to restore from</li>
+          <li><strong>execute() called multiple times:</strong> The same command object is re-executed without resetting state — history stacks get misaligned</li>
+          <li><strong>Undo past origin:</strong> User undoes more times than commands in history — empty stack pop causes <code>NoSuchElementException</code></li>
+          <li><strong>Mutable receiver state captured at wrong time:</strong> Command captures a reference to a mutable object — by the time <code>execute()</code> runs, the object's state has changed</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Save all state in execute() before modifying:</strong> The first thing <code>execute()</code> does is snapshot every piece of state it will change — <code>undo()</code> restores from that snapshot</li>
+          <li><strong>One-shot commands:</strong> Mark a command as "used" after <code>execute()</code> — throw if re-executed to prevent double execution bugs</li>
+          <li><strong>Guard stack pops:</strong> Always check <code>!stack.isEmpty()</code> before popping in <code>undo()</code>/<code>redo()</code> — or use <code>peek()</code> first</li>
+          <li><strong>Capture value, not reference:</strong> Copy primitive values and immutable state into the command object at construction time — not a reference that can change later</li>
+          <li><strong>MacroCommand for transactions:</strong> Wrap multiple commands in a MacroCommand — if any sub-command fails, undo all previously executed ones in reverse order</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — state not saved before execute</span>
+<span class="kw">public class</span> <span class="cl">BrokenDeleteCommand</span> <span class="kw">implements</span> <span class="cl">Command</span> {
+    <span class="kw">private</span> <span class="cl">String</span> backup; <span class="cm">// never populated!</span>
+    <span class="kw">public void</span> <span class="fn">execute</span>() { editor.<span class="fn">deleteText</span>(start, len); } <span class="cm">// ❌ no save</span>
+    <span class="kw">public void</span> <span class="fn">undo</span>()    { editor.<span class="fn">insertText</span>(backup, start); } <span class="cm">// ❌ backup=null</span>
+}
+
+<span class="cm">// ✅ FIX — save state in execute() first</span>
+<span class="kw">public void</span> <span class="fn">execute</span>() {
+    backup = editor.<span class="fn">getText</span>().<span class="fn">substring</span>(start, start+len); <span class="cm">// ✅ save first</span>
+    editor.<span class="fn">deleteText</span>(start, len);
+}
+
+<span class="cm">// ❌ BREAKING — double execution corrupts history</span>
+<span class="cl">Command</span> cmd = <span class="kw">new</span> <span class="cl">InsertCommand</span>(editor, <span class="st">"Hi"</span>, <span class="nm">0</span>);
+history.<span class="fn">execute</span>(cmd);
+history.<span class="fn">execute</span>(cmd); <span class="cm">// ❌ same object — history has two refs, undo misaligns</span>
+
+<span class="cm">// ✅ FIX — one-shot guard</span>
+<span class="kw">private boolean</span> executed = <span class="kw">false</span>;
+<span class="kw">public void</span> <span class="fn">execute</span>() {
+    <span class="kw">if</span> (executed) <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"Command already executed"</span>);
+    executed = <span class="kw">true</span>;
+    editor.<span class="fn">insertText</span>(text, position);
+}
+
+<span class="cm">// ✅ MacroCommand — all-or-nothing transaction</span>
+<span class="kw">public class</span> <span class="cl">MacroCommand</span> <span class="kw">implements</span> <span class="cl">Command</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">Command</span>&gt; commands;
+    <span class="kw">private final</span> <span class="cl">Deque</span>&lt;<span class="cl">Command</span>&gt; executed = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">execute</span>() {
+        <span class="kw">for</span> (<span class="cl">Command</span> cmd : commands) {
+            <span class="kw">try</span> {
+                cmd.<span class="fn">execute</span>();
+                executed.<span class="fn">push</span>(cmd);
+            } <span class="kw">catch</span> (<span class="cl">Exception</span> e) {
+                <span class="fn">undo</span>(); <span class="cm">// rollback all executed so far</span>
+                <span class="kw">throw</span> e;
+            }
+        }
+    }
+
+    <span class="kw">public void</span> <span class="fn">undo</span>() {
+        <span class="kw">while</span> (!executed.<span class="fn">isEmpty</span>()) executed.<span class="fn">pop</span>().<span class="fn">undo</span>(); <span class="cm">// reverse order</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='chain-of-responsibility.html'">
+        <div><div class="related-name">Chain of Responsibility</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Command objects can be passed along a Chain of Responsibility. Each handler decides whether to execute the command or pass it along — powerful for middleware pipelines.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='memento.html'">
+        <div><div class="related-name">Memento</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Command uses Memento to store the state needed for undo. The Command's undo() method uses the Memento snapshot to restore the Receiver to its pre-execute state.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='strategy.html'">
+        <div><div class="related-name">Strategy</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both encapsulate behaviour in objects. Strategy encapsulates interchangeable algorithms — you pick one. Command encapsulates a specific request with its parameters and enables undo/queuing.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../creational/prototype.html'">
+        <div><div class="related-name">Prototype</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Commands that need to be saved in history can be cloned via Prototype, so the history stores independent snapshots rather than shared mutable references.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Wraps a request in an object with <code>execute()</code> and <code>undo()</code>. Decouples the Invoker (who triggers) from the Receiver (who does the work). Enables undo/redo, queuing, logging, and transactions.</li>
+        <li><strong>How:</strong> Command interface with <code>execute()</code>/<code>undo()</code>. ConcreteCommand holds Receiver reference + state snapshot. Invoker maintains undo/redo stacks. Client wires Command(Receiver) and passes to Invoker.</li>
+        <li><strong>Modern Java:</strong> Simple commands without undo can be replaced by lambdas (<code>Runnable</code>, <code>Callable</code>). Use full Command class only when undo, queuing, or serialisation are required.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="chain-of-responsibility.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chain of Responsibility</span></a>
+    <a href="interpreter.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Interpreter</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

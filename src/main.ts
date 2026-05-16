@@ -130,20 +130,20 @@ function render(): void {
             <div class="learn-read-time">23 patterns · Java</div>
           </div>
           <h3 class="learn-title">GoF Design Patterns<br/><span>Mastery Guide</span></h3>
-          <p class="learn-excerpt">All 23 Gang of Four patterns explained with intent, UML-style diagrams, Java code, real-world analogies, pros/cons, and interview cheat sheets. Creational &amp; Structural patterns available now.</p>
+          <p class="learn-excerpt">All 23 Gang of Four patterns explained with intent, UML-style diagrams, Java code, real-world analogies, pros/cons, and interview cheat sheets. All Creational, Structural &amp; Behavioral patterns available now.</p>
           <div class="learn-meta">
             <div class="learn-tags">
               <span class="learn-tag">Creational</span>
               <span class="learn-tag">Structural</span>
-              <span class="learn-tag learn-tag-soon">Behavioral</span>
+              <span class="learn-tag">Behavioral</span>
             </div>
           </div>
           <div class="learn-patterns-preview">
-            <a href="./learn/index.html" class="learn-pattern-chip">Singleton</a>
-            <a href="./learn/factory-method.html" class="learn-pattern-chip">Factory Method</a>
-            <a href="./learn/abstract-factory.html" class="learn-pattern-chip">Abstract Factory</a>
-            <a href="./learn/builder.html" class="learn-pattern-chip">Builder</a>
-            <a href="./learn/prototype.html" class="learn-pattern-chip">Prototype</a>
+            <a href="./learn/creational/singleton.html" class="learn-pattern-chip">Singleton</a>
+            <a href="./learn/creational/factory-method.html" class="learn-pattern-chip">Factory Method</a>
+            <a href="./learn/creational/abstract-factory.html" class="learn-pattern-chip">Abstract Factory</a>
+            <a href="./learn/creational/builder.html" class="learn-pattern-chip">Builder</a>
+            <a href="./learn/creational/prototype.html" class="learn-pattern-chip">Prototype</a>
             <a href="./learn/structural/adapter.html" class="learn-pattern-chip">Adapter</a>
             <a href="./learn/structural/bridge.html" class="learn-pattern-chip">Bridge</a>
             <a href="./learn/structural/composite.html" class="learn-pattern-chip">Composite</a>
@@ -151,6 +151,17 @@ function render(): void {
             <a href="./learn/structural/facade.html" class="learn-pattern-chip">Facade</a>
             <a href="./learn/structural/flyweight.html" class="learn-pattern-chip">Flyweight</a>
             <a href="./learn/structural/proxy.html" class="learn-pattern-chip">Proxy</a>
+            <a href="./learn/behavioral/chain-of-responsibility.html" class="learn-pattern-chip">Chain of Responsibility</a>
+            <a href="./learn/behavioral/command.html" class="learn-pattern-chip">Command</a>
+            <a href="./learn/behavioral/interpreter.html" class="learn-pattern-chip">Interpreter</a>
+            <a href="./learn/behavioral/iterator.html" class="learn-pattern-chip">Iterator</a>
+            <a href="./learn/behavioral/mediator.html" class="learn-pattern-chip">Mediator</a>
+            <a href="./learn/behavioral/memento.html" class="learn-pattern-chip">Memento</a>
+            <a href="./learn/behavioral/observer.html" class="learn-pattern-chip">Observer</a>
+            <a href="./learn/behavioral/state.html" class="learn-pattern-chip">State</a>
+            <a href="./learn/behavioral/strategy.html" class="learn-pattern-chip">Strategy</a>
+            <a href="./learn/behavioral/template-method.html" class="learn-pattern-chip">Template Method</a>
+            <a href="./learn/behavioral/visitor.html" class="learn-pattern-chip">Visitor</a>
           </div>
           <a href="./learn/index.html" class="learn-cta">
             <span>Read the Guide</span>

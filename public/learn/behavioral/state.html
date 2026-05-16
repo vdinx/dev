@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>State Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>State</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">State</h1>
+    <p class="page-tagline">Allow an object to alter its behaviour when its internal state changes — the object will appear to change its class.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #20 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the State Pattern?</h2>
+    <p>State allows an object (Context) to change its behaviour when its internal state changes. Instead of giant if-else or switch blocks checking state, each state is encapsulated in its own class. The Context delegates all state-dependent behaviour to the current State object.</p>
+    <p>From the client's perspective the Context behaves differently at different times — as if it changed its class — but the Context class itself never changes.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A vending machine. In "Idle" state: inserting money transitions to "Has Money". In "Has Money": pressing a button transitions to "Dispensing". In "Dispensing": completing dispense returns to "Idle". Same machine, different behaviours per state.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You're modelling a traffic light. It has states: Red, Yellow, Green. In each state, <code>next()</code> transitions to a different state and <code>getSignal()</code> returns a different string. With if-else: one massive method checking the current state for every operation. Add a new state and every method needs updating.</p>
+    <p>State pattern puts Red, Yellow, Green each in their own class. Adding a new state is adding one new class — zero changes to existing states or the Context.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Context</div><div class="participant-desc">Maintains a reference to the current State. Exposes the interface clients use. Delegates all state-dependent calls to the current State object. May allow states to change the context's current state.</div></div>
+      <div class="participant"><div class="participant-name">State (interface)</div><div class="participant-desc">Declares all state-dependent methods. Each ConcreteState implements these for its specific behaviour.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteState</div><div class="participant-desc">Implements behaviour for a specific state. Has a back-reference to Context to trigger state transitions. Each state knows which state to transition to.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="250" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e8b86d"/></marker></defs>
+        <!-- Context -->
+        <rect x="20" y="80" width="170" height="90" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="105" y="108" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e8b86d" font-weight="600">Context</text>
+        <text x="105" y="126" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">state: State</text>
+        <text x="105" y="142" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">setState(s)</text>
+        <text x="105" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">request() → state.handle()</text>
+        <!-- State interface -->
+        <rect x="270" y="20" width="160" height="55" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="350" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface» State</text>
+        <text x="350" y="63" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">handle(context)</text>
+        <!-- Concrete states -->
+        <rect x="170" y="150" width="120" height="65" rx="6" fill="#1a1e2a" stroke="#e86d6d" stroke-width="1.5"/>
+        <text x="230" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e86d6d">RedState</text>
+        <text x="230" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">handle() →</text>
+        <text x="230" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">→ GreenState</text>
+        <rect x="310" y="150" width="120" height="65" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="370" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">GreenState</text>
+        <text x="370" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">handle() →</text>
+        <text x="370" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">→ YellowState</text>
+        <rect x="450" y="150" width="120" height="65" rx="6" fill="#1a1e2a" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="510" y="174" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">YellowState</text>
+        <text x="510" y="192" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">handle() →</text>
+        <text x="510" y="207" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">→ RedState</text>
+        <!-- arrows -->
+        <line x1="190" y1="125" x2="270" y2="48" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="310" y1="75" x2="230" y2="150" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="350" y1="75" x2="370" y2="150" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="390" y1="75" x2="510" y2="150" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- transition labels -->
+        <text x="195" y="232" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">Each state knows next state → calls context.setState(next)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Vending Machine State Machine</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// State interface</span>
+<span class="kw">public interface</span> <span class="cl">VendingState</span> {
+    <span class="kw">void</span> <span class="fn">insertCoin</span>(<span class="cl">VendingMachine</span> ctx);
+    <span class="kw">void</span> <span class="fn">pressButton</span>(<span class="cl">VendingMachine</span> ctx);
+    <span class="kw">void</span> <span class="fn">dispense</span>(<span class="cl">VendingMachine</span> ctx);
+}
+
+<span class="cm">// Context</span>
+<span class="kw">public class</span> <span class="cl">VendingMachine</span> {
+    <span class="kw">private</span> <span class="cl">VendingState</span> state;
+    <span class="kw">private int</span>           stock;
+
+    <span class="kw">public</span> <span class="fn">VendingMachine</span>(<span class="kw">int</span> stock) {
+        <span class="kw">this</span>.stock = stock;
+        state = <span class="kw">new</span> <span class="cl">IdleState</span>(); <span class="cm">// initial state</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">setState</span>(<span class="cl">VendingState</span> s)  { state = s; }
+    <span class="kw">public int</span>  <span class="fn">getStock</span>()                 { <span class="kw">return</span> stock; }
+    <span class="kw">public void</span> <span class="fn">decrementStock</span>()          { stock--; }
+
+    <span class="cm">// Delegates all behaviour to current state</span>
+    <span class="kw">public void</span> <span class="fn">insertCoin</span>()  { state.<span class="fn">insertCoin</span>(<span class="kw">this</span>); }
+    <span class="kw">public void</span> <span class="fn">pressButton</span>() { state.<span class="fn">pressButton</span>(<span class="kw">this</span>); }
+    <span class="kw">public void</span> <span class="fn">dispense</span>()    { state.<span class="fn">dispense</span>(<span class="kw">this</span>); }
+}
+
+<span class="cm">// Concrete States</span>
+<span class="kw">public class</span> <span class="cl">IdleState</span> <span class="kw">implements</span> <span class="cl">VendingState</span> {
+    <span class="kw">public void</span> <span class="fn">insertCoin</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Coin inserted"</span>);
+        ctx.<span class="fn">setState</span>(<span class="kw">new</span> <span class="cl">HasMoneyState</span>()); <span class="cm">// transition</span>
+    }
+    <span class="kw">public void</span> <span class="fn">pressButton</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Insert coin first"</span>);
+    }
+    <span class="kw">public void</span> <span class="fn">dispense</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"No coin inserted"</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">HasMoneyState</span> <span class="kw">implements</span> <span class="cl">VendingState</span> {
+    <span class="kw">public void</span> <span class="fn">insertCoin</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Already has coin"</span>);
+    }
+    <span class="kw">public void</span> <span class="fn">pressButton</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="kw">if</span> (ctx.<span class="fn">getStock</span>() > <span class="nm">0</span>) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Dispensing..."</span>);
+            ctx.<span class="fn">setState</span>(<span class="kw">new</span> <span class="cl">DispensingState</span>());
+        } <span class="kw">else</span> {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Out of stock — returning coin"</span>);
+            ctx.<span class="fn">setState</span>(<span class="kw">new</span> <span class="cl">IdleState</span>());
+        }
+    }
+    <span class="kw">public void</span> <span class="fn">dispense</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Press button first"</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">DispensingState</span> <span class="kw">implements</span> <span class="cl">VendingState</span> {
+    <span class="kw">public void</span> <span class="fn">insertCoin</span>(<span class="cl">VendingMachine</span> ctx)  { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Please wait"</span>); }
+    <span class="kw">public void</span> <span class="fn">pressButton</span>(<span class="cl">VendingMachine</span> ctx) { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Already dispensing"</span>); }
+    <span class="kw">public void</span> <span class="fn">dispense</span>(<span class="cl">VendingMachine</span> ctx) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Item dispensed!"</span>);
+        ctx.<span class="fn">decrementStock</span>();
+        ctx.<span class="fn">setState</span>(ctx.<span class="fn">getStock</span>() > <span class="nm">0</span>
+            ? <span class="kw">new</span> <span class="cl">IdleState</span>()
+            : <span class="kw">new</span> <span class="cl">OutOfStockState</span>());
+    }
+}
+
+<span class="cm">// Client</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">VendingMachine</span> vm = <span class="kw">new</span> <span class="cl">VendingMachine</span>(<span class="nm">2</span>);
+        vm.<span class="fn">pressButton</span>(); <span class="cm">// Insert coin first</span>
+        vm.<span class="fn">insertCoin</span>();  <span class="cm">// Coin inserted</span>
+        vm.<span class="fn">pressButton</span>(); <span class="cm">// Dispensing...</span>
+        vm.<span class="fn">dispense</span>();    <span class="cm">// Item dispensed!</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>An object's behaviour depends on its state and must change at runtime</li>
+          <li>Operations have large multi-part conditionals that depend on state</li>
+          <li>States and transitions are explicit and need to be documented/tested independently</li>
+          <li>Finite state machines: order processing, workflow, UI components, protocol parsers</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Only a few states with simple transitions — a simple enum + switch is cleaner</li>
+          <li>States change rarely — the abstraction cost isn't worth it</li>
+          <li>You need formal FSM verification — use a proper state machine library</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Spring Statemachine — full State pattern framework for workflow/order management</li>
+      <li>TCP Connection states — <code>LISTEN</code>, <code>SYN_SENT</code>, <code>ESTABLISHED</code>, <code>CLOSE_WAIT</code> etc.</li>
+      <li>Java Thread lifecycle — <code>NEW</code>, <code>RUNNABLE</code>, <code>BLOCKED</code>, <code>WAITING</code>, <code>TERMINATED</code></li>
+      <li>Order management — <code>PENDING</code> → <code>CONFIRMED</code> → <code>SHIPPED</code> → <code>DELIVERED</code> → <code>CANCELLED</code></li>
+      <li>Media player — <code>Playing</code>, <code>Paused</code>, <code>Stopped</code> states with different button behaviour</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Eliminates complex conditionals — each state is self-contained</li>
+          <li>Open/Closed — add new states without changing Context or other states</li>
+          <li>Single Responsibility — each state class handles only its behaviour</li>
+          <li>State transitions are explicit and easy to test in isolation</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Class proliferation — many states = many classes</li>
+          <li>States can be tightly coupled if they directly reference each other for transitions</li>
+          <li>Overkill for objects with only 2-3 trivially simple states</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How State Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Context directly checks state type:</strong> <code>if (state instanceof RedState)</code> in Context methods — reintroduces the type-checking if-else that State was designed to eliminate</li>
+          <li><strong>States referencing each other directly:</strong> <code>RedState</code> imports and instantiates <code>GreenState</code> — states are tightly coupled, making it impossible to add/change states without cascade edits</li>
+          <li><strong>Missing state transition:</strong> A ConcreteState doesn't implement all State methods and leaves some as empty no-ops — invalid actions in a state are silently ignored rather than rejected</li>
+          <li><strong>Shared mutable state objects:</strong> The same ConcreteState instance is shared across multiple Context objects — one context's action changes the shared state's fields, corrupting the other context</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Never instanceof in Context:</strong> Context only calls <code>state.handle(ctx)</code> — it has zero knowledge of which specific state it holds</li>
+          <li><strong>Use state IDs or factory for transitions:</strong> Instead of states instantiating each other directly, transitions go through a factory or pass a string/enum to Context, which resolves the next state — keeps states decoupled</li>
+          <li><strong>Throw on invalid operations:</strong> In State methods that aren't valid for a given state, throw <code>IllegalStateException</code> — fail fast and loudly rather than silent no-op</li>
+          <li><strong>One instance per context:</strong> Create a fresh ConcreteState per Context (or use stateless Singletons only if states have no instance fields) — never share mutable state objects</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — instanceof in Context defeats the pattern</span>
+<span class="kw">public void</span> <span class="fn">pressButton</span>() {
+    <span class="kw">if</span> (state <span class="kw">instanceof</span> <span class="cl">IdleState</span>) {       <span class="cm">// ❌ back to if-else hell</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Insert coin first"</span>);
+    } <span class="kw">else if</span> (state <span class="kw">instanceof</span> <span class="cl">HasMoneyState</span>) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Dispensing"</span>);
+    }
+}
+
+<span class="cm">// ✅ FIX — delegate to state, no instanceof</span>
+<span class="kw">public void</span> <span class="fn">pressButton</span>() {
+    state.<span class="fn">pressButton</span>(<span class="kw">this</span>); <span class="cm">// ✅ polymorphic dispatch — Context knows nothing</span>
+}
+
+<span class="cm">// ❌ BREAKING — state creates next state directly (tight coupling)</span>
+<span class="kw">public class</span> <span class="cl">IdleState</span> <span class="kw">implements</span> <span class="cl">VendingState</span> {
+    <span class="kw">public void</span> <span class="fn">insertCoin</span>(<span class="cl">VendingMachine</span> ctx) {
+        ctx.<span class="fn">setState</span>(<span class="kw">new</span> <span class="cl">HasMoneyState</span>()); <span class="cm">// ❌ IdleState imports HasMoneyState</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — use state enum + factory, states reference only enums</span>
+<span class="kw">public enum</span> <span class="cl">StateType</span> { IDLE, HAS_MONEY, DISPENSING, OUT_OF_STOCK }
+
+<span class="kw">public void</span> <span class="fn">insertCoin</span>(<span class="cl">VendingMachine</span> ctx) {
+    ctx.<span class="fn">transitionTo</span>(<span class="cl">StateType</span>.HAS_MONEY); <span class="cm">// ✅ context resolves the class</span>
+}
+
+<span class="cm">// ❌ BREAKING — invalid state action silently ignored</span>
+<span class="kw">public class</span> <span class="cl">IdleState</span> <span class="kw">implements</span> <span class="cl">VendingState</span> {
+    <span class="kw">public void</span> <span class="fn">dispense</span>(<span class="cl">VendingMachine</span> ctx) { } <span class="cm">// ❌ silent no-op</span>
+}
+
+<span class="cm">// ✅ FIX — fail loudly with meaningful message</span>
+<span class="kw">public void</span> <span class="fn">dispense</span>(<span class="cl">VendingMachine</span> ctx) {
+    <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(
+        <span class="st">"Cannot dispense in IDLE state — insert coin first"</span>);
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='strategy.html'">
+        <div><div class="related-name">Strategy</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both use composition to delegate behaviour. Strategy lets the client choose and swap an algorithm. State transitions automatically based on internal logic — the client doesn't choose which state to be in.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../creational/singleton.html'">
+        <div><div class="related-name">Singleton</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Concrete State objects with no instance fields can be implemented as Singletons — one shared instance per state type, referenced by all Contexts.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/flyweight.html'">
+        <div><div class="related-name">Flyweight</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Stateless ConcreteState objects (no instance fields) are ideal Flyweight candidates — one shared instance per state type reused across all Context objects.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Context delegates all behaviour to the current State object. Each state encapsulates its own behaviour and triggers transitions. Client always calls the same Context method — different state means different result.</li>
+        <li><strong>How:</strong> State interface with one method per behaviour. ConcreteState implements all methods for its state. Context holds <code>state: State</code> field and delegates. States call <code>context.setState(next)</code> to transition.</li>
+        <li><strong>Key distinction from Strategy:</strong> Strategy = client picks the algorithm. State = object transitions automatically based on internal events. Strategy is chosen externally; State changes internally.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="observer.html"><span class="nav-dir">← Previous</span><span class="nav-title">Observer</span></a>
+    <a href="strategy.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Strategy</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

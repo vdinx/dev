@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Observer Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Observer</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Observer</h1>
+    <p class="page-tagline">Define a one-to-many dependency so when one object changes state, all its dependents are notified and updated automatically.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #19 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Observer Pattern?</h2>
+    <p>Observer establishes a subscription mechanism. A Subject (also called Publisher/Observable) maintains a list of Observer objects and notifies them automatically whenever its state changes. Observers subscribe and unsubscribe at runtime — completely decoupled from the Subject.</p>
+    <p>This is the foundation of event-driven programming, reactive systems, and the publish-subscribe model.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A newspaper subscription. The newspaper (Subject) doesn't know who its readers are specifically — it just publishes. Subscribers (Observers) receive every new edition. Anyone can subscribe or unsubscribe without the newspaper changing how it operates.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a <code>StockMarket</code> object. Multiple UI panels, alert systems, and logging services need to update whenever stock prices change. Hardcoding all these dependencies in <code>StockMarket</code> tightly couples it to every consumer — adding a new consumer requires modifying the source.</p>
+    <p>Observer lets all consumers subscribe to the <code>StockMarket</code>. It just calls <code>notifyObservers()</code> on change — no knowledge of who is listening or how many.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Subject (Publisher)</div><div class="participant-desc">Maintains a list of observers. Provides <code>subscribe()</code>, <code>unsubscribe()</code>, and <code>notifyObservers()</code>. Calls <code>notify</code> whenever state changes.</div></div>
+      <div class="participant"><div class="participant-name">Observer (interface)</div><div class="participant-desc">Declares the <code>update()</code> method that the Subject calls. All concrete observers implement this.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteSubject</div><div class="participant-desc">Stores the actual state. Calls <code>notifyObservers()</code> whenever state changes. May pass state as a parameter or observers pull it via a getter.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteObserver</div><div class="participant-desc">Implements <code>update()</code> to react to Subject changes. May hold a reference to the Subject to pull additional state.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="240" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e8b86d"/></marker></defs>
+        <!-- Subject -->
+        <rect x="200" y="20" width="220" height="100" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="2"/>
+        <text x="310" y="48" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e8b86d" font-weight="600">Subject</text>
+        <text x="310" y="66" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">observers: List</text>
+        <text x="310" y="82" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">subscribe(obs)</text>
+        <text x="310" y="98" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">unsubscribe(obs)</text>
+        <text x="310" y="114" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">notifyObservers()</text>
+        <!-- Observer interface -->
+        <rect x="430" y="20" width="190" height="55" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="525" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface» Observer</text>
+        <text x="525" y="64" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">update(event)</text>
+        <!-- Concrete observers -->
+        <rect x="390" y="145" width="120" height="60" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="450" y="170" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">UIPanel</text>
+        <text x="450" y="188" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">update() → repaint</text>
+        <rect x="530" y="145" width="100" height="60" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="580" y="170" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">AlertSvc</text>
+        <text x="580" y="188" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">update() → alert</text>
+        <rect x="280" y="175" width="100" height="45" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="330" y="202" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">Logger</text>
+        <!-- notify arrows -->
+        <line x1="420" y1="70" x2="430" y2="48" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="310" y1="120" x2="330" y2="175" stroke="#e8b86d" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr2)"/>
+        <line x1="360" y1="80" x2="450" y2="145" stroke="#e8b86d" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr2)"/>
+        <line x1="400" y1="80" x2="565" y2="145" stroke="#e8b86d" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr2)"/>
+        <text x="165" y="86" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">notifies</text>
+        <text x="165" y="98" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">all observers</text>
+        <!-- implements arrows -->
+        <line x1="450" y1="145" x2="480" y2="75" stroke="#6d9ee8" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="565" y1="145" x2="545" y2="75" stroke="#6d9ee8" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Stock Market with Push &amp; Pull Models</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Observer interface</span>
+<span class="kw">public interface</span> <span class="cl">Observer</span> {
+    <span class="kw">void</span> <span class="fn">update</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> price); <span class="cm">// PUSH model — data sent with notification</span>
+}
+
+<span class="cm">// Subject interface</span>
+<span class="kw">public interface</span> <span class="cl">Subject</span> {
+    <span class="kw">void</span> <span class="fn">subscribe</span>(<span class="cl">Observer</span> o);
+    <span class="kw">void</span> <span class="fn">unsubscribe</span>(<span class="cl">Observer</span> o);
+    <span class="kw">void</span> <span class="fn">notifyObservers</span>();
+}
+
+<span class="cm">// ConcreteSubject — Stock Market</span>
+<span class="kw">public class</span> <span class="cl">StockMarket</span> <span class="kw">implements</span> <span class="cl">Subject</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">Observer</span>&gt; observers = <span class="kw">new</span> <span class="cl">CopyOnWriteArrayList</span>&lt;&gt;(); <span class="cm">// thread-safe</span>
+    <span class="kw">private</span> <span class="cl">String</span> symbol;
+    <span class="kw">private double</span> price;
+
+    <span class="kw">public void</span> <span class="fn">subscribe</span>(<span class="cl">Observer</span> o)   { observers.<span class="fn">add</span>(o); }
+    <span class="kw">public void</span> <span class="fn">unsubscribe</span>(<span class="cl">Observer</span> o) { observers.<span class="fn">remove</span>(o); }
+
+    <span class="kw">public void</span> <span class="fn">notifyObservers</span>() {
+        observers.<span class="fn">forEach</span>(o -> o.<span class="fn">update</span>(symbol, price)); <span class="cm">// push data to all</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">setPrice</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> price) {
+        <span class="kw">this</span>.symbol = symbol;
+        <span class="kw">this</span>.price  = price;
+        <span class="fn">notifyObservers</span>(); <span class="cm">// auto-notify on state change</span>
+    }
+
+    <span class="cm">// PULL model support — observers can also query state</span>
+    <span class="kw">public double</span> <span class="fn">getPrice</span>()  { <span class="kw">return</span> price; }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getSymbol</span>() { <span class="kw">return</span> symbol; }
+}
+
+<span class="cm">// Concrete Observers</span>
+<span class="kw">public class</span> <span class="cl">StockDisplay</span> <span class="kw">implements</span> <span class="cl">Observer</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> name;
+    <span class="kw">public</span> <span class="fn">StockDisplay</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
+
+    <span class="kw">public void</span> <span class="fn">update</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> price) {
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"[%s] %s = $%.2f%n"</span>, name, symbol, price);
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">PriceAlert</span> <span class="kw">implements</span> <span class="cl">Observer</span> {
+    <span class="kw">private final double</span> threshold;
+    <span class="kw">public</span> <span class="fn">PriceAlert</span>(<span class="kw">double</span> threshold) { <span class="kw">this</span>.threshold = threshold; }
+
+    <span class="kw">public void</span> <span class="fn">update</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> price) {
+        <span class="kw">if</span> (price > threshold)
+            <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"🔔 ALERT: %s hit $%.2f (threshold $%.2f)%n"</span>,
+                symbol, price, threshold);
+    }
+}
+
+<span class="cm">// Client</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">StockMarket</span> market = <span class="kw">new</span> <span class="cl">StockMarket</span>();
+
+        <span class="cl">Observer</span> panel1 = <span class="kw">new</span> <span class="cl">StockDisplay</span>(<span class="st">"TraderPanel"</span>);
+        <span class="cl">Observer</span> panel2 = <span class="kw">new</span> <span class="cl">StockDisplay</span>(<span class="st">"MobileApp"</span>);
+        <span class="cl">Observer</span> alert  = <span class="kw">new</span> <span class="cl">PriceAlert</span>(<span class="nm">150.0</span>);
+
+        market.<span class="fn">subscribe</span>(panel1);
+        market.<span class="fn">subscribe</span>(panel2);
+        market.<span class="fn">subscribe</span>(alert);
+
+        market.<span class="fn">setPrice</span>(<span class="st">"AAPL"</span>, <span class="nm">145.50</span>); <span class="cm">// all 3 notified</span>
+        market.<span class="fn">setPrice</span>(<span class="st">"AAPL"</span>, <span class="nm">152.00</span>); <span class="cm">// panel1, panel2, and alert fire</span>
+
+        market.<span class="fn">unsubscribe</span>(panel2);
+        market.<span class="fn">setPrice</span>(<span class="st">"AAPL"</span>, <span class="nm">148.00</span>); <span class="cm">// only panel1 and alert</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>A change in one object requires changing others, and you don't know how many</li>
+          <li>Objects should be able to notify other objects without assumptions about who those objects are</li>
+          <li>Event-driven UI updates, reactive data pipelines, real-time dashboards</li>
+          <li>Model-View separation — model notifies views on data change</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Notification order matters and must be guaranteed — Observer order is not defined</li>
+          <li>Observers are expensive and updates are very frequent — notification overhead accumulates</li>
+          <li>Cascading updates create complex chains that are hard to trace</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.Observer</code> / <code>Observable</code> (deprecated in Java 9 — use newer alternatives)</li>
+      <li>Java Swing event listeners — <code>ActionListener</code>, <code>MouseListener</code> are all Observers</li>
+      <li>Spring's <code>ApplicationEvent</code> / <code>@EventListener</code> — full Observer infrastructure</li>
+      <li>RxJava / Project Reactor — reactive streams are Observer pattern at scale</li>
+      <li>JavaFX <code>ObservableList</code>, <code>ChangeListener</code> — property change notifications</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Open/Closed — add new observers without changing subject</li>
+          <li>Loose coupling — subject and observers know only the Observer interface</li>
+          <li>Supports broadcast communication — one notification to many</li>
+          <li>Dynamic subscription — observers can join/leave at runtime</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Memory leaks — forgotten subscriptions keep observers alive (lapsed listener problem)</li>
+          <li>Unexpected updates — cascading notifications can cause hard-to-trace bugs</li>
+          <li>No guaranteed notification order</li>
+          <li>Exception in one observer can break notification of subsequent observers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Observer Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Lapsed listener / memory leak:</strong> Observer subscribes but never unsubscribes — subject holds a strong reference forever, preventing garbage collection even after the observer is logically dead</li>
+          <li><strong>Exception in one observer breaks chain:</strong> Observer A throws an exception in <code>update()</code> — the remaining observers B, C, D never receive the notification</li>
+          <li><strong>ConcurrentModificationException:</strong> An observer subscribes or unsubscribes itself during the <code>notifyObservers()</code> loop — modifying the list while iterating it</li>
+          <li><strong>Infinite cascade:</strong> Observer A's <code>update()</code> modifies the Subject's state → Subject fires another notification → triggers A again → infinite loop</li>
+          <li><strong>Notification with stale data:</strong> Subject batches changes but notifies only once — observer reads old data from a getter rather than using the pushed event data</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Always unsubscribe:</strong> Pair every <code>subscribe()</code> with an <code>unsubscribe()</code> in a teardown/destroy lifecycle method. Consider weak references for auto-cleanup</li>
+          <li><strong>Wrap each observer notification in try-catch:</strong> Iterate observers in a try-catch per observer — one failing observer should not prevent others from receiving the notification</li>
+          <li><strong>Use CopyOnWriteArrayList:</strong> Thread-safe and safe for modification during iteration — any subscribe/unsubscribe during notification operates on a new copy, not the active iteration</li>
+          <li><strong>Re-entrancy guard:</strong> Use a flag to prevent the Subject from notifying while already in the middle of a notification cycle</li>
+          <li><strong>Push model over pull model:</strong> Pass all required data in <code>update(event)</code> directly — avoids observers reading stale state via getters after notification</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — exception in one observer breaks chain</span>
+<span class="kw">public void</span> <span class="fn">notifyObservers</span>() {
+    <span class="kw">for</span> (<span class="cl">Observer</span> o : observers) {
+        o.<span class="fn">update</span>(symbol, price); <span class="cm">// ❌ if observer[0] throws, observer[1..n] never notified</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — isolated try-catch per observer</span>
+<span class="kw">public void</span> <span class="fn">notifyObservers</span>() {
+    <span class="kw">for</span> (<span class="cl">Observer</span> o : observers) {
+        <span class="kw">try</span> {
+            o.<span class="fn">update</span>(symbol, price); <span class="cm">// ✅ one failure doesn't break others</span>
+        } <span class="kw">catch</span> (<span class="cl">Exception</span> e) {
+            <span class="cl">System</span>.err.<span class="fn">println</span>(<span class="st">"Observer failed: "</span> + e.<span class="fn">getMessage</span>());
+        }
+    }
+}
+
+<span class="cm">// ❌ BREAKING — ConcurrentModificationException</span>
+<span class="kw">private</span> <span class="cl">List</span>&lt;<span class="cl">Observer</span>&gt; observers = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+<span class="kw">public void</span> <span class="fn">update</span>(<span class="cl">String</span> s, <span class="kw">double</span> p) {
+    subject.<span class="fn">unsubscribe</span>(<span class="kw">this</span>); <span class="cm">// ❌ modifies ArrayList during forEach iteration</span>
+}
+
+<span class="cm">// ✅ FIX — CopyOnWriteArrayList is safe to modify during iteration</span>
+<span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">Observer</span>&gt; observers = <span class="kw">new</span> <span class="cl">CopyOnWriteArrayList</span>&lt;&gt;();
+
+<span class="cm">// ❌ BREAKING — memory leak (lapsed listener)</span>
+<span class="kw">public class</span> <span class="cl">MyPanel</span> <span class="kw">implements</span> <span class="cl">Observer</span> {
+    <span class="kw">public</span> <span class="fn">MyPanel</span>() {
+        market.<span class="fn">subscribe</span>(<span class="kw">this</span>); <span class="cm">// subscribes...</span>
+        <span class="cm">// ...but never unsubscribes on close → market holds reference → GC can't collect</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — deregister in lifecycle cleanup</span>
+<span class="kw">public void</span> <span class="fn">onClose</span>() {
+    market.<span class="fn">unsubscribe</span>(<span class="kw">this</span>); <span class="cm">// ✅ always clean up</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='mediator.html'">
+        <div><div class="related-name">Mediator</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Observer = decentralised one-to-many broadcast. Mediator = centralised many-to-many coordination. In Observer, subject broadcasts to all. In Mediator, any colleague routes through the central mediator to specific targets.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../creational/singleton.html'">
+        <div><div class="related-name">Singleton</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">The Subject (event bus/publisher) is often a Singleton — one shared event channel that all observers subscribe to throughout the application.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='strategy.html'">
+        <div><div class="related-name">Strategy</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both use interfaces and delegation. Strategy encapsulates a swappable algorithm chosen by the client. Observer establishes a dynamic subscription — the subject has no choice of which observers react.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> One-to-many dependency. Subject maintains a subscriber list. On state change, it calls <code>update()</code> on all subscribers. Observers subscribe/unsubscribe at runtime — completely decoupled from Subject.</li>
+        <li><strong>Push vs Pull:</strong> Push = Subject sends data in <code>update(data)</code> — preferred. Pull = Subject sends only notification, observer calls <code>subject.getData()</code> — risks reading stale state.</li>
+        <li><strong>Critical pitfalls:</strong> Always unsubscribe to prevent memory leaks (lapsed listener). Use <code>CopyOnWriteArrayList</code> for thread safety. Wrap each <code>update()</code> in try-catch so one bad observer doesn't break others.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="memento.html"><span class="nav-dir">← Previous</span><span class="nav-title">Memento</span></a>
+    <a href="state.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">State</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

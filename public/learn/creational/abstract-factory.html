@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Abstract Factory Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational" class="active">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#creational">Creational</a><span class="sep">/</span>
+  <span>Abstract Factory</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-creational">Creational</div>
+    <h1 class="page-title">Abstract Factory</h1>
+    <p class="page-tagline">Provide an interface for creating families of related or dependent objects without specifying concrete classes.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #03 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Abstract Factory Pattern?</h2>
+    <p>Abstract Factory provides an interface for creating families of related objects. Where Factory Method creates one product, Abstract Factory creates an entire suite — a "kit" of related products that are designed to work together.</p>
+    <p>The key constraint is that all products created by one factory are compatible with each other, but incompatible with products from a different factory.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> IKEA furniture collections — if you buy from the "MALM" collection, every piece (bed, dresser, nightstand) matches. Mixing with "HEMNES" breaks the aesthetic. The collection is your Abstract Factory; each piece is a product family.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>Consider a cross-platform UI toolkit. You need Buttons, Checkboxes, and TextFields — but each must be platform-specific (Windows or Mac). If you create them independently, you risk mixing Windows buttons with Mac checkboxes, which breaks visual consistency.</p>
+    <p>You need to guarantee that all UI components created for Windows come from one family, and all Mac components from another — with no cross-contamination.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">AbstractFactory</div><div class="participant-desc">Interface declaring creation methods for each distinct product in the family (e.g., createButton(), createCheckbox()).</div></div>
+      <div class="participant"><div class="participant-name">ConcreteFactory</div><div class="participant-desc">Implements all creation methods to produce a specific family of products (e.g., WindowsFactory, MacFactory).</div></div>
+      <div class="participant"><div class="participant-name">AbstractProduct</div><div class="participant-desc">Interface for each type of product (Button, Checkbox). All concrete products of that type implement this.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteProduct</div><div class="participant-desc">Specific implementation of a product (WindowsButton, MacButton). Products within a family are designed to work together.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Uses only AbstractFactory and AbstractProduct interfaces — never knows about concrete classes.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="680" height="340" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- AbstractFactory -->
+        <rect x="240" y="10" width="200" height="75" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="340" y="35" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface»</text>
+        <text x="340" y="52" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">GUIFactory</text>
+        <text x="340" y="68" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createButton() / createCheckbox()</text>
+        <!-- WindowsFactory -->
+        <rect x="80" y="140" width="170" height="65" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="165" y="165" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">WindowsFactory</text>
+        <text x="165" y="183" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createButton()</text>
+        <text x="165" y="197" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createCheckbox()</text>
+        <!-- MacFactory -->
+        <rect x="430" y="140" width="160" height="65" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="510" y="165" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">MacFactory</text>
+        <text x="510" y="183" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createButton()</text>
+        <text x="510" y="197" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createCheckbox()</text>
+        <!-- arrows factory → concrete factories -->
+        <line x1="280" y1="85" x2="210" y2="140" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="400" y1="85" x2="470" y2="140" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- Products -->
+        <rect x="20" y="265" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1"/>
+        <text x="85" y="290" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">WindowsButton</text>
+        <rect x="170" y="265" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1"/>
+        <text x="235" y="290" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">WinCheckbox</text>
+        <rect x="350" y="265" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1"/>
+        <text x="415" y="290" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">MacButton</text>
+        <rect x="500" y="265" width="130" height="50" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1"/>
+        <text x="565" y="290" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">MacCheckbox</text>
+        <!-- factory → products -->
+        <line x1="130" y1="205" x2="85" y2="265" stroke="#e8b86d" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="165" y1="205" x2="235" y2="265" stroke="#e8b86d" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="470" y1="205" x2="415" y2="265" stroke="#e8b86d" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="530" y1="205" x2="565" y2="265" stroke="#e8b86d" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <!-- Client -->
+        <rect x="290" y="140" width="100" height="50" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="340" y="160" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#b46de8">Client</text>
+        <text x="340" y="178" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">uses factory</text>
+        <line x1="340" y1="85" x2="340" y2="140" stroke="#b46de8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Abstract Product interfaces</span>
+<span class="kw">public interface</span> <span class="cl">Button</span> { <span class="kw">void</span> <span class="fn">paint</span>(); }
+<span class="kw">public interface</span> <span class="cl">Checkbox</span> { <span class="kw">void</span> <span class="fn">paint</span>(); }
+
+<span class="cm">// Windows family</span>
+<span class="kw">public class</span> <span class="cl">WindowsButton</span> <span class="kw">implements</span> <span class="cl">Button</span> {
+    <span class="kw">public void</span> <span class="fn">paint</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Windows Button"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">WindowsCheckbox</span> <span class="kw">implements</span> <span class="cl">Checkbox</span> {
+    <span class="kw">public void</span> <span class="fn">paint</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Windows Checkbox"</span>); }
+}
+
+<span class="cm">// Mac family</span>
+<span class="kw">public class</span> <span class="cl">MacButton</span> <span class="kw">implements</span> <span class="cl">Button</span> {
+    <span class="kw">public void</span> <span class="fn">paint</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Mac Button"</span>); }
+}
+<span class="kw">public class</span> <span class="cl">MacCheckbox</span> <span class="kw">implements</span> <span class="cl">Checkbox</span> {
+    <span class="kw">public void</span> <span class="fn">paint</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Mac Checkbox"</span>); }
+}
+
+<span class="cm">// Abstract Factory interface</span>
+<span class="kw">public interface</span> <span class="cl">GUIFactory</span> {
+    <span class="cl">Button</span> <span class="fn">createButton</span>();
+    <span class="cl">Checkbox</span> <span class="fn">createCheckbox</span>();
+}
+
+<span class="cm">// Concrete Factories</span>
+<span class="kw">public class</span> <span class="cl">WindowsFactory</span> <span class="kw">implements</span> <span class="cl">GUIFactory</span> {
+    <span class="kw">public</span> <span class="cl">Button</span>   <span class="fn">createButton</span>()   { <span class="kw">return new</span> <span class="cl">WindowsButton</span>(); }
+    <span class="kw">public</span> <span class="cl">Checkbox</span> <span class="fn">createCheckbox</span>() { <span class="kw">return new</span> <span class="cl">WindowsCheckbox</span>(); }
+}
+<span class="kw">public class</span> <span class="cl">MacFactory</span> <span class="kw">implements</span> <span class="cl">GUIFactory</span> {
+    <span class="kw">public</span> <span class="cl">Button</span>   <span class="fn">createButton</span>()   { <span class="kw">return new</span> <span class="cl">MacButton</span>(); }
+    <span class="kw">public</span> <span class="cl">Checkbox</span> <span class="fn">createCheckbox</span>() { <span class="kw">return new</span> <span class="cl">MacCheckbox</span>(); }
+}
+
+<span class="cm">// Client — depends only on interfaces</span>
+<span class="kw">public class</span> <span class="cl">Application</span> {
+    <span class="kw">private</span> <span class="cl">Button</span> button;
+    <span class="kw">private</span> <span class="cl">Checkbox</span> checkbox;
+
+    <span class="kw">public</span> <span class="fn">Application</span>(<span class="cl">GUIFactory</span> factory) {
+        button   = factory.<span class="fn">createButton</span>();
+        checkbox = factory.<span class="fn">createCheckbox</span>();
+    }
+    <span class="kw">public void</span> <span class="fn">paint</span>() { button.<span class="fn">paint</span>(); checkbox.<span class="fn">paint</span>(); }
+}
+
+<span class="cm">// Bootstrap — only place that knows concrete factory</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">GUIFactory</span> factory = <span class="fn">getFactory</span>(<span class="cl">System</span>.<span class="fn">getProperty</span>(<span class="st">"os.name"</span>));
+        <span class="kw">new</span> <span class="cl">Application</span>(factory).<span class="fn">paint</span>();
+    }
+    <span class="kw">static</span> <span class="cl">GUIFactory</span> <span class="fn">getFactory</span>(<span class="cl">String</span> os) {
+        <span class="kw">return</span> os.contains(<span class="st">"Windows"</span>) ? <span class="kw">new</span> <span class="cl">WindowsFactory</span>() : <span class="kw">new</span> <span class="cl">MacFactory</span>();
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>System needs to be independent of how its products are created</li>
+          <li>System works with multiple families of products that must stay compatible</li>
+          <li>You want to enforce constraints between related products</li>
+          <li>You're building a cross-platform library or framework</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Adding new product types to the family is frequent — requires changing the interface</li>
+          <li>Only one family of products is needed — overkill</li>
+          <li>Products don't need to be related or compatible</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Java AWT/Swing — platform-specific component factories (Peer architecture)</li>
+      <li><code>javax.xml.parsers.DocumentBuilderFactory</code> — XML parser family</li>
+      <li>Spring's <code>PlatformTransactionManager</code> — transaction families per DB provider</li>
+      <li>JDBC — each driver provides a family of Connection, Statement, ResultSet objects</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Guarantees product family compatibility</li>
+          <li>Isolates concrete classes from client code</li>
+          <li>Easy to swap entire product families (just change the factory)</li>
+          <li>Open/Closed for new families — add factory without changing client</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Adding new product types to a family requires changing the AbstractFactory interface — violates OCP</li>
+          <li>Many interfaces and classes — significant code increase</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+    <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Abstract Factory Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Cross-family mixing:</strong> Nothing stops a client from getting a button from WindowsFactory and a checkbox from MacFactory — producing an inconsistent UI</li>
+          <li><strong>Casting to concrete type:</strong> Client casts <code>Button</code> back to <code>WindowsButton</code> and calls platform-specific methods, re-coupling to a concrete class</li>
+          <li><strong>Extending the AbstractFactory interface:</strong> Adding a new product type (e.g., <code>createScrollbar()</code>) to the interface forces all existing ConcreteFactories to change — violates OCP</li>
+          <li><strong>Runtime factory switching mid-session:</strong> Swapping from WindowsFactory to MacFactory after some products are created leaves a mix of Windows and Mac components alive simultaneously</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Enforce factory per session:</strong> Inject the factory once at startup and make it final/immutable. Document that the factory should not be changed at runtime</li>
+          <li><strong>Hide concrete product classes:</strong> Keep all ConcreteProduct classes package-private; clients can only see the product interfaces — impossible to downcast</li>
+          <li><strong>Extend via new factory, not new method:</strong> Instead of adding methods to the AbstractFactory, create a new extended interface and factory class so existing factories are unaffected</li>
+          <li><strong>Factory registry:</strong> Route all factory lookups through a central registry that enforces one factory choice per context, preventing ad-hoc mixing</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — cross-family mixing</span>
+<span class="cl">GUIFactory</span> winFactory = <span class="kw">new</span> <span class="cl">WindowsFactory</span>();
+<span class="cl">GUIFactory</span> macFactory = <span class="kw">new</span> <span class="cl">MacFactory</span>();
+<span class="cm">// Nothing in the type system prevents this!</span>
+<span class="cl">Button</span>   btn      = winFactory.<span class="fn">createButton</span>();   <span class="cm">// Windows</span>
+<span class="cl">Checkbox</span> checkbox = macFactory.<span class="fn">createCheckbox</span>(); <span class="cm">// Mac — mismatch!</span>
+
+<span class="cm">// ✅ FIX — inject factory once, make it immutable</span>
+<span class="kw">public class</span> <span class="cl">Application</span> {
+    <span class="kw">private final</span> <span class="cl">GUIFactory</span> factory; <span class="cm">// set once, never changed</span>
+    <span class="kw">public</span> <span class="fn">Application</span>(<span class="cl">GUIFactory</span> factory) { <span class="kw">this</span>.factory = factory; }
+    <span class="cm">// All UI components created from single factory — guaranteed compatible</span>
+}
+
+<span class="cm">// ❌ BREAKING — downcasting defeats abstraction</span>
+<span class="cl">Button</span> btn = factory.<span class="fn">createButton</span>();
+((<span class="cl">WindowsButton</span>) btn).<span class="fn">setWindowsSpecificStyle</span>(); <span class="cm">// coupled again!</span>
+
+<span class="cm">// ✅ FIX — keep concrete products package-private</span>
+<span class="cm">// WindowsButton is in package com.ui.windows (not exported)</span>
+<span class="cm">// Client package can only see com.ui.Button interface</span></pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='factory-method.html'">
+        <div>
+          <div class="related-name">Factory Method</div>
+          <span class="related-tag tag-extends">Extends</span>
+          <div class="related-desc">Abstract Factory is often implemented using Factory Methods internally. Factory Method creates one product; Abstract Factory creates a whole coordinated family.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='builder.html'">
+        <div>
+          <div class="related-name">Builder</div>
+          <span class="related-tag tag-confused">Often Confused</span>
+          <div class="related-desc">Both abstract the creation process, but Builder focuses on constructing a single complex object step-by-step. Abstract Factory creates multiple simple related objects in one shot.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='prototype.html'">
+        <div>
+          <div class="related-name">Prototype</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">A ConcreteFactory can store prototypes and clone them to create products, combining both patterns to reduce subclassing.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='singleton.html'">
+        <div>
+          <div class="related-name">Singleton</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Concrete Factory classes are often implemented as Singletons — only one factory per family is usually needed in the application.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Creates families of related objects — all from one factory, all guaranteed to be compatible with each other.</li>
+        <li><strong>How:</strong> Interface with one creation method per product type. Multiple ConcreteFactories each implement the full interface for their family. Client uses only the interface.</li>
+        <li><strong>vs Factory Method:</strong> Factory Method = one product via subclassing. Abstract Factory = whole family via composition. Abstract Factory often uses Factory Methods internally.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="factory-method.html"><span class="nav-dir">← Previous</span><span class="nav-title">Factory Method</span></a>
+    <a href="builder.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Builder</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

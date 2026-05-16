@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Strategy Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Strategy</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Strategy</h1>
+    <p class="page-tagline">Define a family of algorithms, encapsulate each one, and make them interchangeable — let the algorithm vary independently from clients that use it.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #21 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Strategy Pattern?</h2>
+    <p>Strategy defines a family of algorithms, puts each in a separate class, and makes their objects interchangeable. The Context holds a reference to a Strategy and delegates the algorithm to it. The client chooses which strategy to use at runtime.</p>
+    <p>This replaces conditional logic that selects a behaviour with polymorphism — each branch of the if-else becomes its own Strategy class.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Navigation app. You can choose to navigate by car, by bike, or on foot. The routing algorithm (strategy) changes, but the app (context) stays the same — it just calls <code>buildRoute(A, B)</code> on whichever strategy is selected.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have an e-commerce checkout that sorts products by price, rating, or name depending on user selection. With if-else: <code>if (sort == "price") { ... } else if (sort == "rating") { ... }</code>. Adding a new sort type means modifying the checkout class — violating Open/Closed.</p>
+    <p>Strategy makes each sort algorithm a class: <code>PriceSortStrategy</code>, <code>RatingSortStrategy</code>, <code>NameSortStrategy</code>. The checkout just calls <code>strategy.sort(products)</code> — adding a new sort is adding one new class.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Strategy (interface)</div><div class="participant-desc">Declares the algorithm interface common to all supported strategies. Context uses this interface to call the algorithm defined by each ConcreteStrategy.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteStrategy</div><div class="participant-desc">Implements the algorithm using the Strategy interface. Each ConcreteStrategy encapsulates one specific algorithm.</div></div>
+      <div class="participant"><div class="participant-name">Context</div><div class="participant-desc">Maintains a reference to a Strategy. Delegates the algorithm to the Strategy object. May provide an interface for clients to swap the strategy at runtime.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="230" viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Context -->
+        <rect x="20" y="80" width="180" height="90" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="110" y="108" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e8b86d" font-weight="600">Context</text>
+        <text x="110" y="126" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">strategy: Strategy</text>
+        <text x="110" y="142" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">setStrategy(s)</text>
+        <text x="110" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">execute() → strategy.do()</text>
+        <!-- Strategy interface -->
+        <rect x="280" y="30" width="180" height="55" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="370" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface» Strategy</text>
+        <text x="370" y="74" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">execute(data)</text>
+        <!-- Concrete strategies -->
+        <rect x="190" y="155" width="140" height="55" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="260" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">BubbleSort</text>
+        <text x="260" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">execute(data)</text>
+        <rect x="350" y="155" width="140" height="55" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="420" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">QuickSort</text>
+        <text x="420" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">execute(data)</text>
+        <rect x="510" y="155" width="120" height="55" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="570" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">MergeSort</text>
+        <text x="570" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">execute(data)</text>
+        <!-- arrows -->
+        <line x1="200" y1="125" x2="280" y2="58" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="340" y1="85" x2="260" y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="370" y1="85" x2="420" y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="400" y1="85" x2="560" y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <text x="20" y="200" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">Context.setStrategy(new QuickSort())</text>
+        <text x="20" y="216" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">→ can swap at runtime</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Sorting + Payment Strategies</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ── EXAMPLE 1: Sort strategies ───────────────────────────────────────</span>
+
+<span class="cm">// Strategy interface</span>
+<span class="kw">public interface</span> <span class="cl">SortStrategy</span>&lt;T <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;T&gt;&gt; {
+    <span class="kw">void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; data);
+}
+
+<span class="cm">// Concrete Strategies</span>
+<span class="kw">public class</span> <span class="cl">BubbleSortStrategy</span>&lt;T <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;T&gt;&gt; <span class="kw">implements</span> <span class="cl">SortStrategy</span>&lt;T&gt; {
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; data) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Bubble sorting "</span> + data.<span class="fn">size</span>() + <span class="st">" items"</span>);
+        <span class="cm">// O(n²) bubble sort implementation</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; data.<span class="fn">size</span>()-<span class="nm">1</span>; i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j = <span class="nm">0</span>; j &lt; data.<span class="fn">size</span>()-i-<span class="nm">1</span>; j++)
+                <span class="kw">if</span> (data.<span class="fn">get</span>(j).<span class="fn">compareTo</span>(data.<span class="fn">get</span>(j+<span class="nm">1</span>)) > <span class="nm">0</span>)
+                    <span class="cl">Collections</span>.<span class="fn">swap</span>(data, j, j+<span class="nm">1</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">QuickSortStrategy</span>&lt;T <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;T&gt;&gt; <span class="kw">implements</span> <span class="cl">SortStrategy</span>&lt;T&gt; {
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; data) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Quick sorting "</span> + data.<span class="fn">size</span>() + <span class="st">" items"</span>);
+        data.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">naturalOrder</span>()); <span class="cm">// simplified</span>
+    }
+}
+
+<span class="cm">// Context</span>
+<span class="kw">public class</span> <span class="cl">Sorter</span>&lt;T <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;T&gt;&gt; {
+    <span class="kw">private</span> <span class="cl">SortStrategy</span>&lt;T&gt; strategy;
+
+    <span class="kw">public</span> <span class="fn">Sorter</span>(<span class="cl">SortStrategy</span>&lt;T&gt; strategy) { <span class="kw">this</span>.strategy = strategy; }
+
+    <span class="kw">public void</span> <span class="fn">setStrategy</span>(<span class="cl">SortStrategy</span>&lt;T&gt; strategy) { <span class="kw">this</span>.strategy = strategy; }
+
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; data) { strategy.<span class="fn">sort</span>(data); }
+}
+
+<span class="cm">// ── EXAMPLE 2: Payment strategies (real-world) ──────────────────────</span>
+
+<span class="kw">public interface</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount);
+}
+
+<span class="kw">public class</span> <span class="cl">CreditCardStrategy</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> cardNumber, cvv;
+    <span class="kw">public</span> <span class="fn">CreditCardStrategy</span>(<span class="cl">String</span> card, <span class="cl">String</span> cvv) { cardNumber=card; <span class="kw">this</span>.cvv=cvv; }
+    <span class="kw">public boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Charging $"</span>+amount+<span class="st">" to card ****"</span>+cardNumber.<span class="fn">substring</span>(<span class="nm">12</span>));
+        <span class="kw">return true</span>;
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">PayPalStrategy</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> email;
+    <span class="kw">public</span> <span class="fn">PayPalStrategy</span>(<span class="cl">String</span> email) { <span class="kw">this</span>.email = email; }
+    <span class="kw">public boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"PayPal payment $"</span>+amount+<span class="st">" from "</span>+email);
+        <span class="kw">return true</span>;
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">ShoppingCart</span> {
+    <span class="kw">private</span> <span class="cl">PaymentStrategy</span> paymentStrategy;
+    <span class="kw">private</span> <span class="kw">double</span> total;
+
+    <span class="kw">public void</span> <span class="fn">setPaymentStrategy</span>(<span class="cl">PaymentStrategy</span> p) { paymentStrategy = p; }
+    <span class="kw">public void</span> <span class="fn">addItem</span>(<span class="kw">double</span> price)                  { total += price; }
+
+    <span class="kw">public void</span> <span class="fn">checkout</span>() {
+        <span class="kw">if</span> (paymentStrategy == <span class="kw">null</span>)
+            <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"No payment strategy set"</span>);
+        <span class="kw">boolean</span> success = paymentStrategy.<span class="fn">pay</span>(total);
+        <span class="kw">if</span> (success) total = <span class="nm">0</span>;
+    }
+}
+
+<span class="cm">// ── Modern Java: lambdas replace simple strategy classes ─────────────</span>
+<span class="cl">SortStrategy</span>&lt;<span class="cl">Integer</span>&gt; reverseSort = data -> data.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">reverseOrder</span>());
+<span class="cl">SortStrategy</span>&lt;<span class="cl">Integer</span>&gt; naturalSort = data -> data.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">naturalOrder</span>());
+
+<span class="cl">Sorter</span>&lt;<span class="cl">Integer</span>&gt; sorter = <span class="kw">new</span> <span class="cl">Sorter</span>&lt;&gt;(naturalSort);
+sorter.<span class="fn">sort</span>(<span class="cl">Arrays</span>.<span class="fn">asList</span>(<span class="nm">5</span>, <span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>));
+sorter.<span class="fn">setStrategy</span>(reverseSort); <span class="cm">// swap at runtime</span>
+sorter.<span class="fn">sort</span>(<span class="cl">Arrays</span>.<span class="fn">asList</span>(<span class="nm">5</span>, <span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>));</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Multiple related classes differ only in their behaviour — strategies factored out</li>
+          <li>You need different variants of an algorithm and want to switch at runtime</li>
+          <li>Algorithm uses data the client shouldn't know about</li>
+          <li>A class defines many behaviours and they appear as conditional statements</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Only one or two algorithms exist and they rarely change — overkill</li>
+          <li>Algorithms are trivially simple — just use a lambda or method reference</li>
+          <li>Clients must know about all strategies to select one — may not always be appropriate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.Comparator</code> — textbook Strategy; pass different comparators to <code>Collections.sort()</code></li>
+      <li>Spring Security <code>AuthenticationStrategy</code> — different auth algorithms plugged in</li>
+      <li>Spring's <code>ResourceLoader</code> — different strategies for classpath, file system, URL resources</li>
+      <li>Hibernate validation — pluggable constraint validation strategies per annotation</li>
+      <li>Jackson <code>ObjectMapper</code> — configurable serialisation/deserialisation strategies</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Eliminates conditional statements — each branch becomes a class</li>
+          <li>Open/Closed — add new strategies without changing Context</li>
+          <li>Swap algorithms at runtime</li>
+          <li>Strategies can be tested in isolation, independently of Context</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Clients must know about different strategies to select one</li>
+          <li>Increased number of objects — one class per strategy</li>
+          <li>In modern Java, functional interfaces + lambdas often make Strategy classes unnecessary</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Strategy Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Null strategy:</strong> Context's strategy field is never set — calling <code>execute()</code> throws <code>NullPointerException</code> with no useful error message</li>
+          <li><strong>Context leaking internal data to strategy:</strong> Strategy needs to call back into the Context to get data — creates a circular dependency and tight coupling between Strategy and Context</li>
+          <li><strong>Stateful shared strategy:</strong> A ConcreteStrategy stores per-execution state in its instance fields — when the same strategy object is used by multiple Contexts concurrently, state is corrupted</li>
+          <li><strong>instanceof checks to pick strategy behaviour:</strong> Context uses <code>if (strategy instanceof QuickSort)</code> to add special-case logic — defeats the point of the pattern entirely</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Default strategy or null guard:</strong> Provide a sensible default in the constructor, or throw <code>IllegalStateException("No strategy configured")</code> with a clear message in <code>execute()</code> before calling the strategy</li>
+          <li><strong>Pass all data as parameters:</strong> Strategy's <code>execute(data)</code> receives everything it needs as method parameters — no callbacks into Context, no circular dependency</li>
+          <li><strong>Keep strategies stateless:</strong> All per-execution data should be local variables inside <code>execute()</code> — no instance fields that persist between calls. Stateless strategies are safe to share</li>
+          <li><strong>Never instanceof the strategy:</strong> If you need different behaviour depending on which strategy is active, that is a signal to add a new method to the Strategy interface — or reconsider the design</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — null strategy causes NPE</span>
+<span class="kw">public class</span> <span class="cl">Sorter</span> {
+    <span class="kw">private</span> <span class="cl">SortStrategy</span> strategy; <span class="cm">// never set!</span>
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span> data) {
+        strategy.<span class="fn">sort</span>(data); <span class="cm">// ❌ NPE — no error message</span>
+    }
+}
+
+<span class="cm">// ✅ FIX 1 — default strategy in constructor</span>
+<span class="kw">public</span> <span class="fn">Sorter</span>() {
+    <span class="kw">this</span>.strategy = <span class="kw">new</span> <span class="cl">QuickSortStrategy</span>(); <span class="cm">// ✅ always has a valid strategy</span>
+}
+
+<span class="cm">// ✅ FIX 2 — fail fast with meaningful message</span>
+<span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span> data) {
+    <span class="kw">if</span> (strategy == <span class="kw">null</span>)
+        <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"Sort strategy not configured"</span>);
+    strategy.<span class="fn">sort</span>(data);
+}
+
+<span class="cm">// ❌ BREAKING — stateful shared strategy</span>
+<span class="kw">public class</span> <span class="cl">StatefulQuickSort</span> <span class="kw">implements</span> <span class="cl">SortStrategy</span> {
+    <span class="kw">private int</span> comparisons = <span class="nm">0</span>; <span class="cm">// ❌ state shared between concurrent calls</span>
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span> data) {
+        comparisons++; <span class="cm">// Thread A and B both increment — race condition</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — stateless strategy, metrics in method scope</span>
+<span class="kw">public class</span> <span class="cl">StatelessQuickSort</span> <span class="kw">implements</span> <span class="cl">SortStrategy</span> {
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span> data) {
+        <span class="kw">int</span> comparisons = <span class="nm">0</span>; <span class="cm">// ✅ local variable — thread-safe</span>
+        <span class="cm">// ... sort logic ...</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Comparisons: "</span> + comparisons);
+    }
+}
+
+<span class="cm">// ❌ BREAKING — strategy callbacks into context</span>
+<span class="kw">public interface</span> <span class="cl">SortStrategy</span> {
+    <span class="kw">void</span> <span class="fn">sort</span>(<span class="cl">Sorter</span> context); <span class="cm">// ❌ strategy imports Context — circular dependency</span>
+}
+
+<span class="cm">// ✅ FIX — pass data directly, no context reference</span>
+<span class="kw">public interface</span> <span class="cl">SortStrategy</span>&lt;T&gt; {
+    <span class="kw">void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; data); <span class="cm">// ✅ pure data in, no context needed</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='state.html'">
+        <div><div class="related-name">State</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Both use composition to delegate behaviour. Strategy = client consciously picks an algorithm. State = object transitions automatically when internal conditions change. Strategy is external; State is internal.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='template-method.html'">
+        <div><div class="related-name">Template Method</div>
+        <span class="related-tag tag-competes">Competes With</span>
+        <div class="related-desc">Template Method varies an algorithm via inheritance — subclasses override steps. Strategy varies the whole algorithm via composition — swap the strategy object. Strategy is more flexible at runtime.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='command.html'">
+        <div><div class="related-name">Command</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Command encapsulates a specific request with its data, enabling undo/queuing. Strategy encapsulates a reusable algorithm. Command = one-time action. Strategy = reusable behaviour.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/bridge.html'">
+        <div><div class="related-name">Bridge</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Bridge separates abstraction from implementation across two hierarchies. Strategy injects an algorithm into a single class. Bridge is structural; Strategy is behavioural.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Encapsulates a family of algorithms into separate classes. Context holds a Strategy reference and delegates to it. Client picks and swaps strategy at runtime without changing Context.</li>
+        <li><strong>How:</strong> Strategy interface with one method. ConcreteStrategies implement it. Context holds <code>strategy: Strategy</code>, calls <code>strategy.execute(data)</code>. Modern Java: use lambdas/method refs for stateless simple strategies.</li>
+        <li><strong>Key distinctions:</strong> vs State — client picks strategy, object transitions state. vs Template Method — Strategy uses composition/whole-algorithm swap; Template Method uses inheritance/step override.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="state.html"><span class="nav-dir">← Previous</span><span class="nav-title">State</span></a>
+    <a href="template-method.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Template Method</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Builder Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational" class="active">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#creational">Creational</a><span class="sep">/</span>
+  <span>Builder</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-creational">Creational</div>
+    <h1 class="page-title">Builder</h1>
+    <p class="page-tagline">Separate the construction of a complex object from its representation, allowing the same process to create different representations.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #04 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Builder Pattern?</h2>
+    <p>The Builder pattern lets you construct complex objects step by step. It separates the "how to build" (construction process) from the "what to build" (representation), allowing the same construction steps to produce entirely different objects.</p>
+    <p>It's especially useful when an object has many optional parts, or when you want to prevent a constructor with a dozen parameters ("telescoping constructor" anti-pattern).</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Ordering a custom pizza. You tell the builder: thin crust, tomato sauce, mozzarella, pepperoni. The same pizza-builder steps (crust → sauce → cheese → toppings) could produce a vegan pizza or a meat lovers — same process, different result.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>Imagine building a <code>House</code> object. It can have walls, a roof, windows, a garden, a pool, a garage... some optional, some required. A constructor with all these parameters becomes unmaintainable. Subclassing for every combination creates a class explosion.</p>
+    <p>The Builder extracts the construction logic into a separate object, letting you build step-by-step and only set what you need.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Builder (interface)</div><div class="participant-desc">Declares construction steps common to all builder types (setWalls, setRoof, setDoors).</div></div>
+      <div class="participant"><div class="participant-name">ConcreteBuilder</div><div class="participant-desc">Implements the construction steps differently to build different representations. Also has getResult() to retrieve the finished product.</div></div>
+      <div class="participant"><div class="participant-name">Director</div><div class="participant-desc">Defines the order in which to call construction steps — it knows what to build, not how. Optional but useful for reusing construction sequences.</div></div>
+      <div class="participant"><div class="participant-name">Product</div><div class="participant-desc">The complex object being built. Different ConcreteBuilders produce different unrelated products.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="280" viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Director -->
+        <rect x="20" y="90" width="140" height="80" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="90" y="118" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#b46de8" font-weight="600">Director</text>
+        <text x="90" y="136" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">construct()</text>
+        <text x="90" y="152" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">calls steps in order</text>
+        <!-- Builder interface -->
+        <rect x="230" y="20" width="180" height="90" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface»</text>
+        <text x="320" y="60" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#fff" font-weight="600">Builder</text>
+        <text x="320" y="78" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">buildWalls()</text>
+        <text x="320" y="93" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">buildRoof() / buildDoors()</text>
+        <!-- ConcreteBuilder1 -->
+        <rect x="180" y="175" width="160" height="80" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="260" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">HouseBuilder</text>
+        <text x="260" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">buildWalls()</text>
+        <text x="260" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">buildRoof()</text>
+        <text x="260" y="245" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">getResult(): House</text>
+        <!-- ConcreteBuilder2 -->
+        <rect x="370" y="175" width="160" height="80" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="450" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">CastleBuilder</text>
+        <text x="450" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">buildWalls()</text>
+        <text x="450" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">buildRoof()</text>
+        <text x="450" y="245" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">getResult(): Castle</text>
+        <!-- Product -->
+        <rect x="540" y="90" width="90" height="60" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="585" y="118" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#6de8a8">Product</text>
+        <text x="585" y="136" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">House/Castle</text>
+        <!-- arrows -->
+        <line x1="160" y1="130" x2="230" y2="65" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="300" y1="110" x2="260" y2="175" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="340" y1="110" x2="450" y2="175" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="340" y1="215" x2="540" y2="120" stroke="#6de8a8" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <text x="80" y="82" font-family="JetBrains Mono,monospace" font-size="9" fill="#b46de8">calls builder steps</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Product</span>
+<span class="kw">public class</span> <span class="cl">House</span> {
+    <span class="kw">private int</span> walls, doors, windows;
+    <span class="kw">private boolean</span> hasGarage, hasPool;
+
+    <span class="cm">// Setters (package-private, only builder sets)</span>
+    <span class="kw">void</span> <span class="fn">setWalls</span>(<span class="kw">int</span> w)    { <span class="kw">this</span>.walls = w; }
+    <span class="kw">void</span> <span class="fn">setDoors</span>(<span class="kw">int</span> d)    { <span class="kw">this</span>.doors = d; }
+    <span class="kw">void</span> <span class="fn">setWindows</span>(<span class="kw">int</span> w)  { <span class="kw">this</span>.windows = w; }
+    <span class="kw">void</span> <span class="fn">setGarage</span>(<span class="kw">boolean</span> g) { <span class="kw">this</span>.hasGarage = g; }
+    <span class="kw">void</span> <span class="fn">setPool</span>(<span class="kw">boolean</span> p)   { <span class="kw">this</span>.hasPool = p; }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() {
+        <span class="kw">return</span> <span class="st">"House[walls="</span> + walls + <span class="st">", doors="</span> + doors +
+               <span class="st">", garage="</span> + hasGarage + <span class="st">", pool="</span> + hasPool + <span class="st">"]"</span>;
+    }
+}
+
+<span class="cm">// Builder interface</span>
+<span class="kw">public interface</span> <span class="cl">HouseBuilder</span> {
+    <span class="kw">void</span> <span class="fn">buildWalls</span>();
+    <span class="kw">void</span> <span class="fn">buildDoors</span>();
+    <span class="kw">void</span> <span class="fn">buildWindows</span>();
+    <span class="kw">void</span> <span class="fn">buildGarage</span>();
+    <span class="kw">void</span> <span class="fn">buildPool</span>();
+    <span class="cl">House</span> <span class="fn">getResult</span>();
+}
+
+<span class="cm">// Concrete Builder — standard house</span>
+<span class="kw">public class</span> <span class="cl">StandardHouseBuilder</span> <span class="kw">implements</span> <span class="cl">HouseBuilder</span> {
+    <span class="kw">private</span> <span class="cl">House</span> house = <span class="kw">new</span> <span class="cl">House</span>();
+
+    <span class="kw">public void</span> <span class="fn">buildWalls</span>()   { house.<span class="fn">setWalls</span>(<span class="nm">4</span>); }
+    <span class="kw">public void</span> <span class="fn">buildDoors</span>()   { house.<span class="fn">setDoors</span>(<span class="nm">2</span>); }
+    <span class="kw">public void</span> <span class="fn">buildWindows</span>() { house.<span class="fn">setWindows</span>(<span class="nm">6</span>); }
+    <span class="kw">public void</span> <span class="fn">buildGarage</span>()  { house.<span class="fn">setGarage</span>(<span class="kw">false</span>); }
+    <span class="kw">public void</span> <span class="fn">buildPool</span>()    { house.<span class="fn">setPool</span>(<span class="kw">false</span>); }
+    <span class="kw">public</span> <span class="cl">House</span> <span class="fn">getResult</span>()   { <span class="kw">return</span> house; }
+}
+
+<span class="cm">// Director — controls construction sequence</span>
+<span class="kw">public class</span> <span class="cl">Director</span> {
+    <span class="kw">private</span> <span class="cl">HouseBuilder</span> builder;
+
+    <span class="kw">public</span> <span class="fn">Director</span>(<span class="cl">HouseBuilder</span> b) { <span class="kw">this</span>.builder = b; }
+
+    <span class="kw">public void</span> <span class="fn">buildMinimalHouse</span>() {
+        builder.<span class="fn">buildWalls</span>();
+        builder.<span class="fn">buildDoors</span>();
+    }
+
+    <span class="kw">public void</span> <span class="fn">buildFullHouse</span>() {
+        builder.<span class="fn">buildWalls</span>();
+        builder.<span class="fn">buildDoors</span>();
+        builder.<span class="fn">buildWindows</span>();
+        builder.<span class="fn">buildGarage</span>();
+        builder.<span class="fn">buildPool</span>();
+    }
+}
+
+<span class="cm">// --- Modern Java Fluent Builder (most common in practice) ---</span>
+<span class="kw">public class</span> <span class="cl">Pizza</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> size, crust, sauce;
+    <span class="kw">private final boolean</span> cheese, pepperoni;
+
+    <span class="kw">private</span> <span class="fn">Pizza</span>(<span class="cl">Builder</span> b) {
+        <span class="kw">this</span>.size = b.size; <span class="kw">this</span>.crust = b.crust; <span class="kw">this</span>.sauce = b.sauce;
+        <span class="kw">this</span>.cheese = b.cheese; <span class="kw">this</span>.pepperoni = b.pepperoni;
+    }
+
+    <span class="kw">public static class</span> <span class="cl">Builder</span> {
+        <span class="kw">private final</span> <span class="cl">String</span> size; <span class="cm">// required</span>
+        <span class="kw">private</span> <span class="cl">String</span> crust = <span class="st">"thin"</span>;
+        <span class="kw">private</span> <span class="cl">String</span> sauce = <span class="st">"tomato"</span>;
+        <span class="kw">private boolean</span> cheese = <span class="kw">true</span>, pepperoni = <span class="kw">false</span>;
+
+        <span class="kw">public</span> <span class="fn">Builder</span>(<span class="cl">String</span> size) { <span class="kw">this</span>.size = size; }
+        <span class="kw">public</span> <span class="cl">Builder</span> <span class="fn">crust</span>(<span class="cl">String</span> c)   { crust = c; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="cl">Builder</span> <span class="fn">pepperoni</span>()       { pepperoni = <span class="kw">true</span>; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="cl">Pizza</span>   <span class="fn">build</span>()            { <span class="kw">return new</span> <span class="cl">Pizza</span>(<span class="kw">this</span>); }
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="cl">Pizza</span> p = <span class="kw">new</span> <span class="cl">Pizza</span>.<span class="cl">Builder</span>(<span class="st">"large"</span>)
+    .<span class="fn">crust</span>(<span class="st">"thick"</span>)
+    .<span class="fn">pepperoni</span>()
+    .<span class="fn">build</span>();</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Object requires many optional parameters (avoid telescoping constructors)</li>
+          <li>Same construction process should create different representations</li>
+          <li>Step-by-step construction makes sense and order matters</li>
+          <li>You need immutable objects with many fields</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Objects are simple with few fields — just use a constructor</li>
+          <li>No multiple representations are needed</li>
+          <li>Adding many new classes for simple creation is unjustified</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>StringBuilder</code> / <code>StringBuffer</code> — fluent builder for String construction</li>
+      <li><code>java.util.stream.Stream.Builder</code> — builds a stream step by step</li>
+      <li>Lombok <code>@Builder</code> annotation — generates builder pattern automatically</li>
+      <li>OkHttp <code>Request.Builder</code> — building HTTP requests with optional headers/params</li>
+      <li>Spring's <code>UriComponentsBuilder</code> — building URIs step by step</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Eliminates telescoping constructors — clean readable code</li>
+          <li>Reuse same construction code for different product types</li>
+          <li>Supports immutable objects — no setters needed after build()</li>
+          <li>Single Responsibility — construction separated from representation</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>More code — need to create separate Builder class</li>
+          <li>Builder and Product must be kept in sync when adding fields</li>
+          <li>Overkill for simple object creation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+    <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Builder Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Partial build &amp; use:</strong> Client calls <code>build()</code> before setting required fields — produces an invalid or inconsistent object with missing state</li>
+          <li><strong>Reusing a builder after build():</strong> Client calls <code>build()</code> twice or continues setting fields after the first <code>build()</code>, producing unexpected shared or mutated state</li>
+          <li><strong>Mutable product exposure:</strong> If the built object exposes setters, clients bypass the builder entirely and mutate the "immutable" product after construction</li>
+          <li><strong>Director bypassed:</strong> Client calls builder steps in wrong order (e.g., roof before walls), violating construction constraints</li>
+          <li><strong>Builder-Product sync:</strong> A field added to Product but not to Builder causes silent default values with no compile-time warning</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Validate in build():</strong> Check all required fields before constructing the product — throw <code>IllegalStateException</code> if mandatory fields are missing</li>
+          <li><strong>Invalidate builder after build():</strong> Set a <code>built = true</code> flag; subsequent calls to <code>build()</code> or setters throw an exception</li>
+          <li><strong>Immutable product:</strong> Give the product only final fields and no setters — only the builder (inner class) can set them via the private constructor</li>
+          <li><strong>Required fields via constructor:</strong> Pass truly required fields to the Builder's constructor, not as optional setters — enforced at compile time</li>
+          <li><strong>Use Lombok @Builder:</strong> Automates Builder generation and keeps it in sync with the Product automatically</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — partial build, missing required field</span>
+<span class="cl">Pizza</span> p = <span class="kw">new</span> <span class="cl">Pizza</span>.<span class="cl">Builder</span>(<span class="st">"large"</span>)
+    .<span class="fn">build</span>(); <span class="cm">// sauce is null — invalid pizza!</span>
+
+<span class="cm">// ✅ FIX — validate inside build()</span>
+<span class="kw">public</span> <span class="cl">Pizza</span> <span class="fn">build</span>() {
+    <span class="kw">if</span> (sauce == <span class="kw">null</span>)
+        <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"Sauce is required"</span>);
+    <span class="kw">return new</span> <span class="cl">Pizza</span>(<span class="kw">this</span>);
+}
+
+<span class="cm">// ❌ BREAKING — reusing builder after build()</span>
+<span class="cl">Pizza</span>.<span class="cl">Builder</span> builder = <span class="kw">new</span> <span class="cl">Pizza</span>.<span class="cl">Builder</span>(<span class="st">"large"</span>).<span class="fn">sauce</span>(<span class="st">"tomato"</span>);
+<span class="cl">Pizza</span> p1 = builder.<span class="fn">build</span>();
+builder.<span class="fn">pepperoni</span>(); <span class="cm">// mutates already-built p1 state!</span>
+<span class="cl">Pizza</span> p2 = builder.<span class="fn">build</span>(); <span class="cm">// surprising result</span>
+
+<span class="cm">// ✅ FIX — invalidate builder after first build()</span>
+<span class="kw">private boolean</span> built = <span class="kw">false</span>;
+<span class="kw">public</span> <span class="cl">Pizza</span> <span class="fn">build</span>() {
+    <span class="kw">if</span> (built) <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"Builder already used"</span>);
+    built = <span class="kw">true</span>;
+    <span class="kw">return new</span> <span class="cl">Pizza</span>(<span class="kw">this</span>);
+}
+
+<span class="cm">// ✅ FIX — immutable product, only builder sets fields</span>
+<span class="kw">public class</span> <span class="cl">Pizza</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> size, sauce; <span class="cm">// final — no setters</span>
+    <span class="kw">private</span> <span class="fn">Pizza</span>(<span class="cl">Builder</span> b) { <span class="kw">this</span>.size = b.size; <span class="kw">this</span>.sauce = b.sauce; }
+    <span class="cm">// No setters exposed to clients</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='abstract-factory.html'">
+        <div>
+          <div class="related-name">Abstract Factory</div>
+          <span class="related-tag tag-confused">Often Confused</span>
+          <div class="related-desc">Both abstract creation. Abstract Factory creates families of different objects immediately. Builder constructs one complex object step by step, giving you control over the build sequence.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/template-method.html'">
+        <div>
+          <div class="related-name">Template Method</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Director's construct() method acts like a Template Method — it defines a fixed sequence of builder steps, where each step is overridden by ConcreteBuilders.</div>
+        </div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/composite.html'">
+        <div>
+          <div class="related-name">Composite</div>
+          <span class="related-tag tag-together">Often Used Together</span>
+          <div class="related-desc">Builders are often used to construct Composite trees step by step, where each build step attaches leaf or composite nodes to the structure.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Separates construction from representation. Use when you need to build a complex object step-by-step, or when an object has many optional parameters.</li>
+        <li><strong>How:</strong> Builder interface with one method per construction step. ConcreteBuilder fills a Product. Optional Director controls the step sequence. Call getResult() when done.</li>
+        <li><strong>Modern Java:</strong> Fluent inner static Builder class (e.g., Lombok @Builder). Each setter returns <code>this</code> for chaining; <code>build()</code> creates the final immutable object.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="abstract-factory.html"><span class="nav-dir">← Previous</span><span class="nav-title">Abstract Factory</span></a>
+    <a href="prototype.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Prototype</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

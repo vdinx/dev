@@ -8,37 +8,37 @@
 <style>
 .hero { padding: 5rem 2rem 4rem; max-width: 960px; margin: 0 auto; }
 .hero-eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
-.hero-title { font-family: var(--font-display); font-size: clamp(2.8rem,6vw,5rem); font-weight: 900; line-height: 1.05; color: #fff; margin-bottom: 1.5rem; letter-spacing: -2px; }
+.hero-title { font-family: var(--font-display); font-size: clamp(2.8rem,6vw,5rem); font-weight: 900; line-height: 1.05; color: #fff; margin-bottom: 1.5rem; }
 .hero-title span { color: var(--accent); }
-.hero-desc { font-size: 1.05rem; color: var(--muted); max-width: 600px; line-height: 1.8; margin-bottom: 2.5rem; font-family: var(--font-mono); }
+.hero-desc { font-size: 1.1rem; color: var(--muted); max-width: 600px; line-height: 1.8; margin-bottom: 2.5rem; }
 .hero-stats { display: flex; gap: 2.5rem; flex-wrap: wrap; }
 .stat { display: flex; flex-direction: column; }
-.stat-num { font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; letter-spacing: -1px; }
+.stat-num { font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; }
 .stat-label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.2rem; }
 
 .filter-bar { display: flex; gap: 0.75rem; padding: 0 2rem; margin-bottom: 2rem; max-width: 960px; margin-left: auto; margin-right: auto; flex-wrap: wrap; }
 .filter-btn { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.45rem 1.1rem; border-radius: 999px; border: 1px solid var(--border); background: none; color: var(--muted); cursor: pointer; transition: all 0.2s; }
 .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-.filter-btn.active { background: var(--accent); color: #0b0b0d; border-color: var(--accent); font-weight: 700; }
+.filter-btn.active { background: var(--accent); color: #0d0f14; border-color: var(--accent); font-weight: 600; }
 
 .catalog { max-width: 960px; margin: 0 auto; padding: 0 2rem 6rem; }
 .category-section { margin-bottom: 3.5rem; }
 .cat-heading { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-.cat-heading h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.cat-heading h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: #fff; }
 .cat-line { flex: 1; height: 1px; background: var(--border); }
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
 .pat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem; text-decoration: none; display: flex; flex-direction: column; gap: 0.6rem; transition: border-color 0.2s, transform 0.2s, background 0.2s; position: relative; overflow: hidden; }
 .pat-card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
-.pat-card.c::before { background: radial-gradient(circle at top right, rgba(0,242,255,0.05), transparent 60%); }
-.pat-card.s::before { background: radial-gradient(circle at top right, rgba(110,0,255,0.07), transparent 60%); }
-.pat-card.b::before { background: radial-gradient(circle at top right, rgba(0,255,170,0.05), transparent 60%); }
+.pat-card.c::before { background: radial-gradient(circle at top right, rgba(232,184,109,0.06), transparent 60%); }
+.pat-card.s::before { background: radial-gradient(circle at top right, rgba(109,158,232,0.06), transparent 60%); }
+.pat-card.b::before { background: radial-gradient(circle at top right, rgba(109,232,168,0.06), transparent 60%); }
 .pat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .pat-card:hover::before { opacity: 1; }
 .pat-num { font-family: var(--font-mono); font-size: 0.7rem; color: var(--border); }
-.pat-name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: #fff; }
-.pat-tag { font-size: 0.82rem; color: var(--muted); line-height: 1.4; font-family: var(--font-mono); }
+.pat-name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: #fff; }
+.pat-tag { font-size: 0.82rem; color: var(--muted); font-style: italic; line-height: 1.4; }
 .pat-diff { margin-top: auto; font-family: var(--font-mono); font-size: 0.68rem; }
-.pat-diff.b { color: var(--accent3); } .pat-diff.i { color: var(--accent); } .pat-diff.a { color: var(--danger); }
+.pat-diff.b { color: #6de8a8; } .pat-diff.i { color: #e8b86d; } .pat-diff.a { color: #e86d6d; }
 
 .intro-strip { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2rem; margin-bottom: 3rem; }
 .intro-strip-inner { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1.5rem; }
@@ -104,31 +104,31 @@
       <div class="cat-line"></div>
     </div>
     <div class="card-grid">
-      <a href="singleton.html" class="pat-card c" data-cat="c">
+      <a href="creational/singleton.html" class="pat-card c" data-cat="c">
         <div class="pat-num">01</div>
         <div class="pat-name">Singleton</div>
         <div class="pat-tag">Ensure a class has only one instance and provide a global access point</div>
         <div class="pat-diff b">● Beginner</div>
       </a>
-      <a href="factory-method.html" class="pat-card c" data-cat="c">
+      <a href="creational/factory-method.html" class="pat-card c" data-cat="c">
         <div class="pat-num">02</div>
         <div class="pat-name">Factory Method</div>
         <div class="pat-tag">Define an interface for creating an object, but let subclasses decide which class to instantiate</div>
         <div class="pat-diff i">● Intermediate</div>
       </a>
-      <a href="abstract-factory.html" class="pat-card c" data-cat="c">
+      <a href="creational/abstract-factory.html" class="pat-card c" data-cat="c">
         <div class="pat-num">03</div>
         <div class="pat-name">Abstract Factory</div>
         <div class="pat-tag">Provide an interface for creating families of related or dependent objects</div>
         <div class="pat-diff i">● Intermediate</div>
       </a>
-      <a href="builder.html" class="pat-card c" data-cat="c">
+      <a href="creational/builder.html" class="pat-card c" data-cat="c">
         <div class="pat-num">04</div>
         <div class="pat-name">Builder</div>
         <div class="pat-tag">Separate construction of a complex object from its representation</div>
         <div class="pat-diff i">● Intermediate</div>
       </a>
-      <a href="prototype.html" class="pat-card c" data-cat="c">
+      <a href="creational/prototype.html" class="pat-card c" data-cat="c">
         <div class="pat-num">05</div>
         <div class="pat-name">Prototype</div>
         <div class="pat-tag">Specify the kinds of objects to create using a prototypical instance, and create by copying</div>

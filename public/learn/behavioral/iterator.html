@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Iterator Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Iterator</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Iterator</h1>
+    <p class="page-tagline">Provide a way to access elements of a collection sequentially without exposing its underlying representation.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #16 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Iterator Pattern?</h2>
+    <p>Iterator extracts the traversal logic from a collection into a separate iterator object. Clients use a uniform interface (<code>hasNext()</code>, <code>next()</code>) to traverse any collection — whether it's a list, tree, graph, or database result set — without knowing the internal structure.</p>
+    <p>Multiple iterators can traverse the same collection independently and simultaneously, each maintaining their own position.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A TV remote's channel button. You press "next channel" without knowing how channels are stored internally (broadcast frequencies, cable mappings, satellite tables). The remote is your iterator.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a tree data structure. Clients want to traverse it depth-first sometimes and breadth-first other times. Adding both traversal modes directly to the tree bloats the collection class and forces clients to know about traversal internals.</p>
+    <p>Iterator extracts each traversal strategy into its own iterator class. The tree just provides <code>createDepthFirstIterator()</code> and <code>createBreadthFirstIterator()</code> — the traversal logic lives outside.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Iterator (interface)</div><div class="participant-desc">Declares the traversal interface: <code>hasNext()</code>, <code>next()</code>, optionally <code>remove()</code>. Clients only use this interface.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteIterator</div><div class="participant-desc">Implements the traversal algorithm. Tracks the current position in the collection. Multiple instances can traverse the same collection independently.</div></div>
+      <div class="participant"><div class="participant-name">IterableCollection (interface)</div><div class="participant-desc">Declares the factory method <code>createIterator()</code> so clients can get an iterator without knowing the concrete collection type.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteCollection</div><div class="participant-desc">Implements <code>createIterator()</code> to return a ConcreteIterator appropriate for its internal structure.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="260" viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Iterator interface -->
+        <rect x="380" y="20" width="210" height="70" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="485" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface» Iterator</text>
+        <text x="485" y="62" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">hasNext(): boolean</text>
+        <text x="485" y="78" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">next(): T</text>
+        <!-- ConcreteIterator -->
+        <rect x="380" y="155" width="210" height="80" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="485" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">ConcreteIterator</text>
+        <text x="485" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">collection: ref</text>
+        <text x="485" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">position: int</text>
+        <text x="485" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">hasNext() / next()</text>
+        <!-- Collection interface -->
+        <rect x="50" y="20" width="220" height="70" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="160" y="44" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface» Collection</text>
+        <text x="160" y="62" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">createIterator(): Iterator</text>
+        <text x="160" y="78" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">add() / getItems()</text>
+        <!-- ConcreteCollection -->
+        <rect x="50" y="155" width="220" height="80" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="160" y="178" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">ConcreteCollection</text>
+        <text x="160" y="196" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">items: List&lt;T&gt;</text>
+        <text x="160" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">createIterator() →</text>
+        <text x="160" y="230" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  new ConcreteIterator(this)</text>
+        <!-- arrows -->
+        <line x1="160" y1="90"  x2="160" y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="485" y1="90"  x2="485" y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="270" y1="195" x2="380" y2="195" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="296" y="188" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">creates</text>
+        <!-- Client -->
+        <rect x="220" y="100" width="140" height="45" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="290" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#b46de8">Client</text>
+        <text x="290" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">uses both interfaces</text>
+        <line x1="270" y1="122" x2="160" y2="90" stroke="#b46de8" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+        <line x1="310" y1="122" x2="430" y2="90" stroke="#b46de8" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arr)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Custom Iterator + Java Iterable Integration</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Custom Iterator interface</span>
+<span class="kw">public interface</span> <span class="cl">Iterator</span>&lt;T&gt; {
+    <span class="kw">boolean</span> <span class="fn">hasNext</span>();
+    T       <span class="fn">next</span>();
+}
+
+<span class="cm">// The collection</span>
+<span class="kw">public class</span> <span class="cl">UserCollection</span> <span class="kw">implements</span> <span class="cl">Iterable</span>&lt;<span class="cl">String</span>&gt; {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; users = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">add</span>(<span class="cl">String</span> user) { users.<span class="fn">add</span>(user); }
+
+    <span class="cm">// Forward iterator</span>
+    <span class="kw">public</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; <span class="fn">iterator</span>() {
+        <span class="kw">return new</span> <span class="cl">ForwardIterator</span>();
+    }
+
+    <span class="cm">// Reverse iterator — extra traversal order</span>
+    <span class="kw">public</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; <span class="fn">reverseIterator</span>() {
+        <span class="kw">return new</span> <span class="cl">ReverseIterator</span>();
+    }
+
+    <span class="cm">// Filter iterator — only users matching a predicate</span>
+    <span class="kw">public</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; <span class="fn">filterIterator</span>(<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; pred) {
+        <span class="kw">return new</span> <span class="cl">FilterIterator</span>(pred);
+    }
+
+    <span class="cm">// ── ConcreteIterator: Forward ──────────────────────────</span>
+    <span class="kw">private class</span> <span class="cl">ForwardIterator</span> <span class="kw">implements</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; {
+        <span class="kw">private int</span> index = <span class="nm">0</span>;
+        <span class="kw">public boolean</span> <span class="fn">hasNext</span>() { <span class="kw">return</span> index &lt; users.<span class="fn">size</span>(); }
+        <span class="kw">public</span> <span class="cl">String</span>  <span class="fn">next</span>()    {
+            <span class="kw">if</span> (!<span class="fn">hasNext</span>()) <span class="kw">throw new</span> <span class="cl">NoSuchElementException</span>();
+            <span class="kw">return</span> users.<span class="fn">get</span>(index++);
+        }
+    }
+
+    <span class="cm">// ── ConcreteIterator: Reverse ──────────────────────────</span>
+    <span class="kw">private class</span> <span class="cl">ReverseIterator</span> <span class="kw">implements</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; {
+        <span class="kw">private int</span> index = users.<span class="fn">size</span>() - <span class="nm">1</span>;
+        <span class="kw">public boolean</span> <span class="fn">hasNext</span>() { <span class="kw">return</span> index >= <span class="nm">0</span>; }
+        <span class="kw">public</span> <span class="cl">String</span>  <span class="fn">next</span>()    {
+            <span class="kw">if</span> (!<span class="fn">hasNext</span>()) <span class="kw">throw new</span> <span class="cl">NoSuchElementException</span>();
+            <span class="kw">return</span> users.<span class="fn">get</span>(index--);
+        }
+    }
+
+    <span class="cm">// ── ConcreteIterator: Filter ───────────────────────────</span>
+    <span class="kw">private class</span> <span class="cl">FilterIterator</span> <span class="kw">implements</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; {
+        <span class="kw">private final</span> <span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; pred;
+        <span class="kw">private int</span> index = <span class="nm">0</span>;
+        <span class="kw">private</span> <span class="cl">String</span> next = <span class="kw">null</span>;
+
+        <span class="fn">FilterIterator</span>(<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; pred) {
+            <span class="kw">this</span>.pred = pred; <span class="fn">advance</span>();
+        }
+
+        <span class="kw">private void</span> <span class="fn">advance</span>() {
+            next = <span class="kw">null</span>;
+            <span class="kw">while</span> (index &lt; users.<span class="fn">size</span>()) {
+                <span class="cl">String</span> candidate = users.<span class="fn">get</span>(index++);
+                <span class="kw">if</span> (pred.<span class="fn">test</span>(candidate)) { next = candidate; <span class="kw">break</span>; }
+            }
+        }
+        <span class="kw">public boolean</span> <span class="fn">hasNext</span>() { <span class="kw">return</span> next != <span class="kw">null</span>; }
+        <span class="kw">public</span> <span class="cl">String</span>  <span class="fn">next</span>()    {
+            <span class="cl">String</span> r = next; <span class="fn">advance</span>(); <span class="kw">return</span> r;
+        }
+    }
+}
+
+<span class="cm">// Client — uniform traversal regardless of iterator type</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">UserCollection</span> users = <span class="kw">new</span> <span class="cl">UserCollection</span>();
+        users.<span class="fn">add</span>(<span class="st">"Alice"</span>); users.<span class="fn">add</span>(<span class="st">"Bob"</span>); users.<span class="fn">add</span>(<span class="st">"Charlie"</span>);
+
+        <span class="cm">// for-each uses iterator() automatically</span>
+        <span class="kw">for</span> (<span class="cl">String</span> u : users) <span class="cl">System</span>.out.<span class="fn">print</span>(u + <span class="st">" "</span>); <span class="cm">// Alice Bob Charlie</span>
+
+        <span class="cm">// Reverse</span>
+        <span class="kw">var</span> rev = users.<span class="fn">reverseIterator</span>();
+        <span class="kw">while</span> (rev.<span class="fn">hasNext</span>()) <span class="cl">System</span>.out.<span class="fn">print</span>(rev.<span class="fn">next</span>() + <span class="st">" "</span>); <span class="cm">// Charlie Bob Alice</span>
+
+        <span class="cm">// Filtered — names starting with 'A'</span>
+        <span class="kw">var</span> filtered = users.<span class="fn">filterIterator</span>(u -> u.<span class="fn">startsWith</span>(<span class="st">"A"</span>));
+        <span class="kw">while</span> (filtered.<span class="fn">hasNext</span>()) <span class="cl">System</span>.out.<span class="fn">print</span>(filtered.<span class="fn">next</span>()); <span class="cm">// Alice</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Collection has a complex internal structure you want to hide from clients</li>
+          <li>You need multiple traversal algorithms over the same collection</li>
+          <li>You want a uniform traversal interface across different collection types</li>
+          <li>Multiple clients need to traverse the same collection simultaneously</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Simple list traversal — Java's enhanced for-loop and Stream API are sufficient</li>
+          <li>The collection is tiny and traversal strategy will never change</li>
+          <li>You need random access by index — Iterator is sequential only</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.Iterator</code> — the canonical Iterator interface, implemented by every Java Collection</li>
+      <li><code>java.util.ListIterator</code> — bidirectional iterator extending the base Iterator</li>
+      <li><code>ResultSet</code> in JDBC — iterates over DB rows with <code>next()</code> without knowing the DB structure</li>
+      <li>Java Streams — <code>Spliterator</code> is an advanced parallel-capable iterator under the hood</li>
+      <li><code>Scanner</code> — iterates tokens over input streams via <code>hasNext()</code>/<code>next()</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Single Responsibility — traversal logic separate from collection</li>
+          <li>Open/Closed — add new traversal types without changing collection</li>
+          <li>Multiple simultaneous iterations over same collection</li>
+          <li>Uniform client code regardless of collection type</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Overkill for simple collections — Java for-each or Streams are cleaner</li>
+          <li>Concurrent modification during iteration throws <code>ConcurrentModificationException</code></li>
+          <li>Stateful iterator objects can be misused if not consumed fully</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Iterator Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Concurrent modification:</strong> Collection is modified (add/remove) while an iterator is traversing it — Java's fail-fast iterators throw <code>ConcurrentModificationException</code>, but custom iterators may silently skip or duplicate elements</li>
+          <li><strong>Calling next() without hasNext():</strong> Iterator is advanced past the end — throws <code>NoSuchElementException</code> or returns null depending on implementation</li>
+          <li><strong>Shared iterator across threads:</strong> Two threads call <code>next()</code> on the same iterator instance — both advance the position counter, causing elements to be skipped</li>
+          <li><strong>remove() on unsupported iterator:</strong> Calling <code>remove()</code> on an iterator that doesn't support it throws <code>UnsupportedOperationException</code> at runtime with no compile-time warning</li>
+          <li><strong>Infinite iterator with no termination:</strong> Iterator over a lazy/infinite sequence — client code that loops without a break condition runs forever</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Use modCount guard:</strong> Store the collection's modification count at iterator creation — check it in <code>next()</code> and throw <code>ConcurrentModificationException</code> if changed (Java's approach)</li>
+          <li><strong>Always check hasNext() before next():</strong> Enforce this by contract documentation; or throw a descriptive <code>IllegalStateException</code> with a message rather than a bare NPE</li>
+          <li><strong>Never share iterator across threads:</strong> Iterators are not thread-safe — document clearly; use <code>CopyOnWriteArrayList</code> or take a snapshot for concurrent scenarios</li>
+          <li><strong>Defensive copy for concurrent iteration:</strong> Iterate over a copy (<code>new ArrayList<>(original)</code>) when modifications are expected during traversal</li>
+          <li><strong>Bound infinite iterators:</strong> Always combine lazy/infinite iterators with a limit — use <code>Stream.limit(n)</code> or add a max-elements guard in <code>hasNext()</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — concurrent modification</span>
+<span class="kw">for</span> (<span class="cl">String</span> user : users) {
+    <span class="kw">if</span> (user.<span class="fn">startsWith</span>(<span class="st">"A"</span>)) users.<span class="fn">remove</span>(user); <span class="cm">// ❌ ConcurrentModificationException</span>
+}
+
+<span class="cm">// ✅ FIX 1 — use iterator's own remove()</span>
+<span class="kw">var</span> it = users.<span class="fn">iterator</span>();
+<span class="kw">while</span> (it.<span class="fn">hasNext</span>()) {
+    <span class="kw">if</span> (it.<span class="fn">next</span>().<span class="fn">startsWith</span>(<span class="st">"A"</span>)) it.<span class="fn">remove</span>(); <span class="cm">// ✅ safe</span>
+}
+
+<span class="cm">// ✅ FIX 2 — removeIf (Java 8+)</span>
+users.<span class="fn">removeIf</span>(u -> u.<span class="fn">startsWith</span>(<span class="st">"A"</span>)); <span class="cm">// ✅ cleanest approach</span>
+
+<span class="cm">// ✅ modCount guard in custom iterator</span>
+<span class="kw">private class</span> <span class="cl">SafeIterator</span> <span class="kw">implements</span> <span class="cl">java.util.Iterator</span>&lt;<span class="cl">String</span>&gt; {
+    <span class="kw">private int</span> index = <span class="nm">0</span>;
+    <span class="kw">private final int</span> expectedModCount = modCount; <span class="cm">// snapshot at creation</span>
+
+    <span class="kw">private void</span> <span class="fn">checkModification</span>() {
+        <span class="kw">if</span> (modCount != expectedModCount)
+            <span class="kw">throw new</span> <span class="cl">ConcurrentModificationException</span>();
+    }
+
+    <span class="kw">public boolean</span> <span class="fn">hasNext</span>() { <span class="fn">checkModification</span>(); <span class="kw">return</span> index &lt; items.<span class="fn">size</span>(); }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">next</span>()    { <span class="fn">checkModification</span>(); <span class="kw">return</span> items.<span class="fn">get</span>(index++); }
+}
+
+<span class="cm">// ❌ BREAKING — next() without hasNext()</span>
+<span class="kw">while</span> (<span class="kw">true</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(it.<span class="fn">next</span>()); <span class="cm">// ❌ NoSuchElementException when empty</span>
+}
+
+<span class="cm">// ✅ FIX — always guard with hasNext()</span>
+<span class="kw">while</span> (it.<span class="fn">hasNext</span>()) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(it.<span class="fn">next</span>()); <span class="cm">// ✅ safe</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='../structural/composite.html'">
+        <div><div class="related-name">Composite</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator is commonly used to traverse Composite trees. A recursive or stack-based iterator can traverse the entire tree without the client knowing its depth or structure.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../creational/factory-method.html'">
+        <div><div class="related-name">Factory Method</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Collections use Factory Method to create their iterator — <code>createIterator()</code> is a factory method that returns the appropriate ConcreteIterator for the collection's structure.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='memento.html'">
+        <div><div class="related-name">Memento</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator can use Memento to capture its current traversal position as a snapshot, allowing the iteration to be paused, saved, and resumed later from the exact same position.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='visitor.html'">
+        <div><div class="related-name">Visitor</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator traverses a collection; Visitor performs operations on each element. Together they let you apply any operation to each element of any structure without modifying either.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Separates traversal from the collection. Iterator knows where it is; client just calls <code>hasNext()</code>/<code>next()</code>. Multiple iterators can traverse the same collection independently and simultaneously.</li>
+        <li><strong>Java built-in:</strong> <code>java.util.Iterator&lt;T&gt;</code> with <code>hasNext()</code>, <code>next()</code>, <code>remove()</code>. Implement <code>Iterable&lt;T&gt;</code> on your collection to enable for-each syntax. Java's iterators are fail-fast — they throw <code>ConcurrentModificationException</code> if collection changes during iteration.</li>
+        <li><strong>Critical rule:</strong> Never modify a collection while iterating with a for-each. Use <code>iterator.remove()</code> or <code>Collection.removeIf()</code> instead.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="interpreter.html"><span class="nav-dir">← Previous</span><span class="nav-title">Interpreter</span></a>
+    <a href="mediator.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Mediator</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

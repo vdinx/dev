@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Memento Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Memento</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Memento</h1>
+    <p class="page-tagline">Capture and externalise an object's internal state so it can be restored later — without violating encapsulation.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #18 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Memento Pattern?</h2>
+    <p>Memento lets you save and restore snapshots of an object's state without exposing its internal structure. The originator creates a memento containing a copy of its private state. The caretaker stores and returns mementos. The originator restores from a memento when needed.</p>
+    <p>Crucially, only the originator can read the memento's content — the caretaker stores it as an opaque token, preserving encapsulation.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Video game save points. When you save, the game writes your entire state (position, health, inventory) to a save file (memento). When you reload, the exact state is restored — the save system (caretaker) never knows the details of the game state.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You need undo in a text editor. The naive approach: make all text editor fields public so the history manager can read and save them. This violates encapsulation — internal state is exposed to the outside world.</p>
+    <p>Memento solves it: the TextEditor creates a snapshot of its own private state and returns it as an opaque object. The history manager stores it without reading it. On undo, the editor receives its snapshot back and restores itself — no outside code ever sees internal state.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Originator</div><div class="participant-desc">Creates mementos capturing its current state. Restores its state from a memento. The only class that reads or writes memento content.</div></div>
+      <div class="participant"><div class="participant-name">Memento</div><div class="participant-desc">Stores a snapshot of the Originator's internal state. Exposes its state only to the Originator (via package-private or inner class access). Opaque to everyone else.</div></div>
+      <div class="participant"><div class="participant-name">Caretaker</div><div class="participant-desc">Stores and manages mementos (typically in a stack for undo). Never examines or modifies memento content — treats them as opaque tokens.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="240" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Originator -->
+        <rect x="20" y="60" width="200" height="110" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="120" y="88" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#e8b86d" font-weight="600">Originator</text>
+        <text x="120" y="106" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">- state (private)</text>
+        <text x="120" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">+ save() → Memento</text>
+        <text x="120" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">+ restore(Memento)</text>
+        <text x="120" y="154" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">only one who reads</text>
+        <text x="120" y="166" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">memento content</text>
+        <!-- Memento -->
+        <rect x="270" y="60" width="160" height="110" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="350" y="88"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6d9ee8" font-weight="600">Memento</text>
+        <text x="350" y="106" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">- state (opaque)</text>
+        <text x="350" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">getState() — only</text>
+        <text x="350" y="138" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">originator can call</text>
+        <text x="350" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">opaque to caretaker</text>
+        <!-- Caretaker -->
+        <rect x="490" y="60" width="140" height="110" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="560" y="88"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#6de8a8" font-weight="600">Caretaker</text>
+        <text x="560" y="106" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">history: Stack</text>
+        <text x="560" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">&lt;Memento&gt;</text>
+        <text x="560" y="140" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">backup()</text>
+        <text x="560" y="158" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">undo()</text>
+        <!-- arrows -->
+        <line x1="220" y1="115" x2="270" y2="115" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="228" y="108" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">save()</text>
+        <line x1="270" y1="130" x2="220" y2="130" stroke="#6d9ee8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="224" y="148" font-family="JetBrains Mono,monospace" font-size="8" fill="#6d9ee8">restore()</text>
+        <line x1="430" y1="115" x2="490" y2="115" stroke="#6de8a8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="440" y="108" font-family="JetBrains Mono,monospace" font-size="8" fill="#6de8a8">stores</text>
+        <!-- flow -->
+        <rect x="10" y="195" width="620" height="35" rx="4" fill="#080a0f" stroke="#252a38"/>
+        <text x="320" y="212" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">Flow: Originator.save() → Memento  →  Caretaker stores it  →  on undo: Caretaker returns Memento → Originator.restore(memento)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Text Editor with Undo History</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Originator — creates and restores from mementos</span>
+<span class="kw">public class</span> <span class="cl">TextEditor</span> {
+    <span class="kw">private</span> <span class="cl">String</span>  text     = <span class="st">""</span>;
+    <span class="kw">private int</span>     cursorPos = <span class="nm">0</span>;
+    <span class="kw">private</span> <span class="cl">String</span>  selection = <span class="kw">null</span>;
+
+    <span class="kw">public void</span> <span class="fn">type</span>(<span class="cl">String</span> chars) {
+        text = text.<span class="fn">substring</span>(<span class="nm">0</span>, cursorPos) + chars + text.<span class="fn">substring</span>(cursorPos);
+        cursorPos += chars.<span class="fn">length</span>();
+    }
+
+    <span class="cm">// Creates a snapshot — only TextEditor can read it back</span>
+    <span class="kw">public</span> <span class="cl">Snapshot</span> <span class="fn">save</span>() {
+        <span class="kw">return new</span> <span class="cl">Snapshot</span>(text, cursorPos, selection); <span class="cm">// captures full state</span>
+    }
+
+    <span class="cm">// Restores from snapshot</span>
+    <span class="kw">public void</span> <span class="fn">restore</span>(<span class="cl">Snapshot</span> snapshot) {
+        <span class="kw">this</span>.text      = snapshot.<span class="fn">getText</span>();
+        <span class="kw">this</span>.cursorPos = snapshot.<span class="fn">getCursorPos</span>();
+        <span class="kw">this</span>.selection = snapshot.<span class="fn">getSelection</span>();
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getText</span>() { <span class="kw">return</span> text; }
+
+    <span class="cm">// ── Memento — inner class preserves encapsulation ──────────</span>
+    <span class="cm">// Only TextEditor (enclosing class) can access getters</span>
+    <span class="kw">public static class</span> <span class="cl">Snapshot</span> {
+        <span class="kw">private final</span> <span class="cl">String</span>  text;
+        <span class="kw">private final int</span>     cursorPos;
+        <span class="kw">private final</span> <span class="cl">String</span>  selection;
+        <span class="kw">private final long</span>    timestamp;
+
+        <span class="kw">private</span> <span class="fn">Snapshot</span>(<span class="cl">String</span> text, <span class="kw">int</span> cursorPos, <span class="cl">String</span> selection) {
+            <span class="kw">this</span>.text      = text;
+            <span class="kw">this</span>.cursorPos = cursorPos;
+            <span class="kw">this</span>.selection = selection;
+            <span class="kw">this</span>.timestamp = <span class="cl">System</span>.<span class="fn">currentTimeMillis</span>();
+        }
+
+        <span class="cm">// Package/private access — only originator uses these</span>
+        <span class="kw">private</span> <span class="cl">String</span>  <span class="fn">getText</span>()      { <span class="kw">return</span> text; }
+        <span class="kw">private int</span>     <span class="fn">getCursorPos</span>() { <span class="kw">return</span> cursorPos; }
+        <span class="kw">private</span> <span class="cl">String</span>  <span class="fn">getSelection</span>() { <span class="kw">return</span> selection; }
+        <span class="kw">public long</span>     <span class="fn">getTimestamp</span>() { <span class="kw">return</span> timestamp; } <span class="cm">// ok to expose</span>
+
+        <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() {
+            <span class="kw">return</span> <span class="st">"Snapshot@"</span> + timestamp + <span class="st">" (opaque)"</span>; <span class="cm">// caretaker sees this only</span>
+        }
+    }
+}
+
+<span class="cm">// Caretaker — manages history, never reads memento content</span>
+<span class="kw">public class</span> <span class="cl">History</span> {
+    <span class="kw">private final</span> <span class="cl">Deque</span>&lt;<span class="cl">TextEditor</span>.<span class="cl">Snapshot</span>&gt; undoStack = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+    <span class="kw">private final</span> <span class="cl">Deque</span>&lt;<span class="cl">TextEditor</span>.<span class="cl">Snapshot</span>&gt; redoStack = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+    <span class="kw">private final</span> <span class="cl">TextEditor</span> editor;
+
+    <span class="kw">public</span> <span class="fn">History</span>(<span class="cl">TextEditor</span> editor) { <span class="kw">this</span>.editor = editor; }
+
+    <span class="kw">public void</span> <span class="fn">backup</span>() {
+        undoStack.<span class="fn">push</span>(editor.<span class="fn">save</span>()); <span class="cm">// store snapshot — never reads it</span>
+        redoStack.<span class="fn">clear</span>();
+    }
+
+    <span class="kw">public void</span> <span class="fn">undo</span>() {
+        <span class="kw">if</span> (undoStack.<span class="fn">isEmpty</span>()) { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Nothing to undo"</span>); <span class="kw">return</span>; }
+        redoStack.<span class="fn">push</span>(editor.<span class="fn">save</span>());         <span class="cm">// save current for redo</span>
+        editor.<span class="fn">restore</span>(undoStack.<span class="fn">pop</span>());         <span class="cm">// restore from snapshot</span>
+    }
+
+    <span class="kw">public void</span> <span class="fn">redo</span>() {
+        <span class="kw">if</span> (redoStack.<span class="fn">isEmpty</span>()) { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Nothing to redo"</span>); <span class="kw">return</span>; }
+        undoStack.<span class="fn">push</span>(editor.<span class="fn">save</span>());
+        editor.<span class="fn">restore</span>(redoStack.<span class="fn">pop</span>());
+    }
+}
+
+<span class="cm">// Client</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">TextEditor</span> editor  = <span class="kw">new</span> <span class="cl">TextEditor</span>();
+        <span class="cl">History</span>    history = <span class="kw">new</span> <span class="cl">History</span>(editor);
+
+        history.<span class="fn">backup</span>(); editor.<span class="fn">type</span>(<span class="st">"Hello"</span>);
+        history.<span class="fn">backup</span>(); editor.<span class="fn">type</span>(<span class="st">" World"</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// Hello World</span>
+
+        history.<span class="fn">undo</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// Hello</span>
+
+        history.<span class="fn">undo</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// (empty)</span>
+
+        history.<span class="fn">redo</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(editor.<span class="fn">getText</span>()); <span class="cm">// Hello</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>You need undo/redo functionality without exposing object internals</li>
+          <li>A snapshot of an object's state is needed to restore it later</li>
+          <li>Direct access to the object's fields would expose its implementation</li>
+          <li>Transactional operations that need rollback support</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>State snapshots are large and memory is constrained</li>
+          <li>Frequent saves create performance overhead</li>
+          <li>The state contains non-serialisable references (open streams, live connections)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Java Serialisation — serialising an object to a byte array and deserialising is a form of Memento</li>
+      <li>Database transaction savepoints — <code>SAVEPOINT sp1</code> saves DB state; <code>ROLLBACK TO sp1</code> restores it</li>
+      <li>Browser history — each page visit is a memento; back/forward restores state</li>
+      <li>Spring's <code>@Transactional</code> rollback — on exception, transaction state is restored to start</li>
+      <li>Git commits — each commit is a memento of the entire repository state; <code>git checkout</code> restores</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Preserves encapsulation — caretaker never sees internal state</li>
+          <li>Simplifies the originator — undo/redo logic lives in caretaker</li>
+          <li>Clean separation: originator creates/restores, caretaker manages lifecycle</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Memory intensive — deep history stacks can consume large amounts of RAM</li>
+          <li>Serialising complex object graphs (circular refs, open resources) is tricky</li>
+          <li>Caretaker must know when to save — missed saves lose history</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Memento Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Caretaker reading memento internals:</strong> If the Memento has public getters for all state fields, the caretaker (or any class) can read and potentially modify the snapshot — encapsulation is broken</li>
+          <li><strong>Shallow snapshot of mutable state:</strong> Memento stores a reference to a mutable nested object — after saving, the originator mutates that object, corrupting the snapshot retroactively</li>
+          <li><strong>Unbounded history stack:</strong> Every keystroke creates a snapshot — after millions of edits the history consumes all available heap memory</li>
+          <li><strong>Restoring stale snapshot with live resources:</strong> Snapshot contains a reference to an open DB connection or file handle — restoring it after those resources have been closed causes errors</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Restrict memento access with inner class or package-private:</strong> Make memento state fields private and getters accessible only to the originator — use a private static inner class or narrow package visibility</li>
+          <li><strong>Deep copy all mutable state:</strong> Every mutable object stored in the snapshot must be copied at snapshot time — never store live references to the originator's mutable fields</li>
+          <li><strong>Bounded history with LRU or max size:</strong> Cap the undo stack at a sensible maximum (e.g., 50 steps). Use an <code>ArrayDeque</code> with a size check and evict the oldest snapshot when full</li>
+          <li><strong>Exclude non-serialisable resources:</strong> Never include open streams, connections, or thread references in a snapshot — store only value data that can be safely recreated</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — shallow copy, originator corrupts snapshot</span>
+<span class="kw">public class</span> <span class="cl">BadSnapshot</span> {
+    <span class="kw">public final</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; items; <span class="cm">// ❌ reference to live mutable list</span>
+    <span class="kw">public</span> <span class="fn">BadSnapshot</span>(<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; items) { <span class="kw">this</span>.items = items; }
+}
+<span class="cm">// After save: originator.items.add("new") → snapshot is corrupted too!</span>
+
+<span class="cm">// ✅ FIX — deep copy at snapshot time</span>
+<span class="kw">public class</span> <span class="cl">GoodSnapshot</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; items;
+    <span class="kw">public</span> <span class="fn">GoodSnapshot</span>(<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; items) {
+        <span class="kw">this</span>.items = <span class="cl">List</span>.<span class="fn">copyOf</span>(items); <span class="cm">// ✅ immutable defensive copy</span>
+    }
+}
+
+<span class="cm">// ❌ BREAKING — public getters expose internals to caretaker</span>
+<span class="kw">public class</span> <span class="cl">LeakySnapshot</span> {
+    <span class="kw">public</span> <span class="cl">String</span> getText()      { <span class="kw">return</span> text; }      <span class="cm">// ❌ anyone can read</span>
+    <span class="kw">public int</span>    getCursorPos()  { <span class="kw">return</span> cursorPos; } <span class="cm">// ❌ internals exposed</span>
+}
+
+<span class="cm">// ✅ FIX — private static inner class, only outer class accesses</span>
+<span class="kw">public class</span> <span class="cl">TextEditor</span> {
+    <span class="kw">private</span> <span class="cl">String</span> text;
+
+    <span class="kw">public static class</span> <span class="cl">Snapshot</span> {
+        <span class="kw">private final</span> <span class="cl">String</span> text; <span class="cm">// private — caretaker cannot read</span>
+        <span class="kw">private</span> <span class="fn">Snapshot</span>(<span class="cl">String</span> t) { <span class="kw">this</span>.text = t; }
+        <span class="kw">private</span> <span class="cl">String</span> <span class="fn">getText</span>() { <span class="kw">return</span> text; } <span class="cm">// only TextEditor calls this</span>
+    }
+
+    <span class="kw">public</span> <span class="cl">Snapshot</span> <span class="fn">save</span>()                  { <span class="kw">return new</span> <span class="cl">Snapshot</span>(text); }
+    <span class="kw">public void</span>     <span class="fn">restore</span>(<span class="cl">Snapshot</span> s)      { <span class="kw">this</span>.text = s.<span class="fn">getText</span>(); }
+}
+
+<span class="cm">// ✅ Bounded history — evict oldest when full</span>
+<span class="kw">private static final int</span> MAX_HISTORY = <span class="nm">50</span>;
+
+<span class="kw">public void</span> <span class="fn">backup</span>() {
+    <span class="kw">if</span> (undoStack.<span class="fn">size</span>() >= MAX_HISTORY) {
+        undoStack.<span class="fn">removeLast</span>(); <span class="cm">// evict oldest to cap memory</span>
+    }
+    undoStack.<span class="fn">push</span>(editor.<span class="fn">save</span>());
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='command.html'">
+        <div><div class="related-name">Command</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Command uses Memento to save state before <code>execute()</code> so <code>undo()</code> can restore it. They are a classic pair — Command provides the action, Memento provides the rollback snapshot.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='iterator.html'">
+        <div><div class="related-name">Iterator</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator can use Memento to capture traversal position — allowing iteration to be paused, serialised, and resumed later from the exact same point in the collection.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../creational/prototype.html'">
+        <div><div class="related-name">Prototype</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Prototype clones an object to create a new independent copy for ongoing use. Memento snapshots an object's state to restore it later — the snapshot is not used as a live object, only as a rollback point.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Saves and restores an object's private state without breaking encapsulation. Originator creates/restores snapshots. Caretaker stores them as opaque tokens — never reads their content.</li>
+        <li><strong>How:</strong> Originator has <code>save() → Snapshot</code> and <code>restore(Snapshot)</code>. Snapshot is a private inner class with private fields/getters — only the enclosing Originator can access them. Caretaker holds a <code>Stack&lt;Snapshot&gt;</code>.</li>
+        <li><strong>Critical rules:</strong> Always deep-copy mutable fields into the snapshot. Cap history stack size to prevent memory leaks. Use Command + Memento together for a complete undo/redo system.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="mediator.html"><span class="nav-dir">← Previous</span><span class="nav-title">Mediator</span></a>
+    <a href="observer.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Observer</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

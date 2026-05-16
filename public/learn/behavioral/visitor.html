@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Visitor Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Visitor</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Visitor</h1>
+    <p class="page-tagline">Represent an operation to be performed on elements of an object structure — define a new operation without changing the classes of the elements it operates on.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-advanced">Advanced</span>
+      <span class="diff-badge">Pattern #23 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Visitor Pattern?</h2>
+    <p>Visitor lets you add new operations to an existing object structure without modifying the classes of those objects. You separate the algorithm from the object structure — the algorithm lives in a Visitor class, while the object's <code>accept(visitor)</code> method dispatches the right visitor method via double dispatch.</p>
+    <p>Every time you need a new operation on the structure, you add a new Visitor class rather than touching the existing element classes.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A tax inspector (visitor) visiting different types of businesses (elements — restaurant, hotel, factory). Each business type has a different tax calculation. The inspector visits each and applies the right calculation for each type — the businesses don't change, just the inspector logic.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a document object model: <code>Paragraph</code>, <code>Image</code>, <code>Table</code> elements. You need operations: export to HTML, export to PDF, spell-check. Adding each operation as a method to every element class bloats them all. Adding a fourth operation requires modifying all three element classes again.</p>
+    <p>Visitor puts each operation in its own class: <code>HTMLExportVisitor</code>, <code>PDFExportVisitor</code>, <code>SpellCheckVisitor</code>. Adding a new operation = one new class, zero changes to elements.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Visitor (interface)</div><div class="participant-desc">Declares a <code>visit(ConcreteElement)</code> overload for each concrete element type in the structure. One method per element class.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteVisitor</div><div class="participant-desc">Implements all visit methods — one per element type. Implements one full operation across all element types.</div></div>
+      <div class="participant"><div class="participant-name">Element (interface)</div><div class="participant-desc">Declares <code>accept(Visitor)</code>. This is the key — it lets the visitor know which concrete element it's dealing with via double dispatch.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteElement</div><div class="participant-desc">Implements <code>accept(v)</code> as <code>v.visit(this)</code> — passing itself to the visitor. This is the double dispatch mechanism.</div></div>
+      <div class="participant"><div class="participant-name">ObjectStructure</div><div class="participant-desc">Holds the collection of elements. Provides a method to iterate elements and call <code>accept(visitor)</code> on each.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="650" height="280" viewBox="0 0 650 280" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Visitor interface -->
+        <rect x="360" y="10" width="270" height="80" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="495" y="36" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface» Visitor</text>
+        <text x="495" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">visit(Paragraph)</text>
+        <text x="495" y="70" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">visit(Image)</text>
+        <text x="495" y="84" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">visit(Table)</text>
+        <!-- ConcreteVisitors -->
+        <rect x="360" y="165" width="130" height="60" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="425" y="190" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">HTMLExportVisitor</text>
+        <text x="425" y="208" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">visit(Paragraph) …</text>
+        <rect x="510" y="165" width="130" height="60" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="575" y="190" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">SpellCheckVisitor</text>
+        <text x="575" y="208" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">visit(Paragraph) …</text>
+        <!-- Element interface -->
+        <rect x="30" y="10" width="220" height="60" rx="6" fill="#13161e" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="140" y="36" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">«interface» Element</text>
+        <text x="140" y="54" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">accept(Visitor v)</text>
+        <!-- ConcreteElements -->
+        <rect x="10" y="155" width="120" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="70" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">Paragraph</text>
+        <text x="70" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">accept(v) {</text>
+        <text x="70" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  v.visit(this)</text>
+        <rect x="145" y="155" width="100" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="195" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e2e4ec">Image</text>
+        <text x="195" y="198" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">accept(v) {</text>
+        <text x="195" y="214" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  v.visit(this)</text>
+        <!-- arrows -->
+        <line x1="90"  y1="70" x2="70"  y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="160" y1="70" x2="195" y2="155" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="420" y1="90" x2="400" y2="165" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="540" y1="90" x2="560" y2="165" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- double dispatch arrow -->
+        <line x1="245" y1="195" x2="360" y2="90" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="255" y="135" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">v.visit(this)</text>
+        <text x="255" y="148" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">double dispatch</text>
+        <!-- label -->
+        <rect x="10" y="240" width="630" height="30" rx="4" fill="#080a0f" stroke="#252a38"/>
+        <text x="325" y="257" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">Double dispatch: element.accept(visitor) → visitor.visit(element) — visitor always knows the exact concrete type</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Document Export Visitor</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Visitor interface — one visit() overload per element type</span>
+<span class="kw">public interface</span> <span class="cl">DocumentVisitor</span> {
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Paragraph</span> paragraph);
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Image</span>     image);
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Table</span>     table);
+}
+
+<span class="cm">// Element interface — accept dispatches to correct visit() via double dispatch</span>
+<span class="kw">public interface</span> <span class="cl">DocumentElement</span> {
+    <span class="kw">void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> visitor);
+}
+
+<span class="cm">// Concrete Elements — each calls v.visit(this)</span>
+<span class="kw">public class</span> <span class="cl">Paragraph</span> <span class="kw">implements</span> <span class="cl">DocumentElement</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> text;
+    <span class="kw">public</span> <span class="fn">Paragraph</span>(<span class="cl">String</span> text) { <span class="kw">this</span>.text = text; }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getText</span>() { <span class="kw">return</span> text; }
+    <span class="kw">public void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> v) { v.<span class="fn">visit</span>(<span class="kw">this</span>); } <span class="cm">// double dispatch</span>
+}
+
+<span class="kw">public class</span> <span class="cl">Image</span> <span class="kw">implements</span> <span class="cl">DocumentElement</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> src;
+    <span class="kw">private final int</span>    width, height;
+    <span class="kw">public</span> <span class="fn">Image</span>(<span class="cl">String</span> src, <span class="kw">int</span> w, <span class="kw">int</span> h) { <span class="kw">this</span>.src=src; width=w; height=h; }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getSrc</span>() { <span class="kw">return</span> src; }
+    <span class="kw">public int</span> <span class="fn">getWidth</span>() { <span class="kw">return</span> width; }
+    <span class="kw">public int</span> <span class="fn">getHeight</span>() { <span class="kw">return</span> height; }
+    <span class="kw">public void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> v) { v.<span class="fn">visit</span>(<span class="kw">this</span>); }
+}
+
+<span class="kw">public class</span> <span class="cl">Table</span> <span class="kw">implements</span> <span class="cl">DocumentElement</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; rows;
+    <span class="kw">public</span> <span class="fn">Table</span>(<span class="cl">List</span>&lt;<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; rows) { <span class="kw">this</span>.rows = rows; }
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; <span class="fn">getRows</span>() { <span class="kw">return</span> rows; }
+    <span class="kw">public void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> v) { v.<span class="fn">visit</span>(<span class="kw">this</span>); }
+}
+
+<span class="cm">// ConcreteVisitor 1 — HTML export operation</span>
+<span class="kw">public class</span> <span class="cl">HTMLExportVisitor</span> <span class="kw">implements</span> <span class="cl">DocumentVisitor</span> {
+    <span class="kw">private final</span> <span class="cl">StringBuilder</span> html = <span class="kw">new</span> <span class="cl">StringBuilder</span>();
+
+    <span class="kw">public void</span> <span class="fn">visit</span>(<span class="cl">Paragraph</span> p) {
+        html.<span class="fn">append</span>(<span class="st">"&lt;p&gt;"</span>).append(p.<span class="fn">getText</span>()).<span class="fn">append</span>(<span class="st">"&lt;/p&gt;\n"</span>);
+    }
+    <span class="kw">public void</span> <span class="fn">visit</span>(<span class="cl">Image</span> img) {
+        html.<span class="fn">append</span>(<span class="st">"&lt;img src='"</span>).append(img.<span class="fn">getSrc</span>())
+            .<span class="fn">append</span>(<span class="st">"' width='"</span>).append(img.<span class="fn">getWidth</span>()).<span class="fn">append</span>(<span class="st">"'/&gt;\n"</span>);
+    }
+    <span class="kw">public void</span> <span class="fn">visit</span>(<span class="cl">Table</span> t) {
+        html.<span class="fn">append</span>(<span class="st">"&lt;table&gt;\n"</span>);
+        t.<span class="fn">getRows</span>().<span class="fn">forEach</span>(row -> {
+            html.<span class="fn">append</span>(<span class="st">"  &lt;tr&gt;"</span>);
+            row.<span class="fn">forEach</span>(cell -> html.<span class="fn">append</span>(<span class="st">"&lt;td&gt;"</span>).append(cell).<span class="fn">append</span>(<span class="st">"&lt;/td&gt;"</span>));
+            html.<span class="fn">append</span>(<span class="st">"&lt;/tr&gt;\n"</span>);
+        });
+        html.<span class="fn">append</span>(<span class="st">"&lt;/table&gt;\n"</span>);
+    }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getHTML</span>() { <span class="kw">return</span> html.<span class="fn">toString</span>(); }
+}
+
+<span class="cm">// ConcreteVisitor 2 — Spell check (separate operation, zero changes to elements)</span>
+<span class="kw">public class</span> <span class="cl">SpellCheckVisitor</span> <span class="kw">implements</span> <span class="cl">DocumentVisitor</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; errors = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">visit</span>(<span class="cl">Paragraph</span> p) {
+        <span class="kw">if</span> (p.<span class="fn">getText</span>().<span class="fn">contains</span>(<span class="st">"teh"</span>)) errors.<span class="fn">add</span>(<span class="st">"Typo in paragraph: teh"</span>);
+    }
+    <span class="kw">public void</span> <span class="fn">visit</span>(<span class="cl">Image</span>     img) { <span class="cm">/* images have no text to check */</span> }
+    <span class="kw">public void</span> <span class="fn">visit</span>(<span class="cl">Table</span>     t)   {
+        t.<span class="fn">getRows</span>().<span class="fn">stream</span>().<span class="fn">flatMap</span>(<span class="cl">List</span>::<span class="fn">stream</span>)
+            .<span class="fn">filter</span>(cell -> cell.<span class="fn">contains</span>(<span class="st">"teh"</span>))
+            .<span class="fn">forEach</span>(c -> errors.<span class="fn">add</span>(<span class="st">"Typo in table cell: "</span> + c));
+    }
+    <span class="kw">public</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; <span class="fn">getErrors</span>() { <span class="kw">return</span> errors; }
+}
+
+<span class="cm">// Object Structure — holds elements, provides traversal</span>
+<span class="kw">public class</span> <span class="cl">Document</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">DocumentElement</span>&gt; elements = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="fn">add</span>(<span class="cl">DocumentElement</span> e) { elements.<span class="fn">add</span>(e); }
+
+    <span class="kw">public void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> visitor) {
+        elements.<span class="fn">forEach</span>(e -> e.<span class="fn">accept</span>(visitor)); <span class="cm">// double dispatch here</span>
+    }
+}
+
+<span class="cm">// Client</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Document</span> doc = <span class="kw">new</span> <span class="cl">Document</span>();
+        doc.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">Paragraph</span>(<span class="st">"Hello teh world"</span>));
+        doc.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">Image</span>(<span class="st">"logo.png"</span>, <span class="nm">200</span>, <span class="nm">100</span>));
+        doc.<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">Table</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Name"</span>, <span class="st">"Age"</span>), <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"30"</span>))));
+
+        <span class="cl">HTMLExportVisitor</span> htmlVisitor = <span class="kw">new</span> <span class="cl">HTMLExportVisitor</span>();
+        doc.<span class="fn">accept</span>(htmlVisitor);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(htmlVisitor.<span class="fn">getHTML</span>());
+
+        <span class="cl">SpellCheckVisitor</span> spellVisitor = <span class="kw">new</span> <span class="cl">SpellCheckVisitor</span>();
+        doc.<span class="fn">accept</span>(spellVisitor);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Errors: "</span> + spellVisitor.<span class="fn">getErrors</span>());
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Object structure is stable but you frequently need to add new operations to it</li>
+          <li>Many distinct and unrelated operations need to be performed on elements</li>
+          <li>You don't want to "pollute" element classes with unrelated operations</li>
+          <li>Working with composite trees (AST, DOM, file system)</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>New element types are added frequently — every new element requires updating all visitors</li>
+          <li>Element classes need to remain encapsulated — visitors may need access to private state</li>
+          <li>Only one or two operations are needed — a simple method on the element is cleaner</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Java compiler AST — Visitor traverses the abstract syntax tree for type-checking, bytecode generation</li>
+      <li>ANTLR generated parsers — listener/visitor pattern for walking parse trees</li>
+      <li>Spring AOP <code>PointcutVisitor</code> — walks pointcut expression trees</li>
+      <li><code>javax.lang.model.element.ElementVisitor</code> — annotation processing uses Visitor pattern</li>
+      <li>Apache Commons Math — expression tree evaluation via visitor traversal</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Open/Closed — add operations without changing element classes</li>
+          <li>Single Responsibility — each operation in its own Visitor class</li>
+          <li>Visitor can accumulate state across elements during traversal</li>
+          <li>Makes adding new operations trivial when element structure is stable</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Adding a new element type requires updating ALL Visitor classes</li>
+          <li>Visitors may break encapsulation — they often need access to element internals</li>
+          <li>Double dispatch is non-obvious and hard to understand for beginners</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Visitor Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>New element added without updating visitors:</strong> A new <code>Video</code> element is added to the structure — existing Visitors have no <code>visit(Video)</code> method. Java compile error if interface has it, but default no-op implementations silently ignore the new element</li>
+          <li><strong>accept() not implemented with double dispatch:</strong> An element implements <code>accept(v)</code> as <code>v.visit(this)</code> but mistakenly calls the wrong overload — visitor executes logic for the wrong element type</li>
+          <li><strong>Visitor accumulating shared mutable state across threads:</strong> A stateful Visitor (e.g., HTMLExportVisitor with a StringBuilder) is shared across multiple threads traversing the same document concurrently — output is corrupted</li>
+          <li><strong>Element bypasses accept() and calls visitor directly:</strong> Element calls <code>visitor.visit(anotherElement)</code> instead of <code>v.visit(this)</code> — double dispatch breaks and the wrong element's logic is invoked</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Sealed classes (Java 17+):</strong> Declare elements as <code>sealed</code> — every permitted subtype must be listed. Adding a new element type forces a compile error in all visitors that use exhaustive pattern matching, making gaps impossible to miss</li>
+          <li><strong>Never use default no-op visit() implementations:</strong> All visit methods should be abstract in the interface — the compiler forces every visitor to explicitly handle every element</li>
+          <li><strong>One visitor instance per traversal:</strong> Create a fresh visitor for each traversal invocation — never share mutable visitor state across threads or across multiple <code>document.accept()</code> calls</li>
+          <li><strong>Strict accept() contract:</strong> The rule is absolute — <code>accept(v)</code> always calls <code>v.visit(this)</code> and nothing else. Enforce via code review or a lint rule. Any deviation breaks double dispatch silently.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — new element not handled (default no-op)</span>
+<span class="kw">public interface</span> <span class="cl">DocumentVisitor</span> {
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Paragraph</span> p);
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Image</span> img);
+    <span class="kw">default void</span> <span class="fn">visit</span>(<span class="cl">Video</span> v) {} <span class="cm">// ❌ default no-op — Video silently ignored</span>
+}
+
+<span class="cm">// ✅ FIX — all visit methods abstract, compiler forces implementation</span>
+<span class="kw">public interface</span> <span class="cl">DocumentVisitor</span> {
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Paragraph</span> p);
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Image</span> img);
+    <span class="kw">void</span> <span class="fn">visit</span>(<span class="cl">Video</span> v);  <span class="cm">// ✅ must implement — won't compile otherwise</span>
+}
+
+<span class="cm">// ✅ Java 17 sealed classes — exhaustive coverage enforced</span>
+<span class="kw">public sealed interface</span> <span class="cl">DocumentElement</span>
+    <span class="kw">permits</span> <span class="cl">Paragraph</span>, <span class="cl">Image</span>, <span class="cl">Table</span>, <span class="cl">Video</span> {
+    <span class="kw">void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> v);
+}
+<span class="cm">// Pattern match in visitor — compiler error if new permit type not handled</span>
+<span class="kw">public void</span> <span class="fn">process</span>(<span class="cl">DocumentElement</span> e) {
+    <span class="kw">switch</span> (e) {
+        <span class="kw">case</span> <span class="cl">Paragraph</span> p -> <span class="fn">visit</span>(p);
+        <span class="kw">case</span> <span class="cl">Image</span>     i -> <span class="fn">visit</span>(i);
+        <span class="kw">case</span> <span class="cl">Table</span>     t -> <span class="fn">visit</span>(t);
+        <span class="kw">case</span> <span class="cl">Video</span>     v -> <span class="fn">visit</span>(v); <span class="cm">// ✅ sealed — compiler ensures complete coverage</span>
+    }
+}
+
+<span class="cm">// ❌ BREAKING — wrong double dispatch</span>
+<span class="kw">public class</span> <span class="cl">Image</span> <span class="kw">implements</span> <span class="cl">DocumentElement</span> {
+    <span class="kw">public void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> v) {
+        v.<span class="fn">visit</span>(<span class="kw">new</span> <span class="cl">Paragraph</span>(<span class="st">""</span>)); <span class="cm">// ❌ wrong type! visits Paragraph logic for an Image</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — accept() always and only calls v.visit(this)</span>
+<span class="kw">public class</span> <span class="cl">Image</span> <span class="kw">implements</span> <span class="cl">DocumentElement</span> {
+    <span class="kw">public void</span> <span class="fn">accept</span>(<span class="cl">DocumentVisitor</span> v) {
+        v.<span class="fn">visit</span>(<span class="kw">this</span>); <span class="cm">// ✅ always this — double dispatch is sacred</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='../structural/composite.html'">
+        <div><div class="related-name">Composite</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Visitor is most commonly applied to Composite trees. The Composite's <code>accept()</code> calls <code>accept()</code> on all children recursively, letting the visitor traverse and operate on the entire tree.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='iterator.html'">
+        <div><div class="related-name">Iterator</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator traverses the elements. Visitor operates on each element. Together they cleanly separate traversal (Iterator) from operation (Visitor) — either can be swapped independently.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='interpreter.html'">
+        <div><div class="related-name">Interpreter</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Visitor adds operations to an Interpreter AST — TypeCheckVisitor, EvalVisitor, OptimiseVisitor all operate on the same tree without modifying expression classes.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='command.html'">
+        <div><div class="related-name">Command</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Command encapsulates a single request as an object. Visitor encapsulates an entire operation across a type hierarchy. Visitor is like running many commands — one per element type — in a single traversal.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Separates operations from the object structure. Add new operations (Visitors) without changing element classes. Works via double dispatch: <code>element.accept(v)</code> → <code>v.visit(this)</code> — visitor always knows the exact concrete type.</li>
+        <li><strong>Double dispatch explained:</strong> First dispatch = polymorphic <code>accept()</code> call selects the right element class. Second dispatch = overloaded <code>visit(ConcreteElement)</code> selects the right visitor method. Together they give type-safe dispatch without instanceof.</li>
+        <li><strong>Trade-off rule:</strong> Visitor is ideal when element types are stable but operations grow frequently. If element types grow frequently instead, Visitor becomes a maintenance burden — every new element requires updating all visitors.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="template-method.html"><span class="nav-dir">← Previous</span><span class="nav-title">Template Method</span></a>
+    <a href="../index.html" class="right"><span class="nav-dir">↑ Back to Index</span><span class="nav-title">All Patterns</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

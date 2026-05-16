@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Template Method Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Template Method</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Template Method</h1>
+    <p class="page-tagline">Define the skeleton of an algorithm in a base class, deferring some steps to subclasses — subclasses can redefine certain steps without changing the algorithm's structure.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-beginner">Beginner</span>
+      <span class="diff-badge">Pattern #22 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Template Method Pattern?</h2>
+    <p>Template Method defines the overall structure of an algorithm in a base class method (the template method), and lets subclasses override specific steps without changing the skeleton. The base class controls the flow; subclasses provide the details.</p>
+    <p>This is the classic example of the Hollywood Principle: "Don't call us, we'll call you" — the base class calls the subclass methods, not the other way around.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Making a hot beverage. The template: boil water → brew → pour → add condiments. The brewing step differs (tea vs coffee), and condiments differ (milk vs lemon). The overall recipe (template) stays the same.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a data mining application that processes reports from different formats (CSV, XML, PDF). Each format has different parsing and extracting logic, but the overall process is: open file → parse → extract data → analyse → send report. That pipeline is identical for all formats.</p>
+    <p>Without Template Method: duplicate the pipeline in every format class. With Template Method: put the pipeline in the base class, override only the format-specific steps in subclasses.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">AbstractClass</div><div class="participant-desc">Defines the template method — the algorithm skeleton as a series of method calls. Implements invariant parts. Declares abstract (required) and hook (optional override) methods for subclasses.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteClass</div><div class="participant-desc">Implements the abstract steps. May override hook methods to extend or modify specific steps. Never overrides the template method itself.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="270" viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- AbstractClass -->
+        <rect x="170" y="10" width="300" height="130" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="38" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e8b86d" font-weight="600">AbstractClass</text>
+        <text x="320" y="58" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">templateMethod() {  ← FINAL</text>
+        <text x="320" y="74" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">  step1()   // concrete</text>
+        <text x="320" y="90" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">  step2()   // abstract (must override)</text>
+        <text x="320" y="106" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#b46de8">  hook()    // optional override</text>
+        <text x="320" y="122" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">  step3()   // concrete</text>
+        <text x="320" y="134" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">}</text>
+        <!-- ConcreteClass A -->
+        <rect x="60" y="190" width="200" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="160" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">CSVDataMiner</text>
+        <text x="160" y="233" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">step2() — CSV parse</text>
+        <text x="160" y="249" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#b46de8">hook() — override opt.</text>
+        <!-- ConcreteClass B -->
+        <rect x="380" y="190" width="200" height="70" rx="6" fill="#1a1e2a" stroke="#252a38"/>
+        <text x="480" y="215" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#e2e4ec">XMLDataMiner</text>
+        <text x="480" y="233" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e86d6d">step2() — XML parse</text>
+        <text x="480" y="249" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">hook() — not overridden</text>
+        <!-- arrows -->
+        <line x1="250" y1="140" x2="200" y2="190" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="390" y1="140" x2="440" y2="190" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- legend -->
+        <rect x="10" y="248" width="620" height="18" rx="3" fill="#080a0f" stroke="#252a38"/>
+        <text x="20"  y="261" font-family="JetBrains Mono,monospace" font-size="8" fill="#6de8a8">■ templateMethod = final</text>
+        <text x="185" y="261" font-family="JetBrains Mono,monospace" font-size="8" fill="#e86d6d">■ abstract = must override</text>
+        <text x="360" y="261" font-family="JetBrains Mono,monospace" font-size="8" fill="#b46de8">■ hook = optional override (has default impl)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Data Mining Pipeline</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// AbstractClass — defines the template</span>
+<span class="kw">public abstract class</span> <span class="cl">DataMiner</span> {
+
+    <span class="cm">// THE TEMPLATE METHOD — final: subclasses must NOT override</span>
+    <span class="kw">public final void</span> <span class="fn">mine</span>(<span class="cl">String</span> path) {
+        <span class="cl">String</span> rawData  = <span class="fn">openFile</span>(path);         <span class="cm">// concrete</span>
+        <span class="cl">String</span> data      = <span class="fn">extractData</span>(rawData);   <span class="cm">// abstract — must override</span>
+        <span class="cl">String</span> parsed    = <span class="fn">parseData</span>(data);        <span class="cm">// abstract — must override</span>
+        <span class="fn">analyzeData</span>(parsed);                      <span class="cm">// concrete (shared logic)</span>
+        <span class="kw">if</span> (<span class="fn">shouldSendReport</span>()) {                 <span class="cm">// hook — optional</span>
+            <span class="fn">sendReport</span>(parsed);                   <span class="cm">// concrete</span>
+        }
+        <span class="fn">closeFile</span>(path);                          <span class="cm">// concrete</span>
+    }
+
+    <span class="cm">// Concrete steps — shared by all subclasses</span>
+    <span class="kw">private</span> <span class="cl">String</span> <span class="fn">openFile</span>(<span class="cl">String</span> path) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Opening: "</span> + path);
+        <span class="kw">return</span> <span class="st">"raw data from "</span> + path;
+    }
+    <span class="kw">private void</span> <span class="fn">analyzeData</span>(<span class="cl">String</span> data) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Analyzing: "</span> + data);
+    }
+    <span class="kw">private void</span> <span class="fn">sendReport</span>(<span class="cl">String</span> data) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Sending report for: "</span> + data);
+    }
+    <span class="kw">private void</span> <span class="fn">closeFile</span>(<span class="cl">String</span> path) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Closing: "</span> + path);
+    }
+
+    <span class="cm">// Abstract steps — MUST be overridden by subclasses</span>
+    <span class="kw">protected abstract</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> raw);
+    <span class="kw">protected abstract</span> <span class="cl">String</span> <span class="fn">parseData</span>(<span class="cl">String</span> data);
+
+    <span class="cm">// Hook — OPTIONAL override. Default: always send report</span>
+    <span class="kw">protected boolean</span> <span class="fn">shouldSendReport</span>() { <span class="kw">return true</span>; }
+}
+
+<span class="cm">// ConcreteClass A — CSV format</span>
+<span class="kw">public class</span> <span class="cl">CSVDataMiner</span> <span class="kw">extends</span> <span class="cl">DataMiner</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> raw) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Extracting CSV columns"</span>);
+        <span class="kw">return</span> <span class="st">"csv_data"</span>;
+    }
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">parseData</span>(<span class="cl">String</span> data) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Parsing CSV rows"</span>);
+        <span class="kw">return</span> <span class="st">"csv_parsed"</span>;
+    }
+    <span class="cm">// does NOT override shouldSendReport — uses default (true)</span>
+}
+
+<span class="cm">// ConcreteClass B — XML format, overrides hook</span>
+<span class="kw">public class</span> <span class="cl">XMLDataMiner</span> <span class="kw">extends</span> <span class="cl">DataMiner</span> {
+    <span class="kw">private boolean</span> debugMode;
+
+    <span class="kw">public</span> <span class="fn">XMLDataMiner</span>(<span class="kw">boolean</span> debug) { <span class="kw">this</span>.debugMode = debug; }
+
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> raw) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Extracting XML nodes"</span>);
+        <span class="kw">return</span> <span class="st">"xml_data"</span>;
+    }
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">parseData</span>(<span class="cl">String</span> data) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Parsing XML elements"</span>);
+        <span class="kw">return</span> <span class="st">"xml_parsed"</span>;
+    }
+
+    <span class="cm">// Override hook — suppress report in debug mode</span>
+    <span class="kw">protected boolean</span> <span class="fn">shouldSendReport</span>() { <span class="kw">return</span> !debugMode; }
+}
+
+<span class="cm">// Client — calls the template method</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">DataMiner</span> csvMiner = <span class="kw">new</span> <span class="cl">CSVDataMiner</span>();
+        csvMiner.<span class="fn">mine</span>(<span class="st">"data.csv"</span>);       <span class="cm">// runs full pipeline</span>
+
+        <span class="cl">DataMiner</span> xmlMiner = <span class="kw">new</span> <span class="cl">XMLDataMiner</span>(<span class="kw">true</span>);
+        xmlMiner.<span class="fn">mine</span>(<span class="st">"data.xml"</span>);       <span class="cm">// skips report (debug mode)</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Multiple classes share the same algorithm skeleton with only specific steps differing</li>
+          <li>You want to control which parts of the algorithm can be overridden</li>
+          <li>Duplicate code across subclasses can be pulled up into a shared template</li>
+          <li>Frameworks — base class controls the flow, plugins override specific steps</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Algorithm steps need to be combined in more flexible ways — use Strategy instead</li>
+          <li>The template method becomes huge with many abstract steps — hard to maintain</li>
+          <li>Liskov Substitution violations are common in subclasses — prefer composition</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.AbstractList</code> — <code>get()</code> and <code>size()</code> are abstract; <code>iterator()</code> and <code>contains()</code> use them in template methods</li>
+      <li>Spring's <code>JdbcTemplate</code> — template method for DB operations; callback supplies the SQL-specific part</li>
+      <li>Spring <code>AbstractController</code> — <code>handleRequest()</code> is the template; <code>handleRequestInternal()</code> is overridden</li>
+      <li>JUnit — <code>setUp()</code>, test method, <code>tearDown()</code> is a classic template method lifecycle</li>
+      <li>Servlet <code>HttpServlet</code> — <code>service()</code> dispatches to <code>doGet()</code>, <code>doPost()</code> which subclasses override</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Eliminates code duplication — shared skeleton in one place</li>
+          <li>Controls the algorithm structure — subclasses can't break the flow</li>
+          <li>Hollywood Principle — base class orchestrates, subclasses provide details</li>
+          <li>Easy to add new variants — just extend and override specific steps</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Liskov Substitution risk — subclasses can violate the contract of abstract steps</li>
+          <li>Hard to maintain as template methods grow with many abstract steps</li>
+          <li>Inheritance is less flexible than composition — hard to change hierarchy later</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Template Method Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Subclass overrides the template method:</strong> If the template method is not declared <code>final</code>, a subclass overrides the entire algorithm skeleton — the controlled structure is lost entirely</li>
+          <li><strong>Abstract step throws instead of implementing:</strong> A ConcreteClass implements an abstract step by throwing <code>UnsupportedOperationException</code> — the base class template method crashes mid-run</li>
+          <li><strong>Subclass calls base class steps directly:</strong> Subclass bypasses the template method and calls inherited concrete steps directly in a different order — violating the defined algorithm flow</li>
+          <li><strong>Hook with side effects breaks flow:</strong> Overriding a hook with code that has unexpected side effects (e.g., modifying shared state) corrupts the template method's execution for other steps</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Always declare template method final:</strong> <code>public final void templateMethod()</code> — makes it impossible for subclasses to override the skeleton, only the designated steps</li>
+          <li><strong>Abstract steps must be meaningful:</strong> Document the contract of each abstract step clearly — what it must return, what side effects are allowed. Consider using an interface with a default method for hooks</li>
+          <li><strong>Keep concrete steps private:</strong> Mark shared concrete steps as <code>private</code> — subclasses cannot call them out of order and the template retains full control</li>
+          <li><strong>Hooks should be pure and minimal:</strong> Hook methods should have no side effects beyond what is documented — override hooks with only Boolean flags or simple customisations</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — template method not final, subclass overrides it</span>
+<span class="kw">public</span> <span class="kw">void</span> <span class="fn">mine</span>(<span class="cl">String</span> path) { <span class="cm">// ❌ not final</span>
+    <span class="cm">/* skeleton */</span>
+}
+
+<span class="kw">public class</span> <span class="cl">RogueSubclass</span> <span class="kw">extends</span> <span class="cl">DataMiner</span> {
+    <span class="kw">public void</span> <span class="fn">mine</span>(<span class="cl">String</span> path) { <span class="cm">// ❌ completely replaces the template!</span>
+        <span class="fn">extractData</span>(path);
+        <span class="cm">// skips analysis, skips close — template structure destroyed</span>
+    }
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> r) { <span class="kw">return</span> <span class="st">""</span>; }
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">parseData</span>(<span class="cl">String</span> d)   { <span class="kw">return</span> <span class="st">""</span>; }
+}
+
+<span class="cm">// ✅ FIX — final template method cannot be overridden</span>
+<span class="kw">public final void</span> <span class="fn">mine</span>(<span class="cl">String</span> path) { <span class="cm">// ✅ final — skeleton protected</span>
+    <span class="fn">openFile</span>(path); <span class="fn">extractData</span>(path); <span class="fn">analyzeData</span>(path); <span class="fn">closeFile</span>(path);
+}
+
+<span class="cm">// ❌ BREAKING — abstract step throws instead of implementing</span>
+<span class="kw">public class</span> <span class="cl">LazySubclass</span> <span class="kw">extends</span> <span class="cl">DataMiner</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> r) {
+        <span class="kw">throw new</span> <span class="cl">UnsupportedOperationException</span>(); <span class="cm">// ❌ base class crashes mid-run</span>
+    }
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">parseData</span>(<span class="cl">String</span> d) { <span class="kw">return</span> <span class="st">""</span>; }
+}
+
+<span class="cm">// ✅ FIX — abstract contract must be implemented properly</span>
+<span class="cm">// Document with Javadoc what the method MUST do:</span>
+<span class="cm">/**</span>
+<span class="cm"> * Extracts raw fields from source data.</span>
+<span class="cm"> * Must return non-null String. Never throw.</span>
+<span class="cm"> */</span>
+<span class="kw">protected abstract</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> raw);
+
+<span class="cm">// ❌ BREAKING — concrete steps not private, subclass calls out of order</span>
+<span class="kw">protected void</span> <span class="fn">openFile</span>(<span class="cl">String</span> p) { <span class="cm">/* ... */</span> } <span class="cm">// ❌ protected — callable by subclass</span>
+
+<span class="kw">public class</span> <span class="cl">BrokenSubclass</span> <span class="kw">extends</span> <span class="cl">DataMiner</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> <span class="fn">extractData</span>(<span class="cl">String</span> r) {
+        <span class="fn">openFile</span>(<span class="st">"extra.csv"</span>); <span class="cm">// ❌ calling a step out of sequence</span>
+        <span class="kw">return</span> <span class="st">""</span>;
+    }
+}
+
+<span class="cm">// ✅ FIX — concrete steps are private</span>
+<span class="kw">private</span> <span class="cl">String</span> <span class="fn">openFile</span>(<span class="cl">String</span> p) { <span class="kw">return</span> <span class="st">""</span>; } <span class="cm">// ✅ subclass cannot call this</span></pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='strategy.html'">
+        <div><div class="related-name">Strategy</div>
+        <span class="related-tag tag-competes">Competes With</span>
+        <div class="related-desc">Template Method uses inheritance to vary algorithm steps. Strategy uses composition to swap the whole algorithm. Template Method is simpler but less flexible — the skeleton is fixed at compile time.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../creational/factory-method.html'">
+        <div><div class="related-name">Factory Method</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Factory Method is a specialisation of Template Method — the object creation step inside a template method is the factory method that subclasses override to return different product types.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='visitor.html'">
+        <div><div class="related-name">Visitor</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Template Method controls the traversal order of an algorithm. Visitor can be injected as a hook into that algorithm to perform operations on each step without changing the template structure.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Base class defines algorithm skeleton as a <code>final</code> method calling abstract and hook methods. Subclasses provide implementations for abstract steps and optionally override hooks. Base class calls subclass — Hollywood Principle.</li>
+        <li><strong>Abstract vs Hook:</strong> Abstract step = subclass MUST implement (algorithm won't work without it). Hook = subclass MAY override (has a sensible default in the base class).</li>
+        <li><strong>Key distinction from Strategy:</strong> Template Method = inheritance, skeleton fixed. Strategy = composition, whole algorithm swapped. When you need runtime flexibility, prefer Strategy. When the skeleton is stable and shared, use Template Method.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="strategy.html"><span class="nav-dir">← Previous</span><span class="nav-title">Strategy</span></a>
+    <a href="visitor.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Visitor</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

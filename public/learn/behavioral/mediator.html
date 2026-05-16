@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mediator Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Mediator</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Mediator</h1>
+    <p class="page-tagline">Define an object that encapsulates how a set of objects interact — promote loose coupling by preventing direct references between objects.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-intermediate">Intermediate</span>
+      <span class="diff-badge">Pattern #17 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Mediator Pattern?</h2>
+    <p>Mediator centralises complex communications and control logic between related objects (colleagues). Instead of objects referencing each other directly, they all communicate through the mediator. This reduces the number of connections from O(N²) to O(N).</p>
+    <p>Without Mediator: N objects communicating directly = N×(N-1)/2 connections. With Mediator: each object has exactly one connection — to the mediator.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> Air traffic control (ATC). Planes don't communicate directly with each other — they all talk to the ATC tower. The tower coordinates all movements. Remove the tower and every plane would need to talk to every other plane.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You have a dialog form with many UI components — a TextBox, a CheckBox, a SubmitButton, a ListBox. When the TextBox changes, the SubmitButton should enable/disable. When the CheckBox is ticked, the ListBox should hide. Every component knows about every other — a tightly coupled web.</p>
+    <p>Mediator (the Dialog itself) receives notifications from all components and decides what to do. Each component only knows the mediator — zero knowledge of siblings.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">Mediator (interface)</div><div class="participant-desc">Declares the communication interface used by colleagues: typically <code>notify(sender, event)</code>.</div></div>
+      <div class="participant"><div class="participant-name">ConcreteMediator</div><div class="participant-desc">Implements the coordination logic. Knows about all colleague objects. Responds to colleague events and triggers appropriate actions on other colleagues.</div></div>
+      <div class="participant"><div class="participant-name">Colleague (Component)</div><div class="participant-desc">Each component has a reference to the Mediator. Notifies the mediator when something happens. Never calls other colleagues directly.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="260" viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- Mediator center -->
+        <rect x="240" y="90" width="160" height="80" rx="8" fill="#13161e" stroke="#e8b86d" stroke-width="2"/>
+        <text x="320" y="118" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" fill="#e8b86d" font-weight="700">Mediator</text>
+        <text x="320" y="136" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">notify(sender, event)</text>
+        <text x="320" y="152" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">coordinates all</text>
+        <!-- Colleagues -->
+        <rect x="20"  y="30"  width="120" height="50" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="80"  y="58"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">TextBox</text>
+        <rect x="20"  y="180" width="120" height="50" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="80"  y="208" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">CheckBox</text>
+        <rect x="500" y="30"  width="120" height="50" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="560" y="58"  text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">SubmitButton</text>
+        <rect x="500" y="180" width="120" height="50" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="560" y="208" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">ListBox</text>
+        <!-- arrows TO mediator -->
+        <line x1="140" y1="55"  x2="240" y2="115" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="140" y1="205" x2="240" y2="155" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="500" y1="55"  x2="400" y2="115" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="500" y1="205" x2="400" y2="155" stroke="#e8b86d" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- labels -->
+        <text x="155" y="75"  font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">notify()</text>
+        <text x="155" y="190" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">notify()</text>
+        <text x="418" y="75"  font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">notify()</text>
+        <text x="418" y="190" font-family="JetBrains Mono,monospace" font-size="8" fill="#e8b86d">notify()</text>
+        <!-- without mediator label -->
+        <rect x="10" y="235" width="620" height="22" rx="4" fill="#080a0f" stroke="#252a38"/>
+        <text x="320" y="250" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#7a7f96">Without Mediator: N×(N-1)/2 = 6 direct connections for 4 objects → With Mediator: 4 connections total</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Dialog Form Mediator</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// Mediator interface</span>
+<span class="kw">public interface</span> <span class="cl">Mediator</span> {
+    <span class="kw">void</span> <span class="fn">notify</span>(<span class="cl">Component</span> sender, <span class="cl">String</span> event);
+}
+
+<span class="cm">// Base Colleague — knows only about the mediator</span>
+<span class="kw">public abstract class</span> <span class="cl">Component</span> {
+    <span class="kw">protected</span> <span class="cl">Mediator</span> mediator;
+
+    <span class="kw">public</span> <span class="fn">Component</span>(<span class="cl">Mediator</span> m) { <span class="kw">this</span>.mediator = m; }
+
+    <span class="kw">public void</span> <span class="fn">changed</span>(<span class="cl">String</span> event) {
+        mediator.<span class="fn">notify</span>(<span class="kw">this</span>, event); <span class="cm">// all colleagues talk only to mediator</span>
+    }
+}
+
+<span class="cm">// Concrete Colleagues</span>
+<span class="kw">public class</span> <span class="cl">TextBox</span> <span class="kw">extends</span> <span class="cl">Component</span> {
+    <span class="kw">private</span> <span class="cl">String</span> text = <span class="st">""</span>;
+    <span class="kw">public</span> <span class="fn">TextBox</span>(<span class="cl">Mediator</span> m) { <span class="kw">super</span>(m); }
+
+    <span class="kw">public void</span> <span class="fn">setText</span>(<span class="cl">String</span> t) {
+        text = t;
+        <span class="fn">changed</span>(<span class="st">"textChanged"</span>);
+    }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getText</span>() { <span class="kw">return</span> text; }
+}
+
+<span class="kw">public class</span> <span class="cl">CheckBox</span> <span class="kw">extends</span> <span class="cl">Component</span> {
+    <span class="kw">private boolean</span> checked = <span class="kw">false</span>;
+    <span class="kw">public</span> <span class="fn">CheckBox</span>(<span class="cl">Mediator</span> m) { <span class="kw">super</span>(m); }
+
+    <span class="kw">public void</span> <span class="fn">toggle</span>() {
+        checked = !checked;
+        <span class="fn">changed</span>(<span class="st">"toggled"</span>);
+    }
+    <span class="kw">public boolean</span> <span class="fn">isChecked</span>() { <span class="kw">return</span> checked; }
+}
+
+<span class="kw">public class</span> <span class="cl">Button</span> <span class="kw">extends</span> <span class="cl">Component</span> {
+    <span class="kw">private boolean</span> enabled = <span class="kw">false</span>;
+    <span class="kw">public</span> <span class="fn">Button</span>(<span class="cl">Mediator</span> m) { <span class="kw">super</span>(m); }
+    <span class="kw">public void</span> <span class="fn">setEnabled</span>(<span class="kw">boolean</span> e) { enabled = e; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Button "</span> + (e ? <span class="st">"enabled"</span> : <span class="st">"disabled"</span>)); }
+    <span class="kw">public boolean</span> <span class="fn">isEnabled</span>() { <span class="kw">return</span> enabled; }
+}
+
+<span class="cm">// Concrete Mediator — all coordination logic here</span>
+<span class="kw">public class</span> <span class="cl">DialogMediator</span> <span class="kw">implements</span> <span class="cl">Mediator</span> {
+    <span class="kw">public</span> <span class="cl">TextBox</span>  loginInput;
+    <span class="kw">public</span> <span class="cl">CheckBox</span> rememberMe;
+    <span class="kw">public</span> <span class="cl">Button</span>   submitBtn;
+
+    <span class="kw">public void</span> <span class="fn">notify</span>(<span class="cl">Component</span> sender, <span class="cl">String</span> event) {
+        <span class="kw">if</span> (sender == loginInput && event.<span class="fn">equals</span>(<span class="st">"textChanged"</span>)) {
+            <span class="cm">// Enable submit only when text is not empty</span>
+            submitBtn.<span class="fn">setEnabled</span>(!loginInput.<span class="fn">getText</span>().<span class="fn">isBlank</span>());
+        }
+        <span class="kw">if</span> (sender == rememberMe && event.<span class="fn">equals</span>(<span class="st">"toggled"</span>)) {
+            <span class="cm">// Log the preference</span>
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Remember me: "</span> + rememberMe.<span class="fn">isChecked</span>());
+        }
+    }
+}
+
+<span class="cm">// Client — wires everything</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">DialogMediator</span> dialog = <span class="kw">new</span> <span class="cl">DialogMediator</span>();
+
+        dialog.loginInput = <span class="kw">new</span> <span class="cl">TextBox</span>(dialog);
+        dialog.rememberMe = <span class="kw">new</span> <span class="cl">CheckBox</span>(dialog);
+        dialog.submitBtn  = <span class="kw">new</span> <span class="cl">Button</span>(dialog);
+
+        dialog.loginInput.<span class="fn">setText</span>(<span class="st">"user@example.com"</span>); <span class="cm">// Button enabled</span>
+        dialog.loginInput.<span class="fn">setText</span>(<span class="st">""</span>);                   <span class="cm">// Button disabled</span>
+        dialog.rememberMe.<span class="fn">toggle</span>();                       <span class="cm">// Remember me: true</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Many objects communicate in complex ways causing tight coupling</li>
+          <li>An object references and depends on many other objects</li>
+          <li>Reusing a component in a different context is difficult due to its many dependencies</li>
+          <li>UI form coordination, chat rooms, event buses, workflow engines</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Only a few objects interact — a mediator adds unnecessary indirection</li>
+          <li>The mediator itself becomes a God Object with too much logic</li>
+          <li>Objects need direct, high-performance communication without routing overhead</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li>Spring's <code>ApplicationEventPublisher</code> — event mediator between publishers and listeners</li>
+      <li>Java MVC — Controller acts as a Mediator between View (colleagues) and Model</li>
+      <li>Java Swing <code>JDialog</code> — dialog coordinates its child components acting as mediator</li>
+      <li>Chat application server — server is the mediator; clients send messages to server, not each other</li>
+      <li>Kubernetes Scheduler — mediator between Pod requests and Node availability</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Single Responsibility — interaction logic in one place</li>
+          <li>Open/Closed — add new colleagues without changing existing ones</li>
+          <li>Reduces coupling from O(N²) to O(N)</li>
+          <li>Colleagues become independently reusable</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Mediator can become a God Object — all knowledge centralised</li>
+          <li>Single point of failure — mediator breakdown affects all colleagues</li>
+          <li>Can be harder to trace which colleagues affect which</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Mediator Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>God Mediator:</strong> All business logic moves into <code>notify()</code> — it becomes a massive if-else chain handling every possible event from every colleague, defeating the purpose of separation</li>
+          <li><strong>Colleagues referencing each other directly:</strong> A colleague bypasses the mediator and calls another colleague directly — the coupling Mediator was meant to eliminate creeps back in</li>
+          <li><strong>Infinite notification loop:</strong> Colleague A notifies mediator → mediator updates Colleague B → B fires its own change event → mediator updates A → infinite loop</li>
+          <li><strong>Mediator holds stale colleague references:</strong> A colleague is removed/destroyed but mediator still holds a reference — sends notifications to a dead object causing NPE or unexpected behaviour</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Keep mediator thin:</strong> Delegate complex business rules to domain services — mediator only routes events and triggers colleague actions, it does not implement business logic itself</li>
+          <li><strong>Strict rule — colleagues only call mediator:</strong> Enforce via code review or ArchUnit tests that no colleague class imports or references another colleague class directly</li>
+          <li><strong>Re-entrancy guard:</strong> Track whether the mediator is already processing a notification — if so, queue the new notification rather than re-entering the handler recursively</li>
+          <li><strong>Weak references or deregistration:</strong> Allow colleagues to deregister from the mediator. Use weak references in the mediator's colleague list so garbage-collected colleagues are not notified</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — infinite loop: A notifies → mediator updates B → B fires → loop</span>
+<span class="kw">public void</span> <span class="fn">notify</span>(<span class="cl">Component</span> sender, <span class="cl">String</span> event) {
+    <span class="kw">if</span> (sender == checkBox) {
+        textBox.<span class="fn">setText</span>(<span class="st">"auto-filled"</span>); <span class="cm">// setText fires "textChanged"</span>
+        <span class="cm">// → mediator.notify(textBox, "textChanged")</span>
+        <span class="cm">// → which might update checkBox → infinite loop!</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — re-entrancy guard</span>
+<span class="kw">private boolean</span> handling = <span class="kw">false</span>;
+
+<span class="kw">public void</span> <span class="fn">notify</span>(<span class="cl">Component</span> sender, <span class="cl">String</span> event) {
+    <span class="kw">if</span> (handling) <span class="kw">return</span>; <span class="cm">// ✅ prevent re-entrant notification</span>
+    handling = <span class="kw">true</span>;
+    <span class="kw">try</span> {
+        <span class="kw">if</span> (sender == checkBox) {
+            textBox.<span class="fn">setText</span>(<span class="st">"auto-filled"</span>); <span class="cm">// won't re-enter</span>
+        }
+    } <span class="kw">finally</span> {
+        handling = <span class="kw">false</span>;
+    }
+}
+
+<span class="cm">// ❌ BREAKING — colleague bypasses mediator</span>
+<span class="kw">public class</span> <span class="cl">CheckBox</span> <span class="kw">extends</span> <span class="cl">Component</span> {
+    <span class="kw">private</span> <span class="cl">Button</span> submitBtn; <span class="cm">// ❌ direct reference to another colleague!</span>
+
+    <span class="kw">public void</span> <span class="fn">toggle</span>() {
+        submitBtn.<span class="fn">setEnabled</span>(checked); <span class="cm">// ❌ direct call — bypasses mediator</span>
+    }
+}
+
+<span class="cm">// ✅ FIX — only notify mediator, never reference other colleagues</span>
+<span class="kw">public class</span> <span class="cl">CheckBox</span> <span class="kw">extends</span> <span class="cl">Component</span> {
+    <span class="kw">public void</span> <span class="fn">toggle</span>() {
+        checked = !checked;
+        <span class="fn">changed</span>(<span class="st">"toggled"</span>); <span class="cm">// ✅ only calls mediator.notify(this, "toggled")</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='observer.html'">
+        <div><div class="related-name">Observer</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Observer is one-to-many broadcast — subject notifies all subscribers. Mediator is many-to-many coordination — colleagues notify the mediator which decides who to route to. Observer is decentralised; Mediator is centralised.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../structural/facade.html'">
+        <div><div class="related-name">Facade</div>
+        <span class="related-tag tag-confused">Often Confused</span>
+        <div class="related-desc">Facade provides a one-way simplified interface to a subsystem — subsystem components don't know about the Facade. Mediator enables two-way communication — colleagues know and call the mediator actively.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='command.html'">
+        <div><div class="related-name">Command</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Colleagues can send Command objects to the mediator instead of plain event strings, giving the mediator queuing, undo, and logging capabilities over inter-colleague operations.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Central coordinator. Colleagues only talk to the mediator — never to each other. Reduces N×(N-1)/2 connections to N. All coordination logic lives in one place.</li>
+        <li><strong>How:</strong> Mediator interface with <code>notify(sender, event)</code>. ConcreteMediator holds references to all colleagues. Each colleague holds a mediator reference and calls <code>mediator.notify(this, event)</code> on change.</li>
+        <li><strong>Key distinction from Observer:</strong> Observer = one-to-many broadcast (subject to subscribers). Mediator = many-to-many coordination (any colleague to any colleague via mediator). Observer is decentralised; Mediator is centralised.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="iterator.html"><span class="nav-dir">← Previous</span><span class="nav-title">Iterator</span></a>
+    <a href="memento.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Memento</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>

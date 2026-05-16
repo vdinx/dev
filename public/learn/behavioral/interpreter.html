@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Interpreter Pattern — GoF Design Patterns</title>
+<link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+<nav class="topbar">
+  <a href="../index.html" class="topbar-brand">GoF Patterns</a>
+  <div class="topbar-nav">
+    <a href="../index.html#creational">Creational</a>
+    <a href="../index.html#structural">Structural</a>
+    <a href="../index.html#behavioral" class="active">Behavioral</a>
+  </div>
+</nav>
+<div class="breadcrumb">
+  <a href="../index.html">Home</a><span class="sep">/</span>
+  <a href="../index.html#behavioral">Behavioral</a><span class="sep">/</span>
+  <span>Interpreter</span>
+</div>
+<div class="page-wrap">
+  <div class="page-hero">
+    <div class="category-pill pill-behavioral">Behavioral</div>
+    <h1 class="page-title">Interpreter</h1>
+    <p class="page-tagline">Define a grammar for a language and provide an interpreter to evaluate sentences in that language.</p>
+    <div class="difficulty-row">
+      <span class="diff-badge diff-advanced">Advanced</span>
+      <span class="diff-badge">Pattern #15 of 23</span>
+    </div>
+  </div>
+  <hr class="divider"/>
+
+  <div class="section">
+    <div class="section-label">01 — Intent</div>
+    <h2 class="section-title">What is the Interpreter Pattern?</h2>
+    <p>Interpreter defines a representation for a language's grammar using a class hierarchy, and provides an interpreter that uses the representation to interpret sentences in that language. Each grammar rule becomes a class; evaluating an expression means calling <code>interpret()</code> on the tree of rule objects.</p>
+    <p>It is most useful for simple, domain-specific languages (DSLs) — mathematical expressions, query languages, configuration rule engines, boolean filters.</p>
+    <div class="callout"><strong>Real-world analogy:</strong> A simple calculator. The expression <code>3 + 5 * 2</code> is parsed into a tree: Add(3, Multiply(5, 2)). Each node is an Interpreter class. Calling <code>interpret()</code> on the root evaluates the whole expression recursively.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Problem</div>
+    <h2 class="section-title">The Problem It Solves</h2>
+    <p>You need to evaluate boolean search expressions like <code>java AND (spring OR hibernate) NOT legacy</code>. The grammar is recursive — expressions can be nested. A single massive if-else parser becomes unmaintainable when the grammar grows.</p>
+    <p>Interpreter maps each grammar rule to a class: <code>AndExpression</code>, <code>OrExpression</code>, <code>NotExpression</code>, <code>TerminalExpression</code>. The expression tree is built from these, and <code>interpret(context)</code> evaluates it naturally.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Solution</div>
+    <h2 class="section-title">Participants</h2>
+    <div class="participants">
+      <div class="participant"><div class="participant-name">AbstractExpression</div><div class="participant-desc">Declares the <code>interpret(context)</code> method that all concrete expressions implement.</div></div>
+      <div class="participant"><div class="participant-name">TerminalExpression</div><div class="participant-desc">Implements interpretation for the leaf nodes of the grammar — the base cases that don't contain sub-expressions.</div></div>
+      <div class="participant"><div class="participant-name">NonterminalExpression</div><div class="participant-desc">Implements grammar rules that contain other expressions. Calls <code>interpret()</code> on its children and combines results.</div></div>
+      <div class="participant"><div class="participant-name">Context</div><div class="participant-desc">Contains global information for the interpreter — variables, input data, or state that expressions need during evaluation.</div></div>
+      <div class="participant"><div class="participant-name">Client</div><div class="participant-desc">Builds the abstract syntax tree from TerminalExpressions and NonterminalExpressions, then calls <code>interpret(context)</code> on the root.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Structure</div>
+    <h2 class="section-title">Visual Flow Diagram</h2>
+    <div class="flow-diagram">
+      <svg width="640" height="250" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6d9ee8"/></marker></defs>
+        <!-- AbstractExpression -->
+        <rect x="220" y="10" width="200" height="55" rx="6" fill="#13161e" stroke="#e8b86d" stroke-width="1.5"/>
+        <text x="320" y="33" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#e8b86d">«interface»</text>
+        <text x="320" y="50" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#fff" font-weight="600">Expression</text>
+        <text x="450" y="25" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">interpret(ctx)</text>
+        <!-- Terminal -->
+        <rect x="50" y="120" width="160" height="60" rx="6" fill="#1a1e2a" stroke="#6de8a8" stroke-width="1.5"/>
+        <text x="130" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6de8a8">TerminalExpression</text>
+        <text x="130" y="164" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">interpret() → base case</text>
+        <!-- NonTerminal -->
+        <rect x="380" y="120" width="200" height="80" rx="6" fill="#1a1e2a" stroke="#6d9ee8" stroke-width="1.5"/>
+        <text x="480" y="146" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#6d9ee8">NonterminalExpression</text>
+        <text x="480" y="164" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">left, right: Expression</text>
+        <text x="480" y="180" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">interpret() →</text>
+        <text x="480" y="194" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#6de8a8">  left+right.interpret()</text>
+        <!-- Context -->
+        <rect x="220" y="120" width="140" height="60" rx="6" fill="#13161e" stroke="#b46de8" stroke-width="1.5"/>
+        <text x="290" y="148" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#b46de8">Context</text>
+        <text x="290" y="166" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#7a7f96">variables / input</text>
+        <!-- arrows -->
+        <line x1="280" y1="65" x2="190" y2="120" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <line x1="360" y1="65" x2="440" y2="120" stroke="#6d9ee8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <!-- parse tree example -->
+        <rect x="10" y="210" width="620" height="35" rx="4" fill="#080a0f" stroke="#252a38"/>
+        <text x="320" y="228" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#e8b86d">Parse tree: AND( OR("java","spring"), NOT("legacy") ).interpret(ctx) → true/false</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Implementation</div>
+    <h2 class="section-title">Java Code Example</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Boolean Search Expression Interpreter</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// AbstractExpression</span>
+<span class="kw">public interface</span> <span class="cl">Expression</span> {
+    <span class="kw">boolean</span> <span class="fn">interpret</span>(<span class="cl">String</span> context);
+}
+
+<span class="cm">// TerminalExpression — leaf node, checks if word is in context</span>
+<span class="kw">public class</span> <span class="cl">TerminalExpression</span> <span class="kw">implements</span> <span class="cl">Expression</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> word;
+    <span class="kw">public</span> <span class="fn">TerminalExpression</span>(<span class="cl">String</span> word) { <span class="kw">this</span>.word = word; }
+
+    <span class="kw">public boolean</span> <span class="fn">interpret</span>(<span class="cl">String</span> ctx) {
+        <span class="kw">return</span> ctx.<span class="fn">contains</span>(word); <span class="cm">// base case</span>
+    }
+}
+
+<span class="cm">// NonterminalExpression — AND</span>
+<span class="kw">public class</span> <span class="cl">AndExpression</span> <span class="kw">implements</span> <span class="cl">Expression</span> {
+    <span class="kw">private final</span> <span class="cl">Expression</span> left, right;
+    <span class="kw">public</span> <span class="fn">AndExpression</span>(<span class="cl">Expression</span> l, <span class="cl">Expression</span> r) { left=l; right=r; }
+
+    <span class="kw">public boolean</span> <span class="fn">interpret</span>(<span class="cl">String</span> ctx) {
+        <span class="kw">return</span> left.<span class="fn">interpret</span>(ctx) && right.<span class="fn">interpret</span>(ctx);
+    }
+}
+
+<span class="cm">// NonterminalExpression — OR</span>
+<span class="kw">public class</span> <span class="cl">OrExpression</span> <span class="kw">implements</span> <span class="cl">Expression</span> {
+    <span class="kw">private final</span> <span class="cl">Expression</span> left, right;
+    <span class="kw">public</span> <span class="fn">OrExpression</span>(<span class="cl">Expression</span> l, <span class="cl">Expression</span> r) { left=l; right=r; }
+
+    <span class="kw">public boolean</span> <span class="fn">interpret</span>(<span class="cl">String</span> ctx) {
+        <span class="kw">return</span> left.<span class="fn">interpret</span>(ctx) || right.<span class="fn">interpret</span>(ctx);
+    }
+}
+
+<span class="cm">// NonterminalExpression — NOT</span>
+<span class="kw">public class</span> <span class="cl">NotExpression</span> <span class="kw">implements</span> <span class="cl">Expression</span> {
+    <span class="kw">private final</span> <span class="cl">Expression</span> expr;
+    <span class="kw">public</span> <span class="fn">NotExpression</span>(<span class="cl">Expression</span> e) { expr = e; }
+
+    <span class="kw">public boolean</span> <span class="fn">interpret</span>(<span class="cl">String</span> ctx) {
+        <span class="kw">return</span> !expr.<span class="fn">interpret</span>(ctx);
+    }
+}
+
+<span class="cm">// Client builds AST and evaluates</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Build: "java AND (spring OR hibernate) AND NOT legacy"</span>
+        <span class="cl">Expression</span> java      = <span class="kw">new</span> <span class="cl">TerminalExpression</span>(<span class="st">"java"</span>);
+        <span class="cl">Expression</span> spring    = <span class="kw">new</span> <span class="cl">TerminalExpression</span>(<span class="st">"spring"</span>);
+        <span class="cl">Expression</span> hibernate = <span class="kw">new</span> <span class="cl">TerminalExpression</span>(<span class="st">"hibernate"</span>);
+        <span class="cl">Expression</span> legacy    = <span class="kw">new</span> <span class="cl">TerminalExpression</span>(<span class="st">"legacy"</span>);
+
+        <span class="cl">Expression</span> query = <span class="kw">new</span> <span class="cl">AndExpression</span>(java,
+                               <span class="kw">new</span> <span class="cl">AndExpression</span>(
+                                   <span class="kw">new</span> <span class="cl">OrExpression</span>(spring, hibernate),
+                                   <span class="kw">new</span> <span class="cl">NotExpression</span>(legacy)));
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(query.<span class="fn">interpret</span>(<span class="st">"java spring microservices"</span>)); <span class="cm">// true</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(query.<span class="fn">interpret</span>(<span class="st">"java legacy code"</span>));         <span class="cm">// false (has legacy)</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(query.<span class="fn">interpret</span>(<span class="st">"python django"</span>));             <span class="cm">// false (no java)</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Applicability</div>
+    <h2 class="section-title">When to Use / Avoid</h2>
+    <div class="use-grid">
+      <div class="use-card yes">
+        <h4>✓ Use When</h4>
+        <ul>
+          <li>Grammar is simple and stable — complex grammars need real parser generators</li>
+          <li>Efficiency is not critical — interpreter is not the fastest evaluation method</li>
+          <li>Building a DSL: rule engines, query filters, config expressions, math parsers</li>
+          <li>Adding new expression types is more common than changing the grammar rules</li>
+        </ul>
+      </div>
+      <div class="use-card no">
+        <h4>✕ Avoid When</h4>
+        <ul>
+          <li>Grammar is large or complex — use ANTLR, JavaCC, or a real parser instead</li>
+          <li>Performance is critical — recursive tree traversal is slow for complex expressions</li>
+          <li>Grammar changes frequently — every change ripples through many classes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real-World Examples</h2>
+    <ul class="rw-list">
+      <li><code>java.util.regex.Pattern</code> — regex grammar interpreted as an expression tree internally</li>
+      <li>Spring Expression Language (SpEL) — <code>#{order.price > 100}</code> evaluated via interpreter</li>
+      <li>SQL WHERE clauses in ORM query builders — expression trees evaluated against data</li>
+      <li>Apache Commons JEXL — embeddable expression language using Interpreter pattern</li>
+      <li>JVM bytecode — the JVM itself is an interpreter for JVM instruction grammar</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-label">08 — Trade-offs</div>
+    <h2 class="section-title">Pros &amp; Cons</h2>
+    <div class="pros-cons">
+      <div class="pc-card pros">
+        <h4>Pros</h4>
+        <ul>
+          <li>Easy to extend — add new expression types without touching existing ones</li>
+          <li>Grammar rules are first-class objects — easy to combine, test, and reuse</li>
+          <li>Natural mapping between grammar and class hierarchy</li>
+        </ul>
+      </div>
+      <div class="pc-card cons">
+        <h4>Cons</h4>
+        <ul>
+          <li>Class explosion for complex grammars — one class per grammar rule</li>
+          <li>Hard to maintain if grammar is large or changes frequently</li>
+          <li>Performance poor for deeply nested expressions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">09 — Break &amp; Prevent</div>
+    <h2 class="section-title">How Interpreter Can Be Broken</h2>
+    <div class="use-grid">
+      <div class="use-card no">
+        <h4>⚠ Attack Vectors</h4>
+        <ul>
+          <li><strong>Deeply nested expressions → stack overflow:</strong> Recursive <code>interpret()</code> calls on a deeply nested expression tree exhaust the call stack</li>
+          <li><strong>Mutable context shared across threads:</strong> Two threads evaluate expressions on the same Context simultaneously — one overwrites variables the other is reading</li>
+          <li><strong>Missing null check in non-terminal:</strong> If a child expression is null (e.g., <code>new AndExpression(left, null)</code>), <code>interpret()</code> throws NPE deep in recursion with no useful stack trace</li>
+          <li><strong>Grammar ambiguity:</strong> Two grammar rules match the same input — expressions produce different results depending on which node the client builds first</li>
+        </ul>
+      </div>
+      <div class="use-card yes">
+        <h4>✓ Prevention</h4>
+        <ul>
+          <li><strong>Depth limit:</strong> Track nesting depth in the context — throw if it exceeds a max (e.g., 100 levels) to prevent stack overflow from malicious or malformed input</li>
+          <li><strong>Immutable or thread-local context:</strong> Pass a new Context instance per evaluation thread — never share mutable Context across concurrent evaluations</li>
+          <li><strong>Null-guard in constructors:</strong> Every non-terminal's constructor validates that child expressions are non-null using <code>Objects.requireNonNull()</code></li>
+          <li><strong>Iterative evaluation for deep trees:</strong> Replace recursive <code>interpret()</code> with an explicit evaluation stack (<code>Deque</code>) for grammars that may produce deep trees</li>
+        </ul>
+      </div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">Java — Break &amp; Fix</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <pre><span class="cm">// ❌ BREAKING — null child expression</span>
+<span class="cl">Expression</span> bad = <span class="kw">new</span> <span class="cl">AndExpression</span>(java, <span class="kw">null</span>);
+bad.<span class="fn">interpret</span>(<span class="st">"java spring"</span>); <span class="cm">// NPE inside AndExpression.interpret()</span>
+
+<span class="cm">// ✅ FIX — null-guard in constructor</span>
+<span class="kw">public</span> <span class="fn">AndExpression</span>(<span class="cl">Expression</span> l, <span class="cl">Expression</span> r) {
+    <span class="kw">this</span>.left  = <span class="cl">Objects</span>.<span class="fn">requireNonNull</span>(l, <span class="st">"left expression required"</span>);
+    <span class="kw">this</span>.right = <span class="cl">Objects</span>.<span class="fn">requireNonNull</span>(r, <span class="st">"right expression required"</span>);
+}
+
+<span class="cm">// ❌ BREAKING — no depth limit, malicious input → StackOverflow</span>
+<span class="kw">public boolean</span> <span class="fn">interpret</span>(<span class="cl">String</span> ctx) {
+    <span class="kw">return</span> left.<span class="fn">interpret</span>(ctx) && right.<span class="fn">interpret</span>(ctx); <span class="cm">// unlimited depth</span>
+}
+
+<span class="cm">// ✅ FIX — depth-aware context</span>
+<span class="kw">public class</span> <span class="cl">Context</span> {
+    <span class="kw">private int</span> depth = <span class="nm">0</span>;
+    <span class="kw">private static final int</span> MAX_DEPTH = <span class="nm">100</span>;
+
+    <span class="kw">public void</span> <span class="fn">enterExpression</span>() {
+        <span class="kw">if</span> (++depth > MAX_DEPTH)
+            <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"Expression too deeply nested"</span>);
+    }
+    <span class="kw">public void</span> <span class="fn">exitExpression</span>() { depth--; }
+}
+
+<span class="kw">public boolean</span> <span class="fn">interpret</span>(<span class="cl">Context</span> ctx) {
+    ctx.<span class="fn">enterExpression</span>();
+    <span class="kw">try</span> {
+        <span class="kw">return</span> left.<span class="fn">interpret</span>(ctx) && right.<span class="fn">interpret</span>(ctx);
+    } <span class="kw">finally</span> {
+        ctx.<span class="fn">exitExpression</span>();
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">10 — Related Patterns</div>
+    <h2 class="section-title">How Other Patterns Relate</h2>
+    <div class="related-grid">
+      <div class="related-card" onclick="location.href='../structural/composite.html'">
+        <div><div class="related-name">Composite</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">The abstract syntax tree is a Composite tree. NonterminalExpressions are composites; TerminalExpressions are leaves. Interpreter is essentially Composite applied to language grammars.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='../behavioral/visitor.html'">
+        <div><div class="related-name">Visitor</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Visitor can add new operations to an AST without changing expression classes — e.g., a TypeCheckVisitor and an EvalVisitor both traverse the same tree using the Visitor pattern.</div></div>
+      </div>
+      <div class="related-card" onclick="location.href='iterator.html'">
+        <div><div class="related-name">Iterator</div>
+        <span class="related-tag tag-together">Often Used Together</span>
+        <div class="related-desc">Iterator traverses the expression tree during interpretation. A breadth-first or depth-first iterator can be used instead of direct recursion to avoid stack overflow.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">11 — Quick Recap</div>
+    <div class="recap-box">
+      <h3>Interview Cheat Sheet</h3>
+      <ol>
+        <li><strong>What:</strong> Maps grammar rules to classes. Builds an AST (abstract syntax tree) from expression objects. Calls <code>interpret(context)</code> on the root to evaluate the expression recursively.</li>
+        <li><strong>How:</strong> Expression interface with <code>interpret(ctx)</code>. TerminalExpression = leaf (base case). NonterminalExpression = composite (delegates to children). Client builds tree, calls root.interpret().</li>
+        <li><strong>When not to use:</strong> For complex grammars use ANTLR or JavaCC. Interpreter is only practical for simple, stable, DSL-style grammars with ~5–15 rules.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <a href="command.html"><span class="nav-dir">← Previous</span><span class="nav-title">Command</span></a>
+    <a href="iterator.html" class="right"><span class="nav-dir">Next →</span><span class="nav-title">Iterator</span></a>
+  </div>
+</div>
+<script>function copyCode(btn){const pre=btn.closest('.code-wrap').querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}</script>
+</body>
+</html>
